@@ -1,0 +1,5 @@
+﻿let lib = require("lib.txt");
+
+lib.f("asd", 5);
+
+test.testFunc3|"System.Int32"|(5);
