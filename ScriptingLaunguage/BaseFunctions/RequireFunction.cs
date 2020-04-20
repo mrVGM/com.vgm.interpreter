@@ -16,7 +16,9 @@ namespace ScriptingLaunguage.BaseFunctions
                     scope.AddVariable("filename", null);
                     scope.AddVariable("exports", new GenericObject());
                 }
-                return scope;
+
+                var localScope = new Scope { ParentScope = scope };
+                return localScope;
             }
         }
         public string[] ParameterNames { get; private set; } = new string[] { "filename" };
