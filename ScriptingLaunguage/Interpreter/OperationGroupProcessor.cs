@@ -24,11 +24,11 @@ namespace ScriptingLaunguage.Interpreter
             {
                 object tmp = null;
                 var operation = ProcessNode(programNode.Children[0], scope, ref tmp);
-                if (StopOnBreak && operation is OperationProcessor.BreakOperation)
+                if (operation is OperationProcessor.BreakOperation)
                 {
                     return operation;
                 }
-                if (StopOnReturn && operation is OperationProcessor.ReturnOperation) 
+                if (operation is OperationProcessor.ReturnOperation) 
                 {
                     value = tmp;
                     return operation;
