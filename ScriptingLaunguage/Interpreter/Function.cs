@@ -13,12 +13,12 @@ namespace ScriptingLaunguage.Interpreter
         public void Execute()
         {
             Result = null;
-            object tmp = null;
+            object functionResult = null;
             var scope = new Scope { ParentScope = Scope };
-            var res = BlockProcessor.ProcessNode(Block, scope, ref tmp);
+            var res = BlockProcessor.ProcessNode(Block, scope, ref functionResult);
             if (res is OperationProcessor.ReturnOperation) 
             {
-                Result = res;
+                Result = functionResult;
             }
         }
     }
