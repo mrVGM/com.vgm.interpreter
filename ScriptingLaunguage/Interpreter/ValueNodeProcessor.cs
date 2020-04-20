@@ -143,24 +143,15 @@ namespace ScriptingLaunguage.Interpreter
                     
                 if (val1 is IEnumerable) 
                 {
-                    if (genericArguments.Length == 0) 
+                    if (genericArguments.Length < 2)
                     {
-                        var method = type.GetMethod("Get");
-                        value = method.Invoke(val1, new object[] { (int)(float)val2 });
-                        return true;
-                    }
-                    if (genericArguments.Length == 1) 
-                    {
-                        var method = type.GetMethod("GetEnumerator");
-                        var enumerator = method.Invoke(val1, null);
-                        var moveNext = enumerator.GetType().GetMethod("MoveNext");
-                        for (int i = 0; i <= (int)(float)val2; ++i) 
+                        var tmpList = new List<object>();
+                        foreach (var obj in val1 as IEnumerable) 
                         {
-                            moveNext.Invoke(enumerator, null);
+                            tmpList.Add(obj);
                         }
-                        var current = enumerator.GetType().GetProperty("Current");
-                        value = current.GetValue(enumerator);
-                        return true;
+                        value = tmpList[(int)(float)val2];
+                        return null;
                     }
                     if (genericArguments.Length == 2) 
                     {

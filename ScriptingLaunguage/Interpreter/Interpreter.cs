@@ -24,6 +24,7 @@ namespace ScriptingLaunguage.Interpreter
                     globalScope = new Scope();
                     globalScope.AddVariable("require", new RequireFunction(workingDir));
                     globalScope.AddVariable("print", new PrintFunction());
+                    globalScope.AddVariable("len", new LengthFunction());
                 }
                 return globalScope;
             }
