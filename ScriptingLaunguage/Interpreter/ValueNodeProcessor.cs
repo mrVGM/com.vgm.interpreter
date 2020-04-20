@@ -14,7 +14,6 @@ namespace ScriptingLaunguage.Interpreter
         public IProgramNodeProcessor NumberProcessor = new NumberNodeProcessor();
         public IProgramNodeProcessor StringProcessor = new StringNodeProcessor();
         public IProgramNodeProcessor ExpressionProcessor = new ExpressionNodeProcessor();
-        public IProgramNodeProcessor KeywordProcessor = DummyNodeProcessor.DummyProcessor;
         public IProgramNodeProcessor NameProcessor = new NameProcessor();
         public IProgramNodeProcessor FunctionCall = new FunctionCallProcessor();
         public IProgramNodeProcessor FunctionDeclaration = new FunctionDeclarationProcessor();
@@ -40,7 +39,8 @@ namespace ScriptingLaunguage.Interpreter
                     case "Name":
                         return NameProcessor.ProcessNode(childNode, scope, ref value);
                     case "null":
-                        return KeywordProcessor.ProcessNode(childNode, scope, ref value);
+                        value = null;
+                        return null;
                     case "FunctionCall":
                         {
                             object tmp = null;
