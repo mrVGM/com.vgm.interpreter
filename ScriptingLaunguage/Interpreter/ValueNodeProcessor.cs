@@ -2,7 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using System.Xml;
 using ScriptingLaunguage.Parser;
 
 namespace ScriptingLaunguage.Interpreter
@@ -218,28 +220,65 @@ namespace ScriptingLaunguage.Interpreter
                 }
                 else 
                 {
-                    var method = obj.GetType().GetMethod(settings.FunctionName);
+                    var method = GetMethod(obj.GetType(), settings);
                     var args = settings.Arguments.ToArray();
-                    var types = method.GetParameters().Select(x => x.ParameterType).ToArray();
-
-                    for (int i = 0; i < Math.Min(args.Length, types.Length); ++i) 
-                    {
-                        if (typeof(int).IsAssignableFrom(types[i])) 
-                        {
-                            args[i] = (int)(float)args[i];
-                        }
-                    }
-                    if (!string.IsNullOrEmpty(settings.TemplateParamName)) 
-                    {
-                        var type = Type.GetType(settings.TemplateParamName);
-                        method = method.MakeGenericMethod(type);
-                    }
                     value = method.Invoke(obj, args);
                     return null;
                 }
             }
 
             throw new NotImplementedException();
+        }
+
+        MethodInfo GetMethod(Type type, FunctionCallProcessor.FunctionCallSettings settings) 
+        {
+            var methods = new List<MethodInfo>();
+
+            var curType = type;
+            while (curType != null) 
+            {
+                methods.AddRange(curType.GetMethods().Where(x => x.Name == settings.FunctionName));
+                curType = curType.BaseType;
+            }
+
+            if (!string.IsNullOrEmpty(settings.TemplateParamName)) 
+            {
+                var genType = Type.GetType(settings.TemplateParamName);
+                methods = methods.Where(x => x.GetGenericArguments().Length == 1)
+                                 .Select(x => x.MakeGenericMethod(genType)).ToList();
+            }
+
+            if (!methods.Any()) 
+            {
+                return null;
+            }
+
+            var args = settings.Arguments.ToArray();
+            settings.Arguments = args;
+            bool methodPredicate(MethodInfo method) 
+            {
+                var methodParameters = method.GetParameters();
+                if (methodParameters.Length != settings.Arguments.Count())
+                {
+                    return false;
+                }
+
+                for (int i = 0; i < methodParameters.Length; ++i) 
+                {
+                    if (args[i] == null)
+                    {
+                        continue;
+                    }
+
+                    if (!methodParameters[i].ParameterType.IsAssignableFrom(args[i].GetType())) 
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            return methods.FirstOrDefault(methodPredicate);
         }
     }
 }

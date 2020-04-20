@@ -182,6 +182,21 @@ namespace ScriptingLaunguage.Interpreter
             {
                 return WhileProcessor.ProcessNode(programNode.Children[0], scope, ref value);
             }
+            if (programNode.MatchChildren("return", ";"))
+            {
+                value = null;
+                return new ReturnOperation();
+            }
+            if (programNode.MatchChildren("return", "Expression", ";"))
+            {
+                ExpressionProcessor.ProcessNode(programNode.Children[1], scope, ref value);
+                return new ReturnOperation();
+            }
+            if (programNode.MatchChildren("return", "BooleanExpression", ";"))
+            {
+                BooleanExpressionProcessor.ProcessNode(programNode.Children[1], scope, ref value);
+                return new ReturnOperation();
+            }
 
             throw new NotImplementedException();
         }
