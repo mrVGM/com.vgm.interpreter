@@ -31,9 +31,9 @@ namespace ScriptingLaunguage.Interpreter
 
             if (programNode.MatchChildren("Expression", "==", "Expression")) 
             {
-                if (e1 is Single || e1 is int) 
+                if (e1 is float || e1 is int) 
                 {
-                    value = (float)e1 == (float)e2;
+                    value = Convert.ToSingle(e1) == Convert.ToSingle(e2);
                     return true;
                 }
 
@@ -44,9 +44,9 @@ namespace ScriptingLaunguage.Interpreter
 
             if (programNode.MatchChildren("Expression", "!=", "Expression"))
             {
-                if (e1 is Single || e1 is int)
+                if (e1 is float || e1 is int)
                 {
-                    value = (float)e1 != (float)e2;
+                    value = Convert.ToSingle(e1) != Convert.ToSingle(e2);
                     return true;
                 }
 
@@ -57,9 +57,8 @@ namespace ScriptingLaunguage.Interpreter
 
             if (programNode.MatchChildren("Expression", "<", "Expression"))
             {
-                if (e1 is Single || e1 is int)
-                {
-                    value = (float)e1 < (float)e2;
+                if (e1 is float || e1 is int) {
+                    value = Convert.ToSingle(e1) < Convert.ToSingle(e2);;
                     return true;
                 }
 
@@ -70,9 +69,9 @@ namespace ScriptingLaunguage.Interpreter
 
             if (programNode.MatchChildren("Expression", ">", "Expression"))
             {
-                if (e1 is Single || e1 is int)
+                if (e1 is float || e1 is int)
                 {
-                    value = (float)e1 > (float)e2;
+                    value = Convert.ToSingle(e1) > Convert.ToSingle(e2);
                     return true;
                 }
 
@@ -83,9 +82,9 @@ namespace ScriptingLaunguage.Interpreter
 
             if (programNode.MatchChildren("Expression", "<=", "Expression"))
             {
-                if (e1 is Single || e1 is int)
+                if (e1 is float || e1 is int)
                 {
-                    value = (float)e1 <= (float)e2;
+                    value = Convert.ToSingle(e1) <=  Convert.ToSingle(e2);
                     return true;
                 }
 
@@ -96,9 +95,9 @@ namespace ScriptingLaunguage.Interpreter
 
             if (programNode.MatchChildren("Expression", ">=", "Expression"))
             {
-                if (e1 is Single || e1 is int)
+                if (e1 is float || e1 is int)
                 {
-                    value = (float)e1 >= (float)e2;
+                    value = Convert.ToSingle(e1) >= Convert.ToSingle(e2);
                     return true;
                 }
 
