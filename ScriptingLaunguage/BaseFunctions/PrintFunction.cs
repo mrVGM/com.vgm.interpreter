@@ -19,7 +19,7 @@ namespace ScriptingLaunguage.BaseFunctions
 
 		public object Execute(Scope scope)
 		{
-			Console.WriteLine(scope.GetVariable("str") as string);
+			Console.WriteLine($"{scope.GetVariable("str")}");
 			return null;
 		}
 	}
