@@ -7,7 +7,10 @@ namespace ScriptingLaunguage.Interpreter
     public class OperationProcessor : IProgramNodeProcessor
     {
         public class BreakOperation { }
-        public class ReturnOperation { }
+        public class ReturnOperation 
+        {
+            public bool ReturnExpression = true;
+        }
 
         static IProgramNodeProcessor ValueProcessor = new ValueNodeProcessor();
         static IProgramNodeProcessor ExpressionProcessor = new ExpressionNodeProcessor();
@@ -185,7 +188,7 @@ namespace ScriptingLaunguage.Interpreter
             if (programNode.MatchChildren("return", ";"))
             {
                 value = null;
-                return new ReturnOperation();
+                return new ReturnOperation { ReturnExpression = false };
             }
             if (programNode.MatchChildren("return", "Expression", ";"))
             {

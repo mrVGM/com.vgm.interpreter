@@ -10,7 +10,7 @@ namespace ScriptingLaunguage.BaseFunctions
     {
         const string argName = "collectionToCount";
         Scope scope;
-        public Scope Scope 
+        public Scope ScopeTemplate
         {
             get 
             {
@@ -25,22 +25,19 @@ namespace ScriptingLaunguage.BaseFunctions
 
         public string[] ParameterNames { get; private set; } = { argName };
 
-        public object Result { get; private set; }
-
-        public void Execute()
+        public object Execute(Scope scope)
         {
-            Result = 0;
-            var col = Scope.GetVariable(argName, InCurrentScope: true) as IEnumerable;
+            var col = scope.GetVariable(argName, InCurrentScope: true) as IEnumerable;
             if (col == null) 
             {
-                return;
+                return 0;
             }
             int res = 0;
             foreach (var obj in col) 
             {
                 ++res;
             }
-            Result = res;
+            return res;
         }
     }
 }

@@ -5,21 +5,38 @@ namespace ScriptingLaunguage.Interpreter
     class Function : IFunction
     {
         public ProgramNode Block;
-        public Scope Scope { get; set; }
+        Scope ParentScope;
+        public Scope ScopeTemplate 
+        {
+            get 
+            {
+                var scope = new Scope { ParentScope = ParentScope };
+                foreach (var param in ParameterNames) 
+                {
+                    scope.AddVariable(param, null);
+                }
+                return scope;
+            }
+        }
+
+        public Function(Scope parentScope) 
+        {
+            ParentScope = parentScope;
+        }
+
         public string[] ParameterNames { get; set; }
         IProgramNodeProcessor BlockProcessor = new BlockProcessor(new OperationGroupProcessor { StopOnReturn = true });
-        public object Result { get; set; }
-
-        public void Execute()
+        public object Execute(Scope scope)
         {
-            Result = null;
             object functionResult = null;
-            var scope = new Scope { ParentScope = Scope };
-            var res = BlockProcessor.ProcessNode(Block, scope, ref functionResult);
-            if (res is OperationProcessor.ReturnOperation) 
+            var localScope = new Scope { ParentScope = scope };
+            var res = BlockProcessor.ProcessNode(Block, localScope, ref functionResult);
+            var returnOperation = res as OperationProcessor.ReturnOperation;
+            if (returnOperation != null && returnOperation.ReturnExpression) 
             {
-                Result = functionResult;
+                return functionResult;
             }
+            return null;
         }
     }
 }

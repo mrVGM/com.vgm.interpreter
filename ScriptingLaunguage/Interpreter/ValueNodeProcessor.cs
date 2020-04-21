@@ -51,9 +51,10 @@ namespace ScriptingLaunguage.Interpreter
                             var iFunc = func as IFunction;
                             if (iFunc != null)
                             {
+                                var functionScope = iFunc.ScopeTemplate;
                                 foreach (var param in iFunc.ParameterNames)
                                 {
-                                    iFunc.Scope.SetVariable(param, null);
+                                    functionScope.SetVariable(param, null);
                                 }
 
                                 if (iFunc.ParameterNames.Length > 0)
@@ -61,7 +62,7 @@ namespace ScriptingLaunguage.Interpreter
                                     int index = 0;
                                     foreach (var arg in funcSettings.Arguments)
                                     {
-                                        iFunc.Scope.SetVariable(iFunc.ParameterNames[index++], arg);
+                                        functionScope.SetVariable(iFunc.ParameterNames[index++], arg);
 
                                         if (index == iFunc.ParameterNames.Length)
                                         {
@@ -69,8 +70,7 @@ namespace ScriptingLaunguage.Interpreter
                                         }
                                     }
                                 }
-                                iFunc.Execute();
-                                value = iFunc.Result;
+                                value = iFunc.Execute(functionScope);
                                 return null;
                             }
                             throw new NotImplementedException();
@@ -80,18 +80,10 @@ namespace ScriptingLaunguage.Interpreter
                             object tmp = null;
                             FunctionDeclaration.ProcessNode(childNode, scope, ref tmp);
                             var funcScopeAndBlock = tmp as FunctionDeclarationProcessor.FunctionScopeAndBlock;
-                            var functionScope = new Scope { ParentScope = scope };
-                            foreach (var param in funcScopeAndBlock.ScopeVariables) 
-                            {
-                                functionScope.AddVariable(param, null);
-                            }
 
-                            var func = new Function
-                            {
-                                Block = funcScopeAndBlock.Block,
-                                ParameterNames = funcScopeAndBlock.ScopeVariables.ToArray(),
-                                Scope = functionScope,
-                            };
+                            var func = new Function(scope);
+                            func.Block = funcScopeAndBlock.Block;
+                            func.ParameterNames = funcScopeAndBlock.ScopeVariables.ToArray();
 
                             value = func;
                             return null;
@@ -186,9 +178,10 @@ namespace ScriptingLaunguage.Interpreter
                     var iFunc = property.ObjectValue as IFunction;
                     if (iFunc != null)
                     {
+                        var functionScope = iFunc.ScopeTemplate;
                         foreach (var param in iFunc.ParameterNames)
                         {
-                            iFunc.Scope.SetVariable(param, null);
+                            functionScope.SetVariable(param, null);
                         }
 
                         if (iFunc.ParameterNames.Length > 0)
@@ -196,7 +189,7 @@ namespace ScriptingLaunguage.Interpreter
                             int index = 0;
                             foreach (var arg in settings.Arguments)
                             {
-                                iFunc.Scope.SetVariable(iFunc.ParameterNames[index++], arg);
+                                functionScope.SetVariable(iFunc.ParameterNames[index++], arg);
 
                                 if (index == iFunc.ParameterNames.Length)
                                 {
@@ -204,8 +197,7 @@ namespace ScriptingLaunguage.Interpreter
                                 }
                             }
                         }
-                        iFunc.Execute();
-                        value = iFunc.Result;
+                        value = iFunc.Execute(functionScope);
                         return null;
                     }
                 }

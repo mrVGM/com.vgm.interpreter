@@ -2,9 +2,8 @@
 {
     public interface IFunction
     {
-        Scope Scope { get; }
+        Scope ScopeTemplate { get; }
         string[] ParameterNames { get; }
-        object Result { get; }
-        void Execute();
+        object Execute(Scope scope);
     }
 }

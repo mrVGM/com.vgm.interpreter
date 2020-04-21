@@ -1,29 +1,25 @@
 ﻿using System.IO;
+using System.Runtime.InteropServices;
 using ScriptingLaunguage.Interpreter;
 
 namespace ScriptingLaunguage.BaseFunctions
 {
     class RequireFunction : IFunction
     {
-        Scope scope;
-        public Scope Scope
+        public Scope ScopeTemplate
         {
             get
             {
-                if (scope == null) 
-                {
-                    scope = new Scope { ParentScope = Interpreter.Interpreter.GlobalScope };
-                    scope.AddVariable("filename", null);
-                    scope.AddVariable("exports", new GenericObject());
-                }
+                var scope = new Scope { ParentScope = Interpreter.Interpreter.GlobalScope };                
+                scope.AddVariable("filename", null);
+                scope.AddVariable("exports", new GenericObject());
 
                 var localScope = new Scope { ParentScope = scope };
                 return localScope;
             }
         }
         public string[] ParameterNames { get; private set; } = new string[] { "filename" };
-        public object Result { get; set; }
-
+        
         string workingDir;
 
         public RequireFunction(string dir) 
@@ -31,17 +27,17 @@ namespace ScriptingLaunguage.BaseFunctions
             workingDir = dir;
         }
 
-        public void Execute()
+        public object Execute(Scope scope)
         {
-            var fullPath = workingDir + Scope.GetVariable("filename");
+            var fullPath = workingDir + scope.GetVariable("filename");
             if (!File.Exists(fullPath)) 
             {
                 throw new FileNotFoundException($"Cannot find script: {fullPath}!");
             }
 
-            var interpreter = new Interpreter.Interpreter(Scope.GetVariable("filename") as string, Scope);
+            var interpreter = new Interpreter.Interpreter(scope.GetVariable("filename") as string, scope);
             interpreter.Run();
-            Result = Scope.GetVariable("exports");
+            return scope.GetVariable("exports");
         }
     }
 }
