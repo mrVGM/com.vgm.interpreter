@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Text;
 using ScriptingLaunguage.Interpreter;
 
 namespace ScriptingLaunguage.BaseFunctions
@@ -16,7 +14,7 @@ namespace ScriptingLaunguage.BaseFunctions
             {
                 if (scope == null) 
                 {
-                    scope = new Scope { ParentScope = Interpreter.Interpreter.GlobalScope };
+                    scope = new Scope();
                     scope.AddVariable(argName, null);
                 }
                 return scope;
