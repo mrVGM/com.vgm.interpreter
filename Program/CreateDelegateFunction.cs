@@ -31,7 +31,7 @@ namespace Program
 
         public string[] ParameterNames => parameters;
 
-        public static void Handler(object arg1, object arg2, object arg3, object arg4, int id)
+        public static void Handler<T1, T2, T3, T4>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, int id)
         {
 
             var func = delegateIds[id];
@@ -60,7 +60,15 @@ namespace Program
                 delegateArgs,
                 typeof(CreateDelegateFunction).Module);
 
+            List<Type> handlerTemplateArgs = new List<Type>();
+            handlerTemplateArgs.AddRange(delegateArgs);
+            while (handlerTemplateArgs.Count() < 4) 
+            {
+                handlerTemplateArgs.Add(typeof(object));
+            }
+
             var method = typeof(CreateDelegateFunction).GetMethod("Handler");
+            method = method.MakeGenericMethod(handlerTemplateArgs.ToArray());
 
             int functionId = Convert.ToInt32(scope.GetVariable(functionToExecuteId));
 
