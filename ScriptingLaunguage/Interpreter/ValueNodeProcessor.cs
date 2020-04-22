@@ -9,6 +9,10 @@ using ScriptingLaunguage.Parser;
 
 namespace ScriptingLaunguage.Interpreter
 {
+    public class StaticMethodPath
+    {
+        public string Path = "";
+    }
     class ValueNodeProcessor : IProgramNodeProcessor
     {
         public IProgramNodeProcessor NumberProcessor = new NumberNodeProcessor();
@@ -37,7 +41,15 @@ namespace ScriptingLaunguage.Interpreter
                     case "String":
                         return StringProcessor.ProcessNode(childNode, scope, ref value);
                     case "Name":
-                        return NameProcessor.ProcessNode(childNode, scope, ref value);
+                        {
+                            var name = childNode.Token.Data as string;
+                            if (!scope.HasVariable(name))
+                            {
+                                value = new StaticMethodPath { Path = name };
+                                return null;
+                            }
+                            return NameProcessor.ProcessNode(childNode, scope, ref value);
+                        }
                     case "null":
                         value = null;
                         return null;
@@ -98,6 +110,14 @@ namespace ScriptingLaunguage.Interpreter
                 object val1 = null;
                 ProcessNode(programNode.Children[0], scope, ref val1);
                 string propertyName = programNode.Children[2].Token.Data as string;
+
+                var staticMethodPath = val1 as StaticMethodPath;
+                if (staticMethodPath != null) 
+                {
+                    staticMethodPath.Path += $".{propertyName}";
+                    value = staticMethodPath;
+                    return null;
+                }
 
                 var genericObject = val1 as GenericObject;
                 if (genericObject != null)
@@ -200,14 +220,22 @@ namespace ScriptingLaunguage.Interpreter
                         value = iFunc.Execute(functionScope);
                         return null;
                     }
+                    throw new NotImplementedException();
                 }
-                else 
+                var staticMethodPath = obj as StaticMethodPath;
+                if (staticMethodPath != null) 
                 {
-                    var method = GetMethod(obj.GetType(), settings);
-                    var args = settings.Arguments.ToArray();
-                    value = method.Invoke(obj, args);
+                    var type = Type.GetType(staticMethodPath.Path);
+                    var staticMethod = GetMethod(type, settings);
+                    value = staticMethod.Invoke(null, settings.Arguments.ToArray());
                     return null;
                 }
+                
+                var method = GetMethod(obj.GetType(), settings);
+                var args = settings.Arguments.ToArray();
+                value = method.Invoke(obj, args);
+                return null;
+                
             }
 
             throw new NotImplementedException();
