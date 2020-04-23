@@ -9,20 +9,16 @@ namespace ScriptingLaunguage.BaseFunctions
     class CreateDelegateFunction : IFunction
     {
         const string delegateType = "delegate_type";
-        const string returnType = "return_value_type";
-        const string argument_types = "argument_types";
         const string functionToExecute = "function_to_execute";
         const string functionToExecuteId = "function_to_execute_id";
 
-        string[] parameters = { delegateType, returnType, argument_types, functionToExecute, functionToExecuteId };
+        string[] parameters = { delegateType, functionToExecute, functionToExecuteId };
         public Scope ScopeTemplate
         {
             get
             {
                 var scope = new Scope();
                 scope.AddVariable(delegateType, null);
-                scope.AddVariable(returnType, null);
-                scope.AddVariable(argument_types, null);
                 scope.AddVariable(functionToExecute, null);
                 scope.AddVariable(functionToExecuteId, null);
                 return scope;
@@ -49,9 +45,11 @@ namespace ScriptingLaunguage.BaseFunctions
 
         public object Execute(Scope scope)
         {
-            var argsTypeNames = scope.GetVariable(argument_types) as IEnumerable<object>;
-            var delegateArgs = argsTypeNames.Select(x => Utils.GetTypeAcrossAssemblies(x as string)).ToArray();
-            var retType = Utils.GetTypeAcrossAssemblies(scope.GetVariable(returnType) as string);
+            var typeOfDelegate = scope.GetVariable(delegateType) as Type;
+            var delegateMethod = typeOfDelegate.GetMethod("Invoke");
+
+            var delegateArgs = delegateMethod.GetParameters().Select(x => x.ParameterType).ToArray();
+            var retType = delegateMethod.ReturnType;
 
             int argsCount = delegateArgs.Length;
 
@@ -95,7 +93,6 @@ namespace ScriptingLaunguage.BaseFunctions
             }
             il.Emit(OpCodes.Ret);
 
-            var typeOfDelegate = scope.GetVariable(delegateType) as Type;
             var function = dynamicMethod.CreateDelegate(typeOfDelegate);
 
             delegateIds[functionId] = scope.GetVariable(functionToExecute) as IFunction;
