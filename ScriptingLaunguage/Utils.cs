@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Reflection;
 using ScriptingLaunguage.Tokenizer;
 
 namespace ScriptingLaunguage
@@ -70,6 +71,38 @@ namespace ScriptingLaunguage
             }
             char c = token.Name[0];
             return '0' <= c && c <= '9';
+        }
+
+        public static object GetProperty(object obj, string propertyName)
+        {
+            var type = obj.GetType();
+            var propertyInfo = type.GetProperty(propertyName);
+            if (propertyInfo != null) {
+                return propertyInfo.GetValue(obj);
+            }
+
+            var fieldInfo = type.GetField(propertyName);
+            if (fieldInfo != null) {
+                return fieldInfo.GetValue(obj);
+            }
+
+            return null;
+        }
+
+        public static void SetProperty(object obj, string propertyName, object value)
+        {
+            var type = obj.GetType();
+            var propertyInfo = type.GetProperty(propertyName);
+            if (propertyInfo != null) {
+                propertyInfo.SetValue(obj, value);
+                return;
+            }
+
+            var fieldInfo = type.GetField(propertyName);
+            if (fieldInfo != null) {
+                fieldInfo.SetValue(obj, value);
+                return;
+            }
         }
     }
 }

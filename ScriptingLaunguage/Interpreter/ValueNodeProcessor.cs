@@ -53,6 +53,12 @@ namespace ScriptingLaunguage.Interpreter
                     case "null":
                         value = null;
                         return null;
+                    case "true":
+                        value = true;
+                        return null;
+                    case "false":
+                        value = false;
+                        return null;
                     case "FunctionCall":
                         {
                             object tmp = null;
@@ -126,8 +132,7 @@ namespace ScriptingLaunguage.Interpreter
                     return true;
                 }
 
-                var type = val1.GetType();
-                value = type.GetProperty(propertyName).GetValue(val1);
+                value = Utils.GetProperty(val1, propertyName);
                 return true;
             }
 

@@ -26,6 +26,9 @@ namespace ScriptingLaunguage.Interpreter
                     globalScope.AddVariable("print", new PrintFunction());
                     globalScope.AddVariable("len", new LengthFunction());
                     globalScope.AddVariable("new", new CreateObjectFunction());
+                    globalScope.AddVariable("getDelegate", new GetEventType());
+                    globalScope.AddVariable("createDelegate", new CreateDelegateFunction());
+                    globalScope.AddVariable("subscribeToEvent", new SubscribeToEvent());
                 }
                 return globalScope;
             }

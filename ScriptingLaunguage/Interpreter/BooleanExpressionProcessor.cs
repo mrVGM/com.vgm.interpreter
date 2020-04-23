@@ -27,7 +27,7 @@ namespace ScriptingLaunguage.Interpreter
                 if (programNode.MatchChildren("!", "SingleBooleanExpression"))
                 {
                     object tmp = null;
-                    BooleanExpression.ProcessNode(programNode.Children[0], scope, ref tmp);
+                    BooleanExpression.ProcessNode(programNode.Children[1], scope, ref tmp);
                     value = !(bool)tmp;
                     return true;
                 }
@@ -104,7 +104,7 @@ namespace ScriptingLaunguage.Interpreter
             {
                 if (programNode.MatchChildren("(", "BooleanExpression", ")")) 
                 {
-                    ProcessNode(programNode.Children[0], scope, ref value);
+                    ProcessNode(programNode.Children[1], scope, ref value);
                     return true;
                 }
                 if (programNode.MatchChildren("Comparison"))

@@ -36,6 +36,8 @@
 "Value" "Number"
 "Value" "String"
 "Value" "null"
+"Value" "true"
+"Value" "false"
 "Value" "FunctionCall"
 "Value" "FunctionDeclaration"
 "Value" "{" "}"

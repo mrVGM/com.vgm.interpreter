@@ -29,6 +29,11 @@ namespace ScriptingLaunguage.Interpreter
                         {
                             break;
                         }
+
+                        if (block is OperationProcessor.ReturnOperation)
+                        {
+                            return block;
+                        }
                     }
                     else 
                     {

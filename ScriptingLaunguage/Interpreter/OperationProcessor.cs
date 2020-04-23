@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 using ScriptingLaunguage.Parser;
 
 namespace ScriptingLaunguage.Interpreter
@@ -46,13 +47,18 @@ namespace ScriptingLaunguage.Interpreter
                 {
                     object val = null;
                     ValueProcessor.ProcessNode(programNode.Children[0], scope, ref val);
-
-                    object propertyName = null;
-                    NameProcessor.ProcessNode(programNode.Children[2], scope, ref propertyName);
-
-                    var type = val.GetType();
-                    var property = type.GetProperty(propertyName as string);
-                    property.SetValue(val, ValueToSet);
+                    
+                    string propertyName = programNode.Children[2].Token.Data as string;
+                    
+                    var genericObject = val as GenericObject;
+                    if (genericObject != null)
+                    {
+                        var objectContainer = genericObject.GetPropoerty(propertyName);
+                        objectContainer.ObjectValue = ValueToSet;
+                        return true;
+                    }
+                    
+                    Utils.SetProperty(val, propertyName, ValueToSet);
                     return true;
                 }
 

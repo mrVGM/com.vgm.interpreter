@@ -31,13 +31,24 @@ namespace ScriptingLaunguage.Interpreter
 
             if (programNode.MatchChildren("Expression", "==", "Expression")) 
             {
+                
                 if (e1 is float || e1 is int) 
                 {
                     value = Convert.ToSingle(e1) == Convert.ToSingle(e2);
                     return true;
                 }
 
+                if (e1 is bool) {
+                    value = Convert.ToBoolean(e1) == Convert.ToBoolean(e2);
+                    return null;
+                }
+
                 var method = e1.GetType().GetMethod("op_Equality");
+                if (method == null) {
+                    value = e1 == e2;
+                    return null;
+                }
+
                 value = method.Invoke(null, new object[] { e1, e2 });
                 return true;
             }
@@ -49,8 +60,18 @@ namespace ScriptingLaunguage.Interpreter
                     value = Convert.ToSingle(e1) != Convert.ToSingle(e2);
                     return true;
                 }
+                
+                if (e1 is bool) {
+                    value = Convert.ToBoolean(e1) != Convert.ToBoolean(e2);
+                    return null;
+                }
 
                 var method = e1.GetType().GetMethod("op_Inequality");
+                if (method == null) {
+                    value = e1 != e2;
+                    return null;
+                }
+
                 value = method.Invoke(null, new object[] { e1, e2 });
                 return true;
             }
