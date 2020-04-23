@@ -3,7 +3,7 @@ using ScriptingLaunguage.Interpreter;
 
 namespace ScriptingLaunguage.BaseFunctions
 {
-    class SubscribeToEvent : IFunction
+    class SubscribeToEventFunction : IFunction
     {
         const string targetObject = "target_object";
         const string eventName = "event_name";

@@ -55,7 +55,7 @@ namespace ScriptingLaunguage.BaseFunctions
 
             int argsCount = delegateArgs.Length;
 
-            DynamicMethod hello = new DynamicMethod("asd",
+            DynamicMethod dynamicMethod = new DynamicMethod("",
                 retType,
                 delegateArgs,
                 typeof(CreateDelegateFunction).Module);
@@ -72,7 +72,7 @@ namespace ScriptingLaunguage.BaseFunctions
 
             int functionId = Convert.ToInt32(scope.GetVariable(functionToExecuteId));
 
-            ILGenerator il = hello.GetILGenerator(256);
+            ILGenerator il = dynamicMethod.GetILGenerator(256);
             if (argsCount >= 1)
                 il.Emit(OpCodes.Ldarg_0);
             if (argsCount >= 2)
@@ -96,7 +96,7 @@ namespace ScriptingLaunguage.BaseFunctions
             il.Emit(OpCodes.Ret);
 
             var typeOfDelegate = scope.GetVariable(delegateType) as Type;
-            var function = hello.CreateDelegate(typeOfDelegate);
+            var function = dynamicMethod.CreateDelegate(typeOfDelegate);
 
             delegateIds[functionId] = scope.GetVariable(functionToExecute) as IFunction;
 
