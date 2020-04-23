@@ -230,7 +230,7 @@ namespace ScriptingLaunguage.Interpreter
                 var staticMethodPath = obj as StaticMethodPath;
                 if (staticMethodPath != null) 
                 {
-                    var type = Type.GetType(staticMethodPath.Path);
+                    var type = Utils.GetTypeAcrossAssemblies(staticMethodPath.Path);
                     var staticMethod = GetMethod(type, settings);
                     value = staticMethod.Invoke(null, settings.Arguments.ToArray());
                     return null;
@@ -259,7 +259,7 @@ namespace ScriptingLaunguage.Interpreter
 
             if (!string.IsNullOrEmpty(settings.TemplateParamName)) 
             {
-                var genType = Type.GetType(settings.TemplateParamName);
+                var genType = Utils.GetTypeAcrossAssemblies(settings.TemplateParamName);
                 methods = methods.Where(x => x.GetGenericArguments().Length == 1)
                                  .Select(x => x.MakeGenericMethod(genType)).ToList();
             }

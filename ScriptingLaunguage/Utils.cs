@@ -104,5 +104,20 @@ namespace ScriptingLaunguage
                 return;
             }
         }
+
+        public static Type GetTypeAcrossAssemblies(string typeName)
+        {
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            foreach (var assembly in assemblies)
+            {
+                var type = assembly.GetType(typeName);
+                if (type != null)
+                {
+                    return type;
+                }
+            }
+
+            return null;
+        }
     }
 }

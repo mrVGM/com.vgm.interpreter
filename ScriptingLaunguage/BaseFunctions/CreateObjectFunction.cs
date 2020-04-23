@@ -27,8 +27,8 @@ namespace ScriptingLaunguage.BaseFunctions
 
         public object Execute(Scope scope)
         {
-            var type = Type.GetType(scope.GetVariable(typeNameParam) as string);
-            var argTypes = (scope.GetVariable(argTypesParam) as IEnumerable<object>).Select(x => Type.GetType(x as string)).ToArray();
+            var type = Utils.GetTypeAcrossAssemblies(scope.GetVariable(typeNameParam) as string);
+            var argTypes = (scope.GetVariable(argTypesParam) as IEnumerable<object>).Select(x => Utils.GetTypeAcrossAssemblies(x as string)).ToArray();
             var args = (scope.GetVariable(argValuesParam) as IEnumerable<object>).ToArray();
 
             for (int i = 0; i < argTypes.Length; ++i) 

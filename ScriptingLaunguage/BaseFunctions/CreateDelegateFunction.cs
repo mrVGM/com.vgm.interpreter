@@ -47,24 +47,11 @@ namespace ScriptingLaunguage.BaseFunctions
 
         static Dictionary<int, IFunction> delegateIds = new Dictionary<int, IFunction>();
 
-        Type GetTypeAcrossAssemblies(string typeName)
-        {
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            foreach (var assembly in assemblies) {
-                var type = assembly.GetType(typeName);
-                if (type != null) {
-                    return type;
-                }
-            }
-
-            return null;
-        }
-
         public object Execute(Scope scope)
         {
             var argsTypeNames = scope.GetVariable(argument_types) as IEnumerable<object>;
-            var delegateArgs = argsTypeNames.Select(x => GetTypeAcrossAssemblies(x as string)).ToArray();
-            var retType = GetTypeAcrossAssemblies(scope.GetVariable(returnType) as string);
+            var delegateArgs = argsTypeNames.Select(x => Utils.GetTypeAcrossAssemblies(x as string)).ToArray();
+            var retType = Utils.GetTypeAcrossAssemblies(scope.GetVariable(returnType) as string);
 
             int argsCount = delegateArgs.Length;
 
