@@ -31,7 +31,12 @@ namespace ScriptingLaunguage.Interpreter
 
             if (programNode.MatchChildren("Expression", "==", "Expression")) 
             {
-                
+                if (e1 == null) 
+                {
+                    value = e2 == null;
+                    return null;
+                }
+
                 if (e1 is float || e1 is int) 
                 {
                     value = Convert.ToSingle(e1) == Convert.ToSingle(e2);
@@ -55,6 +60,12 @@ namespace ScriptingLaunguage.Interpreter
 
             if (programNode.MatchChildren("Expression", "!=", "Expression"))
             {
+                if (e1 == null)
+                {
+                    value = e2 != null;
+                    return null;
+                }
+
                 if (e1 is float || e1 is int)
                 {
                     value = Convert.ToSingle(e1) != Convert.ToSingle(e2);
