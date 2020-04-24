@@ -145,7 +145,13 @@ namespace ScriptingLaunguage.Interpreter
             {
                 if (programNode.MatchChildren("Value")) 
                 {
-                    return ValueProcessor.ProcessNode(programNode.Children[0], scope, ref value);
+                    var res = ValueProcessor.ProcessNode(programNode.Children[0], scope, ref value);
+                    var objectContainer = value as GenericObject.ObjectContainer;
+                    if (objectContainer != null) {
+                        value = objectContainer.ObjectValue;
+                    }
+
+                    return res;
                 }
                 if (programNode.MatchChildren("(", "ArithmethicExpression", ")"))
                 {

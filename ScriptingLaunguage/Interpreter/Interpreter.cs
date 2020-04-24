@@ -30,6 +30,7 @@ namespace ScriptingLaunguage.Interpreter
                     globalScope.AddVariable("createDelegate", new CreateDelegateFunction());
                     globalScope.AddVariable("subscribeToEvent", new SubscribeToEventFunction());
                     globalScope.AddVariable("unsubscribeFromEvent", new UnsubscribeFromEventFunction());
+                    globalScope.AddVariable("getTypeMembers", new GetTypeMembersFunction());
                 }
                 return globalScope;
             }
