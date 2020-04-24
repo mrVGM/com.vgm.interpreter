@@ -34,7 +34,7 @@ namespace ScriptingLaunguage.Interpreter
 
                     if (val1 is Single || val1 is int) 
                     {
-                        value = (Single)val1 + (Single)val2;
+                        value = Convert.ToSingle(val1) + Convert.ToSingle(val2);
                         return true;
                     }
 
@@ -54,7 +54,7 @@ namespace ScriptingLaunguage.Interpreter
 
                     if (val1 is Single || val1 is int)
                     {
-                        value = (Single)val1 - (Single)val2;
+                        value = Convert.ToSingle(val1) - Convert.ToSingle(val2);
                         return true;
                     }
 
@@ -92,7 +92,7 @@ namespace ScriptingLaunguage.Interpreter
 
                     if (val1 is Single || val1 is int)
                     {
-                        value = (Single)val1 * (Single)val2;
+                        value = Convert.ToSingle(val1) * Convert.ToSingle(val2);
                         return true;
                     }
 
@@ -112,7 +112,7 @@ namespace ScriptingLaunguage.Interpreter
 
                     if (val1 is Single || val1 is int)
                     {
-                        value = (Single)val1 / (Single)val2;
+                        value = Convert.ToSingle(val1) / Convert.ToSingle(val2);
                         return true;
                     }
 

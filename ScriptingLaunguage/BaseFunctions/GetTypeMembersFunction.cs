@@ -31,10 +31,11 @@ namespace ScriptingLaunguage.BaseFunctions
             
             IEnumerable<MemberInfo> getMemberInfos<T>() where T : MemberInfo
             {
+                var flags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
                 var curType = type;
                 var res = new List<MemberInfo>();
                 while (curType != null) {
-                    res.AddRange(curType.GetMembers().OfType<T>());
+                    res.AddRange(curType.GetMembers(flags).OfType<T>());
                     curType = curType.BaseType;
                 }
 

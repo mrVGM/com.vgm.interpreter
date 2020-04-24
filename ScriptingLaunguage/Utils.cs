@@ -75,13 +75,14 @@ namespace ScriptingLaunguage
 
         public static object GetProperty(object obj, string propertyName)
         {
+            var flags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
             var type = obj.GetType();
-            var propertyInfo = type.GetProperty(propertyName);
+            var propertyInfo = type.GetProperty(propertyName, flags);
             if (propertyInfo != null) {
                 return propertyInfo.GetValue(obj);
             }
 
-            var fieldInfo = type.GetField(propertyName);
+            var fieldInfo = type.GetField(propertyName, flags);
             if (fieldInfo != null) {
                 return fieldInfo.GetValue(obj);
             }
@@ -91,14 +92,15 @@ namespace ScriptingLaunguage
 
         public static void SetProperty(object obj, string propertyName, object value)
         {
+            var flags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
             var type = obj.GetType();
-            var propertyInfo = type.GetProperty(propertyName);
+            var propertyInfo = type.GetProperty(propertyName, flags);
             if (propertyInfo != null) {
                 propertyInfo.SetValue(obj, value);
                 return;
             }
 
-            var fieldInfo = type.GetField(propertyName);
+            var fieldInfo = type.GetField(propertyName, flags);
             if (fieldInfo != null) {
                 fieldInfo.SetValue(obj, value);
                 return;
