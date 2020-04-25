@@ -32,9 +32,9 @@ namespace ScriptingLaunguage.Interpreter
                     object val2 = null;
                     ProductExpr.ProcessNode(programNode.Children[2], scope, ref val2);
 
-                    if (val1 is Single || val1 is int) 
+                    if (val1 is Number) 
                     {
-                        value = Convert.ToSingle(val1) + Convert.ToSingle(val2);
+                        value = new Number((val1 as Number).DoubleValue + (val2 as Number).DoubleValue);
                         return true;
                     }
 
@@ -52,9 +52,9 @@ namespace ScriptingLaunguage.Interpreter
                     object val2 = null;
                     ProductExpr.ProcessNode(programNode.Children[2], scope, ref val2);
 
-                    if (val1 is Single || val1 is int)
+                    if (val1 is Number)
                     {
-                        value = Convert.ToSingle(val1) - Convert.ToSingle(val2);
+                        value = new Number((val1 as Number).DoubleValue - (val2 as Number).DoubleValue);
                         return true;
                     }
 
@@ -90,9 +90,9 @@ namespace ScriptingLaunguage.Interpreter
                     object val2 = null;
                     ProductExpr.ProcessNode(programNode.Children[2], scope, ref val2);
 
-                    if (val1 is Single || val1 is int)
+                    if (val1 is Number)
                     {
-                        value = Convert.ToSingle(val1) * Convert.ToSingle(val2);
+                        value = new Number((val1 as Number).DoubleValue * (val2 as Number).DoubleValue);
                         return true;
                     }
 
@@ -110,9 +110,9 @@ namespace ScriptingLaunguage.Interpreter
                     object val2 = null;
                     ProductExpr.ProcessNode(programNode.Children[2], scope, ref val2);
 
-                    if (val1 is Single || val1 is int)
+                    if (val1 is Number)
                     {
-                        value = Convert.ToSingle(val1) / Convert.ToSingle(val2);
+                        value = new Number((val1 as Number).DoubleValue / (val2 as Number).DoubleValue);
                         return true;
                     }
 
@@ -149,6 +149,10 @@ namespace ScriptingLaunguage.Interpreter
                     var objectContainer = value as GenericObject.ObjectContainer;
                     if (objectContainer != null) {
                         value = objectContainer.ObjectValue;
+                    }
+                    if (Utils.IsNumber(value)) 
+                    {
+                        value = Utils.ToNumber(value);
                     }
 
                     return res;

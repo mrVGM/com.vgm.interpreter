@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Reflection;
+using ScriptingLaunguage.Interpreter;
 using ScriptingLaunguage.Tokenizer;
 
 namespace ScriptingLaunguage
@@ -120,6 +122,51 @@ namespace ScriptingLaunguage
             }
 
             return null;
+        }
+
+        public static bool IsNumber(object obj)
+        {
+            return Number.SupportedTypes.Contains(obj.GetType());
+        }
+
+        public static Number ToNumber(object obj)
+        {
+            if (IsNumber(obj)) 
+            {
+                return new Number(Convert.ToDouble(obj));
+            }
+            return null;
+        }
+
+        public static bool GetArgumentFor(Type paramType, object argument, out object realParam)
+        {
+            if (argument == null)
+            {
+                realParam = null;
+                return true;
+            }
+
+            if (argument is Number)
+            {
+                var requiredType = Number.SupportedTypes.FirstOrDefault(x => paramType.IsAssignableFrom(x));
+                if (requiredType != null)
+                {
+                    realParam = (argument as Number).GetNumber(requiredType);
+                    return true;
+                }
+                else
+                {
+                    realParam = argument;
+                    return false;
+                }
+            }
+
+            realParam = argument;
+            if (paramType.IsAssignableFrom(argument.GetType()))
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

@@ -68,7 +68,7 @@ namespace ScriptingLaunguage.BaseFunctions
             var method = typeof(CreateDelegateFunction).GetMethod("Handler");
             method = method.MakeGenericMethod(handlerTemplateArgs.ToArray());
 
-            int functionId = Convert.ToInt32(scope.GetVariable(functionToExecuteId));
+            int functionId = (int) (scope.GetVariable(functionToExecuteId) as Number).GetNumber(typeof(int));
 
             ILGenerator il = dynamicMethod.GetILGenerator(256);
             if (argsCount >= 1)

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Xml;
 using ScriptingLaunguage.Parser;
@@ -227,18 +228,26 @@ namespace ScriptingLaunguage.Interpreter
                     }
                     throw new NotImplementedException();
                 }
+
                 var staticMethodPath = obj as StaticMethodPath;
+                Type typeForSearchMethodIn = obj.GetType();
+                object objectToCallMethodOn = obj;
                 if (staticMethodPath != null) 
                 {
-                    var type = Utils.GetTypeAcrossAssemblies(staticMethodPath.Path);
-                    var staticMethod = GetMethod(type, settings);
-                    value = staticMethod.Invoke(null, settings.Arguments.ToArray());
-                    return null;
+                    typeForSearchMethodIn = Utils.GetTypeAcrossAssemblies(staticMethodPath.Path);
+                    objectToCallMethodOn = null;
                 }
                 
-                var method = GetMethod(obj.GetType(), settings);
+                var method = GetMethod(typeForSearchMethodIn, settings);
                 var args = settings.Arguments.ToArray();
-                value = method.Invoke(obj, args);
+                var paramTypes = method.GetParameters().Select(x => x.ParameterType).ToArray();
+
+                for (int i = 0; i < args.Length; ++i) 
+                {
+                    Utils.GetArgumentFor(paramTypes[i], args[i], out args[i]);
+                }
+
+                value = method.Invoke(objectToCallMethodOn, args);
                 return null;
                 
             }
@@ -271,7 +280,8 @@ namespace ScriptingLaunguage.Interpreter
 
             var args = settings.Arguments.ToArray();
             settings.Arguments = args;
-            bool methodPredicate(MethodInfo method) 
+
+            bool methodPredicate(MethodInfo method)
             {
                 var methodParameters = method.GetParameters();
                 if (methodParameters.Length != settings.Arguments.Count())
@@ -281,12 +291,11 @@ namespace ScriptingLaunguage.Interpreter
 
                 for (int i = 0; i < methodParameters.Length; ++i) 
                 {
-                    if (args[i] == null)
-                    {
-                        continue;
-                    }
+                    var arg = args[i];
+                    var paramType = methodParameters[i].ParameterType;
 
-                    if (!methodParameters[i].ParameterType.IsAssignableFrom(args[i].GetType())) 
+                    object tmp = null;
+                    if (!Utils.GetArgumentFor(paramType, arg, out tmp)) 
                     {
                         return false;
                     }
