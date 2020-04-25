@@ -255,14 +255,15 @@ namespace ScriptingLaunguage.Interpreter
             throw new NotImplementedException();
         }
 
-        MethodInfo GetMethod(Type type, FunctionCallProcessor.FunctionCallSettings settings) 
+        MethodInfo GetMethod(Type type, FunctionCallProcessor.FunctionCallSettings settings)
         {
+            var flags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
             var methods = new List<MethodInfo>();
 
             var curType = type;
             while (curType != null) 
             {
-                methods.AddRange(curType.GetMethods().Where(x => x.Name == settings.FunctionName));
+                methods.AddRange(curType.GetMethods(flags).Where(x => x.Name == settings.FunctionName));
                 curType = curType.BaseType;
             }
 
