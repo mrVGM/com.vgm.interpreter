@@ -168,15 +168,15 @@ namespace ScriptingLaunguage.Interpreter
                         {
                             tmpList.Add(obj);
                         }
-                        value = tmpList[(int)(float)val2];
+                        value = tmpList[(int)(val2 as Number).GetNumber(typeof(int))];
                         return null;
                     }
                     if (genericArguments.Length == 2) 
                     {
                         object key = val2;
-                        if (val2 is Single && typeof(int).IsAssignableFrom(genericArguments[0])) 
+                        if (val2 is Number) 
                         {
-                            key = (int)((float)val2);
+                            key = (val2 as Number).GetNumber(genericArguments[0]);
                         }
                         var method = type.GetMethod("TryGetValue");
                         object res = null;
