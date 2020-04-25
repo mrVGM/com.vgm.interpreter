@@ -36,14 +36,14 @@ namespace ScriptingLaunguage.Interpreter
                     return o2 == null;
                 }
 
-                if (o1 is float || o1 is int)
-                {
-                    return Convert.ToSingle(o1) == Convert.ToSingle(o2);
-                }
-
                 if (o1 is bool)
                 {
                     return Convert.ToBoolean(o1) == Convert.ToBoolean(o2);
+                }
+
+                if (o1 is Number)
+                {
+                    return (o1 as Number).DoubleValue == (o2 as Number).DoubleValue;
                 }
 
                 var method = o1.GetType().GetMethod("op_Equality");
@@ -69,8 +69,8 @@ namespace ScriptingLaunguage.Interpreter
 
             if (programNode.MatchChildren("Expression", "<", "Expression"))
             {
-                if (e1 is float || e1 is int) {
-                    value = Convert.ToSingle(e1) < Convert.ToSingle(e2);;
+                if (e1 is Number) {
+                    value = (e1 as Number).DoubleValue < (e2 as Number).DoubleValue;
                     return true;
                 }
 
@@ -81,9 +81,9 @@ namespace ScriptingLaunguage.Interpreter
 
             if (programNode.MatchChildren("Expression", ">", "Expression"))
             {
-                if (e1 is float || e1 is int)
+                if (e1 is Number)
                 {
-                    value = Convert.ToSingle(e1) > Convert.ToSingle(e2);
+                    value = (e1 as Number).DoubleValue > (e2 as Number).DoubleValue;
                     return true;
                 }
 
@@ -94,9 +94,9 @@ namespace ScriptingLaunguage.Interpreter
 
             if (programNode.MatchChildren("Expression", "<=", "Expression"))
             {
-                if (e1 is float || e1 is int)
+                if (e1 is Number)
                 {
-                    value = Convert.ToSingle(e1) <=  Convert.ToSingle(e2);
+                    value = (e1 as Number).DoubleValue <= (e2 as Number).DoubleValue;
                     return true;
                 }
 
@@ -107,9 +107,9 @@ namespace ScriptingLaunguage.Interpreter
 
             if (programNode.MatchChildren("Expression", ">=", "Expression"))
             {
-                if (e1 is float || e1 is int)
+                if (e1 is Number)
                 {
-                    value = Convert.ToSingle(e1) >= Convert.ToSingle(e2);
+                    value = (e1 as Number).DoubleValue >= (e2 as Number).DoubleValue;
                     return true;
                 }
 

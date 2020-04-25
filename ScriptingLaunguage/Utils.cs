@@ -126,6 +126,9 @@ namespace ScriptingLaunguage
 
         public static bool IsNumber(object obj)
         {
+            if (obj == null) {
+                return false;
+            }
             return Number.SupportedTypes.Contains(obj.GetType());
         }
 
