@@ -7,6 +7,13 @@ namespace ScriptingLaunguage.Parser
 {
     public class Parser
     {
+        public class ParseException : Exception
+        {
+            public ParseException(string message) : base(message)
+            {
+            }
+        }
+
         public ParserTable ParserTable;
         public ProgramNode ParseProgram(IEnumerable<Token> program)
         {
@@ -23,13 +30,13 @@ namespace ScriptingLaunguage.Parser
             {
                 if (endOfProgram)
                 {
-                    throw new Exception("Parsing error!");
+                    throw new ParseException("Parsing error!");
                 }
                 var curToken = script.Current;
                 var action = ParserTable.ParserActions.FirstOrDefault(x => x.CurrentState == stateStack.Peek() && x.NextSymbol == curToken.Name);
                 if (action == null) 
                 {
-                    throw new Exception("Parsing error!");
+                    throw new ParseException("Parsing error!");
                 }
 
                 if (action.ActionType == ActionType.Shift) 
@@ -56,7 +63,7 @@ namespace ScriptingLaunguage.Parser
                 var shiftAfterReduceAction = ParserTable.ParserActions.FirstOrDefault(x => x.CurrentState == stateStack.Peek() && x.NextSymbol == reduceSymbol);
                 if (shiftAfterReduceAction == null) 
                 {
-                    throw new Exception("Parsing error!");
+                    throw new ParseException("Parsing error!");
                 }
                 treeStack.Push(reduceNode);
                 stateStack.Push(shiftAfterReduceAction.NextState);

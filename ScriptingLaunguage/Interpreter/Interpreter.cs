@@ -55,16 +55,21 @@ namespace ScriptingLaunguage.Interpreter
             }
         }
 
-        public void Run(string scriptToRunFullPath, Scope scope = null)
+        public object RunScriptFile(string scriptToRunFullPath, Scope scope = null)
         {
             var entryScript = File.ReadAllText(scriptToRunFullPath);
-            var tokenized = tokenizer.Tokenize(Utils.TokenizeText(entryScript, new Token { Name = "Terminal" }));
+            return RunScript(entryScript, scope);
+        }
+        
+        public object RunScript(string script, Scope scope = null)
+        {
+            var tokenized = tokenizer.Tokenize(Utils.TokenizeText(script, new Token { Name = "Terminal" }));
             var programTree = parser.ParseProgram(tokenized);
             
-            EvaluateProgramNode(programTree, scope);
+            return EvaluateProgramNode(programTree, scope);
         }
 
-        public void EvaluateProgramNode(ProgramNode programNode, Scope scope) 
+        public object EvaluateProgramNode(ProgramNode programNode, Scope scope) 
         {
             var curNode = programNode;
             if (curNode.Token.Name != "Root") 
@@ -72,8 +77,9 @@ namespace ScriptingLaunguage.Interpreter
                 throw new Exception("Invalid Program");
             }
             curNode = curNode.Children[0];
-            object tmp = null;
-            OperationGroupProcessor.ProcessNode(curNode, scope, ref tmp);
+            object res = null;
+            OperationGroupProcessor.ProcessNode(curNode, scope, ref res);
+            return res;
         }
     }
 }

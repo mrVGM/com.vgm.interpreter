@@ -8,13 +8,17 @@ namespace ScriptingLaunguage.Interpreter
         public Scope SessionScope { get; private set; }
 
         private Scope interpteterScope;
-
-        public Scope GetClearScope()
+        private Scope workingScope = null;
+        
+        public Scope GetWorkingScope()
         {
-            var clearScope = new Scope {ParentScope = interpteterScope};
-            return clearScope;
-        }
+            if (workingScope == null) {
+                workingScope = new Scope {ParentScope = interpteterScope};
+            }
 
+            return workingScope;
+        }
+        
         public Session(string workingDir)
         {
             WorkingDir = workingDir;

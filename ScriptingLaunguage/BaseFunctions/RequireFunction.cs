@@ -41,7 +41,7 @@ namespace ScriptingLaunguage.BaseFunctions
             }
 
             var interpreter = new Interpreter.Interpreter(Session);
-            interpreter.Run(fullPath, scope);
+            interpreter.RunScriptFile(fullPath, scope);
             return scope.GetVariable("exports");
         }
     }
