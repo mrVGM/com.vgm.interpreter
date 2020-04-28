@@ -11,71 +11,60 @@ namespace ScriptingLaunguage.Interpreter
         const string grammarDefinition = "grammar.txt";
         const string parserTableData = "parserTable.dat";
 
-        public static string workingDir;
-        string entryPoint;
-
-        private static Scope globalScope;
-        public static Scope GlobalScope
+        public static Scope GetStaticScope()
         {
-            get 
-            {
-                if (globalScope == null) 
-                {
-                    globalScope = new Scope();
-                    globalScope.AddVariable("require", new RequireFunction(workingDir));
-                    globalScope.AddVariable("print", new PrintFunction());
-                    globalScope.AddVariable("len", new LengthFunction());
-                    globalScope.AddVariable("new", new CreateObjectFunction());
-                    globalScope.AddVariable("getDelegate", new GetEventType());
-                    globalScope.AddVariable("createDelegate", new CreateDelegateFunction());
-                    globalScope.AddVariable("subscribeToEvent", new SubscribeToEventFunction());
-                    globalScope.AddVariable("unsubscribeFromEvent", new UnsubscribeFromEventFunction());
-                    globalScope.AddVariable("getTypeMembers", new GetTypeMembersFunction());
-                    globalScope.AddVariable("createCoroutine", new CreateCoroutineFunction());
-                }
-                return globalScope;
-            }
+            return StaticScope;
         }
 
-        public Scope Scope = GlobalScope;
+        private static Scope StaticScope
+        {
+            get
+            {
+                var staticScope = new Scope();
+                staticScope.AddVariable("print", new PrintFunction());
+                staticScope.AddVariable("len", new LengthFunction());
+                staticScope.AddVariable("new", new CreateObjectFunction());
+                staticScope.AddVariable("getDelegate", new GetEventType());
+                staticScope.AddVariable("createDelegate", new CreateDelegateFunction());
+                staticScope.AddVariable("subscribeToEvent", new SubscribeToEventFunction());
+                staticScope.AddVariable("unsubscribeFromEvent", new UnsubscribeFromEventFunction());
+                staticScope.AddVariable("getTypeMembers", new GetTypeMembersFunction());
+                staticScope.AddVariable("createCoroutine", new CreateCoroutineFunction());
+                return staticScope;
+            }
+        }
 
         public IProgramNodeProcessor OperationGroupProcessor = new OperationGroupProcessor();
 
         ITokenizer tokenizer = Tokenizer.CombinedTokenizer.DefaultTokenizer;
         Parser.Parser parser;
-        public Interpreter(string mainScript, Scope scope = null)
+        public Interpreter(Session session)
         {
-            entryPoint = mainScript;
-            if (scope != null) 
+            if (!File.Exists(session.WorkingDir + parserTableData)) 
             {
-                Scope = scope;
-            }
-
-            if (!File.Exists(workingDir + parserTableData)) 
-            {
-                var grammar = Grammar.ReadGrammarFromFile(workingDir + grammarDefinition);
+                var grammar = Grammar.ReadGrammarFromFile(session.WorkingDir + grammarDefinition);
                 var parserTable = new ParserTable(grammar);
                 bool validTable =  parserTable.Validate();
-                parserTable.Serialize(workingDir + parserTableData);
+                parserTable.Serialize(session.WorkingDir + parserTableData);
                 parser = new Parser.Parser { ParserTable = parserTable };
             }
             else 
             {
-                var parserTable = ParserTable.Deserialize(workingDir + parserTableData);
+                var parserTable = ParserTable.Deserialize(session.WorkingDir + parserTableData);
                 parser = new Parser.Parser { ParserTable = parserTable };
             }
         }
 
-        public void Run() 
+        public void Run(string scriptToRunFullPath, Scope scope = null)
         {
-            var entryScript = File.ReadAllText(workingDir + entryPoint);
+            var entryScript = File.ReadAllText(scriptToRunFullPath);
             var tokenized = tokenizer.Tokenize(Utils.TokenizeText(entryScript, new Token { Name = "Terminal" }));
             var programTree = parser.ParseProgram(tokenized);
-
-            EvaluateProgramNode(programTree);
+            
+            EvaluateProgramNode(programTree, scope);
         }
 
-        public void EvaluateProgramNode(ProgramNode programNode) 
+        public void EvaluateProgramNode(ProgramNode programNode, Scope scope) 
         {
             var curNode = programNode;
             if (curNode.Token.Name != "Root") 
@@ -84,7 +73,7 @@ namespace ScriptingLaunguage.Interpreter
             }
             curNode = curNode.Children[0];
             object tmp = null;
-            OperationGroupProcessor.ProcessNode(curNode, Scope, ref tmp);
+            OperationGroupProcessor.ProcessNode(curNode, scope, ref tmp);
         }
     }
 }
