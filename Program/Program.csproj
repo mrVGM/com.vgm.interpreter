@@ -9,12 +9,8 @@
     <ProjectReference Include="..\ScriptingLanguage\ScriptingLanguage.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Scripts\" />
-  </ItemGroup>
-
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if exist $(OutputPath)Scripts rmdir /s /q $(OutputPath)Scripts&#xD;&#xA;mkdir $(OutputPath)Scripts&#xD;&#xA;copy $(SolutionDir)ScriptingLanguage\GrammarTests\grammar.txt $(OutputPath)Scripts\grammar.txt&#xD;&#xA;" />
+    <Exec Command="if exist $(OutputPath)Scripts rmdir /s /q $(OutputPath)Scripts&#xD;&#xA;mkdir $(OutputPath)Scripts&#xD;&#xA;copy $(SolutionDir)ScriptingLanguage\GrammarTests\grammar.txt $(OutputPath)Scripts\grammar.txt&#xD;&#xA;xcopy /s $(ProjectDir)Scripts $(OutputPath)Scripts&#xD;&#xA;" />
   </Target>
 
 </Project>

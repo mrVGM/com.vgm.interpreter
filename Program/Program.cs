@@ -1,7 +1,5 @@
 ﻿using System;
-using ScriptingLaunguage;
 using ScriptingLaunguage.Interpreter;
-using ScriptingLaunguage.Tokenizer;
 using static ScriptingLaunguage.Parser.Parser;
 
 namespace Program
