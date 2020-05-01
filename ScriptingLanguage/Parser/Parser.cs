@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using ScriptingLaunguage.Tokenizer;
 
@@ -7,11 +8,21 @@ namespace ScriptingLaunguage.Parser
 {
     public class Parser
     {
-        public class ParseException : Exception
+        public abstract class ParseException : Exception
         {
             public ParseException(string message) : base(message)
             {
             }
+        }
+
+        public class ExpectsSymbolException : ParseException 
+        {
+            public ExpectsSymbolException() : base("Expects Symbol") { }
+        }
+
+        public class CantProceedParsingException : ParseException 
+        {
+            public CantProceedParsingException() : base("Syntax error") { }
         }
 
         public ParserTable ParserTable;
@@ -30,13 +41,29 @@ namespace ScriptingLaunguage.Parser
             {
                 if (endOfProgram)
                 {
-                    throw new ParseException("Parsing error!");
+                    var nextSymbols = ParserTable.ParserActions.Where(x => x.CurrentState == stateStack.Peek()).Select(x => x.NextSymbol);
+                    if (!nextSymbols.Any())
+                    {
+                        throw new CantProceedParsingException();
+                    }
+                    else 
+                    {
+                        throw new ExpectsSymbolException();
+                    }
                 }
                 var curToken = script.Current;
                 var action = ParserTable.ParserActions.FirstOrDefault(x => x.CurrentState == stateStack.Peek() && x.NextSymbol == curToken.Name);
                 if (action == null) 
                 {
-                    throw new ParseException("Parsing error!");
+                    var nextSymbols = ParserTable.ParserActions.Where(x => x.CurrentState == stateStack.Peek()).Select(x => x.NextSymbol);
+                    if (!nextSymbols.Any())
+                    {
+                        throw new CantProceedParsingException();
+                    }
+                    else
+                    {
+                        throw new ExpectsSymbolException();
+                    }
                 }
 
                 if (action.ActionType == ActionType.Shift) 
@@ -63,7 +90,15 @@ namespace ScriptingLaunguage.Parser
                 var shiftAfterReduceAction = ParserTable.ParserActions.FirstOrDefault(x => x.CurrentState == stateStack.Peek() && x.NextSymbol == reduceSymbol);
                 if (shiftAfterReduceAction == null) 
                 {
-                    throw new ParseException("Parsing error!");
+                    var nextSymbols = ParserTable.ParserActions.Where(x => x.CurrentState == stateStack.Peek()).Select(x => x.NextSymbol);
+                    if (!nextSymbols.Any())
+                    {
+                        throw new CantProceedParsingException();
+                    }
+                    else
+                    {
+                        throw new ExpectsSymbolException();
+                    }
                 }
                 treeStack.Push(reduceNode);
                 stateStack.Push(shiftAfterReduceAction.NextState);
