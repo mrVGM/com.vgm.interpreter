@@ -13,7 +13,7 @@ namespace ScriptingLaunguage.Tokenizer
             Words = words.OrderByDescending(x => x.Length);
         }
 
-        bool TryReadWord(string word, IEnumerable<Token> script)
+        bool TryReadWord(string word, IEnumerable<IndexedToken> script)
         {
             var beginning = script.Take(word.Length);
             if (beginning.Count() < word.Length || beginning.Any(x => x.Name.Length > 1))
@@ -35,13 +35,14 @@ namespace ScriptingLaunguage.Tokenizer
             return true;
         }
 
-        int ReadWord(IEnumerable<Token> script, out Token token)
+        int ReadWord(IEnumerable<IndexedToken> script, out IndexedToken token)
         {
+            int index = script.FirstOrDefault().Index;
             foreach (var word in Words)
             {
                 if (TryReadWord(word, script)) 
                 {
-                    token = new Token { Name = word };
+                    token = new IndexedToken(index) { Name = word };
                     return word.Length;
                 }
             }
@@ -49,12 +50,12 @@ namespace ScriptingLaunguage.Tokenizer
             token = script.First();
             return 1;
         }
-        public IEnumerable<Token> Tokenize(IEnumerable<Token> script)
+        public IEnumerable<IndexedToken> Tokenize(IEnumerable<IndexedToken> script)
         {
             var left = script;
             while (left.Any()) 
             {
-                Token token = null;
+                IndexedToken token = null;
                 int read = ReadWord(left, out token);
                 yield return token;
                 left = left.Skip(read);

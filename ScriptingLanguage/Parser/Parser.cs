@@ -55,7 +55,7 @@ namespace ScriptingLaunguage.Parser
                     tmpTreeStack.Push(treeStack.Pop());
                 }
                 var reduceSymbol = action.ReduceSymbol;
-                var reduceNode = new ProgramNode { RuleId = action.RuleId, Token = new Token { Name = reduceSymbol } };
+                var reduceNode = new ProgramNode { RuleId = action.RuleId, Token = new SimpleToken { Name = reduceSymbol } };
                 while (tmpTreeStack.Any()) 
                 {
                     reduceNode.Children.Add(tmpTreeStack.Pop());

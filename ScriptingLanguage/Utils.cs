@@ -10,17 +10,18 @@ namespace ScriptingLaunguage
 {
     public static class Utils
     {
-        public static IEnumerable<Token> TokenizeText(string text, Token endOfText = null)
+        public static IEnumerable<IndexedToken> TokenizeText(string text, Token endOfText = null)
         {
+            int index = 0;
             foreach (var symbol in text)
             {
-                yield return new Token {
+                yield return new IndexedToken (index++) {
                     Name = $"{symbol}"
                 };
             }
             if (endOfText != null) 
             {
-                yield return endOfText;
+                yield return new IndexedToken(index) { Name = endOfText.Name, Data = endOfText.Data };
             }
         }
 

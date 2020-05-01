@@ -6,36 +6,37 @@ namespace ScriptingLaunguage.Tokenizer
 {
     public class NewLineTokenizer : ITokenizer
     {
-        IEnumerable<Token> TwoSymbolNewLine(IEnumerable<Token> script) 
+        IEnumerable<IndexedToken> TwoSymbolNewLine(IEnumerable<IndexedToken> script) 
         {
-            bool oneSymbolRead = false;
+            IndexedToken oneSymbolRead = null;
             string firstSymbol = Environment.NewLine[0].ToString();
             string secondSymbol = Environment.NewLine[1].ToString();
             foreach (var symbol in script)
             {
-                if (!oneSymbolRead && symbol.Name == firstSymbol)
+                if (oneSymbolRead == null && symbol.Name == firstSymbol)
                 {
-                    oneSymbolRead = true;
+                    oneSymbolRead = symbol;
                     continue;
                 }
-                if (oneSymbolRead) 
+                if (oneSymbolRead != null) 
                 {
                     if (symbol.Name == secondSymbol) 
                     {
-                        yield return new Token { Name = Environment.NewLine };
+                        yield return new IndexedToken(oneSymbolRead.Index) { Name = Environment.NewLine };
                     }
                     else 
                     {
-                        yield return new Token { Name = firstSymbol };
+                        yield return oneSymbolRead;
+                        yield return symbol;
                     }
-                    oneSymbolRead = false;
+                    oneSymbolRead = null;
                     continue;
                 }
 
                 yield return symbol;
             }
         }
-        public IEnumerable<Token> Tokenize(IEnumerable<Token> script)
+        public IEnumerable<IndexedToken> Tokenize(IEnumerable<IndexedToken> script)
         {
             if (Environment.NewLine.Length == 2) 
             {

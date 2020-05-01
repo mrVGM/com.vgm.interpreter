@@ -11,10 +11,11 @@ namespace ScriptingLaunguage.Tokenizer
             InString,
             EscapingToken
         };
-        public IEnumerable<Token> Tokenize(IEnumerable<Token> script)
+        public IEnumerable<IndexedToken> Tokenize(IEnumerable<IndexedToken> script)
         {
             var state = State.Default;
-            List<Token> buffer = new List<Token>();
+            List<IndexedToken> buffer = new List<IndexedToken>();
+            int stringIndex = -1;
 
             foreach (var token in script)
             {
@@ -44,6 +45,7 @@ namespace ScriptingLaunguage.Tokenizer
                     {
                         buffer.Clear();
                         state = State.InString;
+                        stringIndex = token.Index;
                         continue;
                     }
 
@@ -55,7 +57,7 @@ namespace ScriptingLaunguage.Tokenizer
                             dataStr += symbol.Name;
                         }
 
-                        var stringToken = new Token {
+                        var stringToken = new IndexedToken (stringIndex) {
                             Name = "String",
                             Data = dataStr
                         };

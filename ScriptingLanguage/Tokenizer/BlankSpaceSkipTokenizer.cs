@@ -5,7 +5,7 @@ namespace ScriptingLaunguage.Tokenizer
 {
     public class BlankSpaceSkipTokenizer : ITokenizer
     {
-        public IEnumerable<Token> Tokenize(IEnumerable<Token> script)
+        public IEnumerable<IndexedToken> Tokenize(IEnumerable<IndexedToken> script)
         {
             foreach (var token in script) 
             {
