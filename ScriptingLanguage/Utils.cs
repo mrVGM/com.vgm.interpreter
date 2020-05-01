@@ -10,7 +10,7 @@ namespace ScriptingLaunguage
 {
     public static class Utils
     {
-        public static IEnumerable<IndexedToken> TokenizeText(string text, Token endOfText = null)
+        public static IEnumerable<IndexedToken> TokenizeText(string text, IToken endOfText = null)
         {
             int index = 0;
             foreach (var symbol in text)
@@ -25,7 +25,7 @@ namespace ScriptingLaunguage
             }
         }
 
-        public static bool IsNameSymbol(Token token) 
+        public static bool IsNameSymbol(IToken token) 
         {
             if (token.Name.Length > 1) 
             {
@@ -52,7 +52,7 @@ namespace ScriptingLaunguage
             return false;
         }
 
-        public static bool IsNameStartSymbol(Token token) 
+        public static bool IsNameStartSymbol(IToken token) 
         {
             if (!IsNameSymbol(token)) 
             {
@@ -66,7 +66,7 @@ namespace ScriptingLaunguage
             return true;
         }
 
-        public static bool IsDigit(Token token)
+        public static bool IsDigit(IToken token)
         {
             if (token.Name.Length > 1)
             {

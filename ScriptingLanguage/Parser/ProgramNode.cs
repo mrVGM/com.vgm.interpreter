@@ -8,7 +8,7 @@ namespace ScriptingLaunguage.Parser
     public class ProgramNode
     {
         public int RuleId = -1;
-        public Token Token;
+        public IToken Token;
         public List<ProgramNode> Children = new List<ProgramNode>();
 
         public bool MatchChildren(params string[] template) 

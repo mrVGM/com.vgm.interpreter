@@ -15,9 +15,9 @@ namespace ScriptingLaunguage.Parser
         }
 
         public ParserTable ParserTable;
-        public ProgramNode ParseProgram(IEnumerable<Token> program)
+        public ProgramNode ParseProgram(IEnumerable<IToken> program)
         {
-            IEnumerator<Token> script = program.GetEnumerator();
+            IEnumerator<IToken> script = program.GetEnumerator();
             script.MoveNext();
 
             Stack<int> stateStack = new Stack<int>();

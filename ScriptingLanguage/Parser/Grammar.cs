@@ -116,9 +116,9 @@ namespace ScriptingLaunguage.Parser
         }
 
         public 
-        static IEnumerable<IEnumerable<Token>> GetLines(IEnumerable<Token> grammarScript)
+        static IEnumerable<IEnumerable<IToken>> GetLines(IEnumerable<IToken> grammarScript)
         {
-            List<Token> curLine = new List<Token>();
+            List<IToken> curLine = new List<IToken>();
             foreach (var token in grammarScript)
             {
                 if (token.Name == Environment.NewLine) 
@@ -126,7 +126,7 @@ namespace ScriptingLaunguage.Parser
                     if (curLine.Any()) 
                     {
                         yield return curLine;
-                        curLine = new List<Token>();
+                        curLine = new List<IToken>();
                     }
                     continue;
                 }
@@ -138,7 +138,7 @@ namespace ScriptingLaunguage.Parser
             }
         }
 
-        static Rule ReadRule(IEnumerable<Token> ruleTokens) 
+        static Rule ReadRule(IEnumerable<IToken> ruleTokens) 
         {
             var rule = new Rule();
             ruleTokens = ruleTokens.Where(x => x.Name == "String");
