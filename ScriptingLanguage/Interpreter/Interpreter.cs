@@ -61,7 +61,7 @@ namespace ScriptingLaunguage.Interpreter
             return RunScript(entryScript, scope);
         }
         
-        public object RunScript(string script, Scope scope = null)
+        public object RunScript(string script, Scope scope)
         {
             var tokenized = tokenizer.Tokenize(Utils.TokenizeText(script, new Token { Name = "Terminal" }));
             var programTree = parser.ParseProgram(tokenized);
