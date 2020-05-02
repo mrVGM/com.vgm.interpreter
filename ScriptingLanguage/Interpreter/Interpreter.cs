@@ -3,6 +3,7 @@ using System.IO;
 using ScriptingLaunguage.BaseFunctions;
 using ScriptingLaunguage.Parser;
 using ScriptingLaunguage.Tokenizer;
+using static ScriptingLaunguage.Parser.Parser;
 
 namespace ScriptingLaunguage.Interpreter
 {
@@ -54,17 +55,17 @@ namespace ScriptingLaunguage.Interpreter
                 parser = new Parser.Parser { ParserTable = parserTable };
             }
         }
-
-        public object RunScriptFile(string scriptToRunFullPath, Scope scope = null)
+        
+        public object RunScriptFile(string scriptToRunFullPath, Scope scope)
         {
             var entryScript = File.ReadAllText(scriptToRunFullPath);
-            return RunScript(entryScript, scope);
+            return RunScript(entryScript, scope, new ProgramSource { Interpreter = this, Filename = scriptToRunFullPath, SourceCode = entryScript });
         }
         
-        public object RunScript(string script, Scope scope)
+        public object RunScript(string script, Scope scope, ProgramSource scriptSource)
         {
             var tokenized = tokenizer.Tokenize(Utils.TokenizeText(script, new SimpleToken { Name = "Terminal" }));
-            var programTree = parser.ParseProgram(tokenized);
+            var programTree = parser.ParseProgram(tokenized, scriptSource);
             
             return EvaluateProgramNode(programTree, scope);
         }

@@ -29,16 +29,21 @@ namespace Program
                 object res = null;
                 try
                 {
-                    res = interpreter.RunScript(buffer, session.GetWorkingScope());
+                    res = interpreter.RunScript(buffer, session.GetWorkingScope(), new ProgramSource { Interpreter = interpreter, SourceCode = buffer });
                 }
-                catch (ParseException parseException)
+                catch (ExpectsSymbolException expectSymbolException)
                 {
-                    Console.WriteLine(" ...");
-                    continue;
+                    var exceptionSource = expectSymbolException.ExceptionSource;
+                    if (exceptionSource.Interpreter == interpreter && expectSymbolException.CodeIndex == buffer.Length)
+                    {
+                        Console.WriteLine(" ...");
+                        continue;
+                    }
+
+                    Console.WriteLine(expectSymbolException.GetErrorMessage());
                 }
                 catch (Exception exception)
                 {
-                    buffer = "";
                     Console.WriteLine(exception.Message);
                 }
 

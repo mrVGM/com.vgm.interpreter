@@ -44,7 +44,7 @@ namespace ScriptingLaunguage
             }
             if (index == 0) 
             {
-                return source.Substring(0, newLineIndeces[1]);
+                return source.Substring(0, newLineIndeces[0]);
             }
             int startIndex = newLineIndeces[index] + Environment.NewLine.Length;
             return source.Substring(startIndex, newLineIndeces[index + 1] - startIndex);

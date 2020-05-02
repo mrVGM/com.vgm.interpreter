@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using ScriptingLaunguage.Tokenizer;
 
@@ -26,6 +27,17 @@ namespace ScriptingLaunguage.Parser
                 }
             }
             return true;
+        }
+
+        public int GetCodeIndex() 
+        {
+            var indexed = Token as IIndexed;
+            if (indexed != null) 
+            {
+                return indexed.Index;
+            }
+
+            return Children.FirstOrDefault().GetCodeIndex();
         }
     }
 }

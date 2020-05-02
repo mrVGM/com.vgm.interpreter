@@ -10,17 +10,22 @@ namespace ScriptingLaunguage.Tokenizer
 		object Data { get; }
 	}
 
+	public interface IIndexed 
+	{
+		int Index { get; set; }
+	}
+
 	public class SimpleToken : IToken
 	{
 		public string Name { get; set; }
 		public object Data { get; set; }
 	}
 
-	public class IndexedToken : IToken 
+	public class IndexedToken : IToken, IIndexed
 	{
 		public string Name { get; set; }
 		public object Data { get; set; }
-		public int Index;
+		public int Index { get; set; }
 		public IndexedToken(int index) 
 		{
 			Index = index;
