@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices.ComTypes;
+using System.Xml.Serialization;
+using ScriptingLaunguage.BaseFunctions;
 using ScriptingLaunguage.Interpreter;
 using ScriptingLaunguage.Tokenizer;
 
@@ -10,6 +13,73 @@ namespace ScriptingLaunguage
 {
     public static class Utils
     {
+        public static IEnumerable<int> GetNewLineIndeces(string source)
+        {
+            int curIndex = 0;
+            while (true) 
+            {
+                int foundIndex = source.IndexOf(Environment.NewLine, curIndex);
+                if (foundIndex < 0) 
+                {
+                    break;
+                }
+                curIndex = foundIndex + Environment.NewLine.Length;
+                yield return foundIndex;
+            }
+        }
+        
+        public static int GetLineNumber(int index, string source)
+        {
+            var newLineIndeces = GetNewLineIndeces(source);
+            return newLineIndeces.Count(x => index <= x);
+        }
+
+        public static string GetLine(int index, string source) 
+        {
+            var newLineIndeces = GetNewLineIndeces(source).ToList();
+            
+            if (index >= newLineIndeces.Count) 
+            {
+                return "";
+            }
+            if (index == 0) 
+            {
+                return source.Substring(0, newLineIndeces[1]);
+            }
+            int startIndex = newLineIndeces[index] + Environment.NewLine.Length;
+            return source.Substring(startIndex, newLineIndeces[index + 1] - startIndex);
+        }
+
+        public static int GetLineOffset(int index, string source) 
+        {
+            var newLines = GetNewLineIndeces(source);
+            int startLine = 0;
+            if (newLines.Any(x => x < index)) 
+            {
+                startLine = newLines.First(x => x < index) + Environment.NewLine.Length;
+            }
+
+            return index - startLine;
+        }
+
+        public static string PointSymbol(int index, string line) 
+        {
+            var replaced = line.Select(x => {
+                if (x == '\t') {
+                    return x;
+                }
+                return ' ';
+            }).ToList();
+
+            while (replaced.Count() <= index) 
+            {
+                replaced.Add(' ');
+            }
+            replaced[index] = '^';
+
+            return new string(replaced.ToArray());
+        }
+
         public static IEnumerable<IndexedToken> TokenizeText(string text, IToken endOfText = null)
         {
             int index = 0;
