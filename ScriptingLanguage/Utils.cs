@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices.ComTypes;
-using System.Xml.Serialization;
-using ScriptingLaunguage.BaseFunctions;
 using ScriptingLaunguage.Interpreter;
 using ScriptingLaunguage.Tokenizer;
 
@@ -31,14 +27,14 @@ namespace ScriptingLaunguage
         public static int GetLineNumber(int index, string source)
         {
             var newLineIndeces = GetNewLineIndeces(source);
-            return newLineIndeces.Count(x => index <= x);
+            return newLineIndeces.Count(x => x <= index);
         }
 
         public static string GetLine(int index, string source) 
         {
             var newLineIndeces = GetNewLineIndeces(source).ToList();
             
-            if (index >= newLineIndeces.Count) 
+            if (index > newLineIndeces.Count)
             {
                 return "";
             }
@@ -46,8 +42,13 @@ namespace ScriptingLaunguage
             {
                 return source.Substring(0, newLineIndeces[0]);
             }
-            int startIndex = newLineIndeces[index] + Environment.NewLine.Length;
-            return source.Substring(startIndex, newLineIndeces[index + 1] - startIndex);
+            int startIndex = newLineIndeces[index - 1] + Environment.NewLine.Length;
+            int endIndex = source.Length;
+            if (index < newLineIndeces.Count) 
+            {
+                endIndex = newLineIndeces[index];
+            }
+            return source.Substring(startIndex, endIndex - startIndex);
         }
 
         public static int GetLineOffset(int index, string source) 
@@ -56,7 +57,7 @@ namespace ScriptingLaunguage
             int startLine = 0;
             if (newLines.Any(x => x < index)) 
             {
-                startLine = newLines.First(x => x < index) + Environment.NewLine.Length;
+                startLine = newLines.Last(x => x < index) + Environment.NewLine.Length;
             }
 
             return index - startLine;

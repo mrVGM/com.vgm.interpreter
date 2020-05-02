@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
 using ScriptingLaunguage.Tokenizer;
 
 namespace ScriptingLaunguage.Parser
@@ -27,6 +25,16 @@ namespace ScriptingLaunguage.Parser
             }
             public string GetCodeSample(int index, string source)
             {
+                string lineNumber(int number, int stringLength) 
+                {
+                    string res = (number + 1).ToString();
+                    while (res.Length < stringLength) 
+                    {
+                        res = $" {res}";
+                    }
+                    return $"{res}| ";
+                }
+
                 int errorLineNumber = Utils.GetLineNumber(index, source);
                 string errorLine = Utils.GetLine(errorLineNumber, source);
                 int lineOffset = Utils.GetLineOffset(index, source);
@@ -45,6 +53,18 @@ namespace ScriptingLaunguage.Parser
                 }
                 pointerLine = $"{pointerLine}{newLine}";
                 nextLine = $"{nextLine}{newLine}";
+
+                int lineNumberLength = (errorLineNumber + 2).ToString().Length;
+
+                if (!string.IsNullOrEmpty(previousLine))
+                {
+                    previousLine = $"{lineNumber(errorLineNumber - 1, lineNumberLength)}{previousLine}";
+                }
+                errorLine = $"{lineNumber(errorLineNumber, lineNumberLength)}{errorLine}{newLine}";
+                if (!string.IsNullOrEmpty(nextLine))
+                {
+                    nextLine = $"{lineNumber(errorLineNumber + 1, lineNumberLength)}{nextLine}";
+                }
 
                 return $"{previousLine}{errorLine}{pointerLine}{nextLine}";
             }
@@ -68,7 +88,7 @@ namespace ScriptingLaunguage.Parser
                     expecting += $", {symbol}";
                 }
                 expecting = expecting.Substring(2);
-                return $"Expection one of: {expecting}{Environment.NewLine}{ExceptionSource.Filename}{Environment.NewLine}{GetCodeSample(CodeIndex, ExceptionSource.SourceCode)}";
+                return $"Expecting one of: {expecting}{Environment.NewLine}{ExceptionSource.Filename}{Environment.NewLine}{GetCodeSample(CodeIndex, ExceptionSource.SourceCode)}";
             }
         }
 
