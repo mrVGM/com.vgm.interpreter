@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices.ComTypes;
 using ScriptingLaunguage.Interpreter;
 using ScriptingLaunguage.Tokenizer;
 
@@ -15,6 +14,82 @@ namespace ScriptingLaunguage
             public int LineIndex;
             public string Line;
         }
+
+        public abstract class LanguageException : Exception
+        {
+            const int SurroundingLines = 2;
+
+            public int CodeIndex;
+            public ScriptId ScriptId;
+            public LanguageException(ScriptId scriptId, int codeIndex)
+            {
+                ScriptId = scriptId;
+                CodeIndex = codeIndex;
+            }
+
+            public IEnumerable<NumberedLine> GetSampleOfLines(int lineOfInterest, int numberOfSurroundingLines, string script)
+            {
+                var lines = Utils.GetNumberedLines(script);
+                foreach (var line in lines)
+                {
+                    if (Math.Abs(line.LineIndex - lineOfInterest) <= numberOfSurroundingLines)
+                    {
+                        yield return line;
+                    }
+                }
+            }
+
+            public string GetCodeSample(int index, string script, bool printLineNumbers)
+            {
+                int lineOfInterest = Utils.GetLineNumber(index, script);
+                var sample = GetSampleOfLines(lineOfInterest, SurroundingLines, script);
+
+                var errorLine = sample.FirstOrDefault(x => x.LineIndex == lineOfInterest);
+                int errorLineOffset = Utils.GetLineOffset(index, script);
+
+                string pointerLine = Utils.PointSymbol(errorLineOffset, errorLine.Line);
+
+                string lineNumberSuffix = "| ";
+                int longestPrefixLength = (sample.Last().LineIndex + 1).ToString().Length + lineNumberSuffix.Length;
+                string blankPrefix = "";
+                while (blankPrefix.Length < longestPrefixLength)
+                {
+                    blankPrefix += " ";
+                }
+
+                string getPrefix(NumberedLine line)
+                {
+                    if (!printLineNumbers)
+                    {
+                        return "";
+                    }
+                    string lineNumber = $"{line.LineIndex + 1}{lineNumberSuffix}";
+                    while (lineNumber.Length < longestPrefixLength)
+                    {
+                        lineNumber = $" {lineNumber}";
+                    }
+                    return lineNumber;
+                }
+
+                if (printLineNumbers)
+                {
+                    pointerLine = $"{blankPrefix}{pointerLine}";
+                }
+                string res = "";
+                foreach (var line in sample)
+                {
+                    res += $"{getPrefix(line)}{line.Line}{Environment.NewLine}";
+                    if (line.LineIndex == lineOfInterest)
+                    {
+                        res += $"{pointerLine}{Environment.NewLine}";
+                    }
+                }
+
+                return res;
+            }
+            public abstract string GetErrorMessage(bool printLineNumbers);
+        }
+
         public static IEnumerable<int> GetNewLineIndeces(string source)
         {
             int curIndex = 0;

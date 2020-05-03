@@ -3,7 +3,6 @@ using System.IO;
 using ScriptingLaunguage.BaseFunctions;
 using ScriptingLaunguage.Parser;
 using ScriptingLaunguage.Tokenizer;
-using static ScriptingLaunguage.Parser.Parser;
 
 namespace ScriptingLaunguage.Interpreter
 {
