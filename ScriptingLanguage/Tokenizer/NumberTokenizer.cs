@@ -24,7 +24,7 @@ namespace ScriptingLaunguage.Tokenizer
                         str += t.Name;
                     }
                     int index = buffer.FirstOrDefault().Index;
-                    yield return new IndexedToken(index) { Name = "Number", Data = str };
+                    yield return new IndexedToken(index, token.ScriptSource) { Name = "Number", Data = str };
                     yield return token;
                     buffer.Clear();
                 }
@@ -42,7 +42,7 @@ namespace ScriptingLaunguage.Tokenizer
                     str += t.Name;
                 }
                 int index = buffer.FirstOrDefault().Index;
-                yield return new IndexedToken(index) { Name = "Number", Data = str };
+                yield return new IndexedToken(index, buffer.FirstOrDefault().ScriptSource) { Name = "Number", Data = str };
             }
         }
 
@@ -54,7 +54,7 @@ namespace ScriptingLaunguage.Tokenizer
                 if (tmp[0].Name == "Number" && tmp[1].Name == "." && tmp[2].Name == "Number")
                 {
                     int index = tmp[0].Index;
-                    processed = new IndexedToken(index) { Name = "Number", Data = $"{tmp[0].Data}.{tmp[2].Data}" };
+                    processed = new IndexedToken(index, tmp[0].ScriptSource) { Name = "Number", Data = $"{tmp[0].Data}.{tmp[2].Data}" };
                     return 3;
                 }
             }

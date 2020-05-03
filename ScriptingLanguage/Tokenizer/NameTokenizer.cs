@@ -27,7 +27,7 @@ namespace ScriptingLaunguage.Tokenizer
                             str += t.Name;
                         }
                         int index = buffer.FirstOrDefault().Index;
-                        yield return new IndexedToken(index) { Name = "Name", Data = str };
+                        yield return new IndexedToken(index, token.ScriptSource) { Name = "Name", Data = str };
                         buffer.Clear();
                         reading = false;
                         yield return token;
@@ -53,8 +53,10 @@ namespace ScriptingLaunguage.Tokenizer
                 {
                     str += t.Name;
                 }
-                int index = buffer.FirstOrDefault().Index;
-                yield return new IndexedToken(index) { Name = "Name", Data = str };
+                var firstToken = buffer.FirstOrDefault();
+                int index = firstToken.Index;
+                var scriptSource = firstToken.ScriptSource;
+                yield return new IndexedToken(index, scriptSource) { Name = "Name", Data = str };
             }
         }
     }

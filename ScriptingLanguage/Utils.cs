@@ -81,18 +81,18 @@ namespace ScriptingLaunguage
             return new string(replaced.ToArray());
         }
 
-        public static IEnumerable<IndexedToken> TokenizeText(string text, IToken endOfText = null)
+        public static IEnumerable<IndexedToken> TokenizeText(string text, ScriptId scriptId, IToken endOfText = null)
         {
             int index = 0;
             foreach (var symbol in text)
             {
-                yield return new IndexedToken (index++) {
+                yield return new IndexedToken(index++, scriptId) {
                     Name = $"{symbol}"
                 };
             }
             if (endOfText != null) 
             {
-                yield return new IndexedToken(index) { Name = endOfText.Name, Data = endOfText.Data };
+                yield return new IndexedToken(index, scriptId) { Name = endOfText.Name, Data = endOfText.Data };
             }
         }
 

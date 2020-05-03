@@ -22,7 +22,7 @@ namespace ScriptingLaunguage.Tokenizer
                 {
                     if (symbol.Name == secondSymbol) 
                     {
-                        yield return new IndexedToken(oneSymbolRead.Index) { Name = Environment.NewLine };
+                        yield return new IndexedToken(oneSymbolRead.Index, symbol.ScriptSource) { Name = Environment.NewLine };
                     }
                     else 
                     {

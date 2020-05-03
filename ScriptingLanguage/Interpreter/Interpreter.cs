@@ -64,8 +64,10 @@ namespace ScriptingLaunguage.Interpreter
         
         public object RunScript(string script, Scope scope, ProgramSource scriptSource)
         {
-            var tokenized = tokenizer.Tokenize(Utils.TokenizeText(script, new SimpleToken { Name = "Terminal" }));
-            var programTree = parser.ParseProgram(tokenized, scriptSource);
+            var scriptId = new ScriptId { Filename = scriptSource.Filename, Script = scriptSource.SourceCode };
+            var tokenized = Utils.TokenizeText(script, scriptId, new SimpleToken { Name = "Terminal" });
+            var processed = tokenizer.Tokenize(tokenized);
+            var programTree = parser.ParseProgram(processed, scriptSource);
             
             return EvaluateProgramNode(programTree, scope);
         }

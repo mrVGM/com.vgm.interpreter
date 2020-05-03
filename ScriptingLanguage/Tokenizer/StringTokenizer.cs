@@ -57,7 +57,7 @@ namespace ScriptingLaunguage.Tokenizer
                             dataStr += symbol.Name;
                         }
 
-                        var stringToken = new IndexedToken (stringIndex) {
+                        var stringToken = new IndexedToken (stringIndex, token.ScriptSource) {
                             Name = "String",
                             Data = dataStr
                         };

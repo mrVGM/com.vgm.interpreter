@@ -40,12 +40,14 @@ namespace ScriptingLaunguage.Tokenizer
 
         IEnumerable<IndexedToken> TryReadSingleKeyword(IEnumerable<IndexedToken> script, out IndexedToken processedToken) 
         {
-            int index = script.FirstOrDefault().Index;
+            var firstToken = script.FirstOrDefault();
+            int index = firstToken.Index;
+            var scriptSource = firstToken.ScriptSource;
             foreach (var keyword in Keywords) 
             {
                 if (ReadKeyword(keyword, script)) 
                 {
-                    processedToken = new IndexedToken (index) { Name = keyword };
+                    processedToken = new IndexedToken (index, scriptSource) { Name = keyword };
                     return script.Skip(keyword.Length);
                 }
             }

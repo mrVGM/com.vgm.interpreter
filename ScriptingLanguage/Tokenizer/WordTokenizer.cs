@@ -37,12 +37,14 @@ namespace ScriptingLaunguage.Tokenizer
 
         int ReadWord(IEnumerable<IndexedToken> script, out IndexedToken token)
         {
+            var firstToken = script.FirstOrDefault();
             int index = script.FirstOrDefault().Index;
+            var scriptSource = firstToken.ScriptSource;
             foreach (var word in Words)
             {
                 if (TryReadWord(word, script)) 
                 {
-                    token = new IndexedToken(index) { Name = word };
+                    token = new IndexedToken(index, scriptSource) { Name = word };
                     return word.Length;
                 }
             }
