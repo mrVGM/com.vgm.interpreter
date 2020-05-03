@@ -4,6 +4,6 @@ namespace ScriptingLaunguage.Tokenizer
 {
     public interface ITokenizer
     {
-        IEnumerable<Token> Tokenize(IEnumerable<Token> script);
+        IEnumerable<IndexedToken> Tokenize(IEnumerable<IndexedToken> script);
     }
 }

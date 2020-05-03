@@ -54,17 +54,18 @@ namespace ScriptingLaunguage.Interpreter
                 parser = new Parser.Parser { ParserTable = parserTable };
             }
         }
-
-        public object RunScriptFile(string scriptToRunFullPath, Scope scope = null)
+        
+        public object RunScriptFile(string scriptToRunFullPath, Scope scope)
         {
             var entryScript = File.ReadAllText(scriptToRunFullPath);
-            return RunScript(entryScript, scope);
+            return RunScript(entryScript, scope, new ScriptId { Filename = scriptToRunFullPath, Script = entryScript });
         }
         
-        public object RunScript(string script, Scope scope)
+        public object RunScript(string script, Scope scope, ScriptId scriptId)
         {
-            var tokenized = tokenizer.Tokenize(Utils.TokenizeText(script, new Token { Name = "Terminal" }));
-            var programTree = parser.ParseProgram(tokenized);
+            var tokenized = Utils.TokenizeText(script, scriptId, new SimpleToken { Name = "Terminal" });
+            var processed = tokenizer.Tokenize(tokenized);
+            var programTree = parser.ParseProgram(processed);
             
             return EvaluateProgramNode(programTree, scope);
         }
@@ -78,7 +79,7 @@ namespace ScriptingLaunguage.Interpreter
             }
             curNode = curNode.Children[0];
             object res = null;
-            OperationGroupProcessor.ProcessNode(curNode, scope, ref res);
+            NodeProcessor.ExecuteProgramNodeProcessor(OperationGroupProcessor, curNode, scope, ref res);
             return res;
         }
     }

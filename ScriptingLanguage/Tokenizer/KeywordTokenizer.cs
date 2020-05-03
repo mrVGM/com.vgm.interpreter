@@ -11,7 +11,7 @@ namespace ScriptingLaunguage.Tokenizer
             Keywords = keywords;
         }
 
-        bool ReadKeyword(string keyword, IEnumerable<Token> script) 
+        bool ReadKeyword(string keyword, IEnumerable<IndexedToken> script) 
         {
             var str = "";
             var beginning = script.Take(keyword.Length);
@@ -38,13 +38,16 @@ namespace ScriptingLaunguage.Tokenizer
             return true;
         }
 
-        IEnumerable<Token> TryReadSingleKeyword(IEnumerable<Token> script, out Token processedToken) 
+        IEnumerable<IndexedToken> TryReadSingleKeyword(IEnumerable<IndexedToken> script, out IndexedToken processedToken) 
         {
+            var firstToken = script.FirstOrDefault();
+            int index = firstToken.Index;
+            var scriptSource = firstToken.ScriptSource;
             foreach (var keyword in Keywords) 
             {
                 if (ReadKeyword(keyword, script)) 
                 {
-                    processedToken = new Token { Name = keyword };
+                    processedToken = new IndexedToken (index, scriptSource) { Name = keyword };
                     return script.Skip(keyword.Length);
                 }
             }
@@ -52,12 +55,12 @@ namespace ScriptingLaunguage.Tokenizer
             processedToken = script.First();
             return script.Skip(1); 
         }
-        public IEnumerable<Token> Tokenize(IEnumerable<Token> script)
+        public IEnumerable<IndexedToken> Tokenize(IEnumerable<IndexedToken> script)
         {
             var left = script;
             while (left.Any()) 
             {
-                Token token = null;
+                IndexedToken token = null;
                 left = TryReadSingleKeyword(left, out token);
                 yield return token;
             }

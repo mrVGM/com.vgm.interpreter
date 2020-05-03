@@ -23,7 +23,7 @@ namespace ScriptingLaunguage.Interpreter
                 }
 
                 object val = null;
-                ExpressionProcessor.ProcessNode(programNode.Children[3], scope, ref val);
+                NodeProcessor.ExecuteProgramNodeProcessor(ExpressionProcessor, programNode.Children[3], scope, ref val);
                 scope.AddVariable(varName as string, val);
                 return true;
             }

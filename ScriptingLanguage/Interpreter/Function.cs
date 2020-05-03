@@ -30,7 +30,7 @@ namespace ScriptingLaunguage.Interpreter
         {
             object functionResult = null;
             var localScope = new Scope { ParentScope = scope };
-            var res = BlockProcessor.ProcessNode(Block, localScope, ref functionResult);
+            var res = NodeProcessor.ExecuteProgramNodeProcessor(BlockProcessor, Block, localScope, ref functionResult);
             var returnOperation = res as OperationProcessor.ReturnOperation;
             if (returnOperation != null && returnOperation.ReturnExpression) 
             {

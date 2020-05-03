@@ -29,7 +29,7 @@ namespace ScriptingLaunguage.Interpreter
                 if (programNode.MatchChildren("Parameters", ",", "Name")) 
                 {
                     object tmp = null;
-                    ProcessNode(programNode.Children[0], scope, ref tmp);
+                    NodeProcessor.ExecuteProgramNodeProcessor(this, programNode.Children[0], scope, ref tmp);
                     var paramsList = (tmp as IEnumerable<string>).ToList();
                     paramsList.Add(programNode.Children[2].Token.Data as string);
                     value = paramsList;
@@ -56,7 +56,7 @@ namespace ScriptingLaunguage.Interpreter
             if (programNode.MatchChildren("function", "(", "Parameters", ")", "Block")) 
             {
                 object tmp = null;
-                Parameters.ProcessNode(programNode.Children[2], scope, ref tmp);
+                NodeProcessor.ExecuteProgramNodeProcessor(Parameters, programNode.Children[2], scope, ref tmp);
                 var parameters = tmp as IEnumerable<string>;
                 value = new FunctionScopeAndBlock { ScopeVariables = parameters, Block = programNode.Children[4] };
                 return null;

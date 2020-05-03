@@ -9,7 +9,7 @@ namespace ScriptingLaunguage.Interpreter
         IProgramNodeProcessor BooleanExpressionProcessor = new BooleanExpressionProcessor();
         public object ProcessNode(ProgramNode programNode, Scope scope, ref object value)
         {
-            if (programNode.Token.Name != "WhileStatement") 
+            if (programNode.Token.Name != "WhileStatement")
             {
                 throw new NotSupportedException();
             }
@@ -19,12 +19,12 @@ namespace ScriptingLaunguage.Interpreter
                 while (true)
                 {
                     object expr = null;
-                    BooleanExpressionProcessor.ProcessNode(programNode.Children[2], scope, ref expr);
+                    NodeProcessor.ExecuteProgramNodeProcessor(BooleanExpressionProcessor, programNode.Children[2], scope, ref expr);
                     if ((bool)expr)
                     {
                         var whileScope = new Scope();
                         whileScope.ParentScope = scope;
-                        var block = BlockProcessor.ProcessNode(programNode.Children[4], whileScope, ref value);
+                        var block = NodeProcessor.ExecuteProgramNodeProcessor(BlockProcessor, programNode.Children[4], whileScope, ref value);
                         if (block is OperationProcessor.BreakOperation) 
                         {
                             break;

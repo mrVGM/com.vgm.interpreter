@@ -17,13 +17,13 @@ namespace ScriptingLaunguage.Interpreter
 
             if (programNode.MatchChildren("Operation")) 
             {
-                return OperationProcessor.ProcessNode(programNode.Children[0], scope, ref value);
+                return NodeProcessor.ExecuteProgramNodeProcessor(OperationProcessor, programNode.Children[0], scope, ref value);
             }
 
             if (programNode.MatchChildren("OperationGroup", "Operation"))
             {
                 object tmp = null;
-                var operation = ProcessNode(programNode.Children[0], scope, ref tmp);
+                var operation = NodeProcessor.ExecuteProgramNodeProcessor(this, programNode.Children[0], scope, ref tmp);
                 if (operation is OperationProcessor.BreakOperation)
                 {
                     return operation;
@@ -33,7 +33,7 @@ namespace ScriptingLaunguage.Interpreter
                     value = tmp;
                     return operation;
                 }
-                return OperationProcessor.ProcessNode(programNode.Children[1], scope, ref value);
+                return NodeProcessor.ExecuteProgramNodeProcessor(OperationProcessor, programNode.Children[1], scope, ref value);
             }
 
             throw new NotImplementedException();

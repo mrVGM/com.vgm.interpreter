@@ -22,15 +22,15 @@ namespace ScriptingLaunguage.Interpreter
 
                 if (programNode.MatchChildren("Prod")) 
                 {
-                    return ProductExpr.ProcessNode(programNode.Children[0], scope, ref value);
+                    return NodeProcessor.ExecuteProgramNodeProcessor(ProductExpr, programNode.Children[0], scope, ref value);
                 }
                 if (programNode.MatchChildren("ArithmethicExpression", "+", "Prod")) 
                 {
                     object val1 = null;
-                    ProcessNode(programNode.Children[0], scope, ref val1);
+                    NodeProcessor.ExecuteProgramNodeProcessor(this, programNode.Children[0], scope, ref val1);
                     
                     object val2 = null;
-                    ProductExpr.ProcessNode(programNode.Children[2], scope, ref val2);
+                    NodeProcessor.ExecuteProgramNodeProcessor( ProductExpr, programNode.Children[2], scope, ref val2);
 
                     if (val1 is Number) 
                     {
@@ -47,10 +47,10 @@ namespace ScriptingLaunguage.Interpreter
                 if (programNode.MatchChildren("ArithmethicExpression", "-", "Prod"))
                 {
                     object val1 = null;
-                    ProcessNode(programNode.Children[0], scope, ref val1);
+                    NodeProcessor.ExecuteProgramNodeProcessor(this, programNode.Children[0], scope, ref val1);
 
                     object val2 = null;
-                    ProductExpr.ProcessNode(programNode.Children[2], scope, ref val2);
+                    NodeProcessor.ExecuteProgramNodeProcessor(ProductExpr, programNode.Children[2], scope, ref val2);
 
                     if (val1 is Number)
                     {
@@ -80,15 +80,15 @@ namespace ScriptingLaunguage.Interpreter
 
                 if (programNode.MatchChildren("SingleValue"))
                 {
-                    return ExpressionProcessor.ProcessNode(programNode.Children[0], scope, ref value);
+                    return NodeProcessor.ExecuteProgramNodeProcessor(ExpressionProcessor, programNode.Children[0], scope, ref value);
                 }
                 if (programNode.MatchChildren("Prod", "*", "SingleValue"))
                 {
                     object val1 = null;
-                    ProcessNode(programNode.Children[0], scope, ref val1);
+                    NodeProcessor.ExecuteProgramNodeProcessor(this, programNode.Children[0], scope, ref val1);
 
                     object val2 = null;
-                    ProductExpr.ProcessNode(programNode.Children[2], scope, ref val2);
+                    NodeProcessor.ExecuteProgramNodeProcessor(ProductExpr, programNode.Children[2], scope, ref val2);
 
                     if (val1 is Number)
                     {
@@ -105,10 +105,10 @@ namespace ScriptingLaunguage.Interpreter
                 if (programNode.MatchChildren("Prod", "/", "SingleValue"))
                 {
                     object val1 = null;
-                    ProcessNode(programNode.Children[0], scope, ref val1);
+                    NodeProcessor.ExecuteProgramNodeProcessor(this, programNode.Children[0], scope, ref val1);
 
                     object val2 = null;
-                    ProductExpr.ProcessNode(programNode.Children[2], scope, ref val2);
+                    NodeProcessor.ExecuteProgramNodeProcessor(ProductExpr, programNode.Children[2], scope, ref val2);
 
                     if (val1 is Number)
                     {
@@ -133,19 +133,19 @@ namespace ScriptingLaunguage.Interpreter
             var childrenNames = programNode.Children.Select(x => x.Token.Name).ToArray();
             if (token.Name == "Expression")
             {
-                return ProcessNode(programNode.Children[0], scope, ref value);
+                return NodeProcessor.ExecuteProgramNodeProcessor(this, programNode.Children[0], scope, ref value);
             }
 
             if (token.Name == "ArithmethicExpression") 
             {
-                return ArithmeticExpr.ProcessNode(programNode, scope, ref value);
+                return NodeProcessor.ExecuteProgramNodeProcessor(ArithmeticExpr, programNode, scope, ref value);
             }
 
             if (token.Name == "SingleValue") 
             {
                 if (programNode.MatchChildren("Value")) 
                 {
-                    var res = ValueProcessor.ProcessNode(programNode.Children[0], scope, ref value);
+                    var res = NodeProcessor.ExecuteProgramNodeProcessor(ValueProcessor, programNode.Children[0], scope, ref value);
                     var objectContainer = value as GenericObject.ObjectContainer;
                     if (objectContainer != null) {
                         value = objectContainer.ObjectValue;
@@ -159,7 +159,7 @@ namespace ScriptingLaunguage.Interpreter
                 }
                 if (programNode.MatchChildren("(", "ArithmethicExpression", ")"))
                 {
-                    return ArithmeticExpr.ProcessNode(programNode.Children[1], scope, ref value);
+                    return NodeProcessor.ExecuteProgramNodeProcessor(ArithmeticExpr, programNode.Children[1], scope, ref value);
                 }
 
                 throw new NotImplementedException();

@@ -2,22 +2,50 @@
 using System.Collections.Generic;
 using System.Linq;
 using ScriptingLaunguage.Tokenizer;
+using static ScriptingLaunguage.Utils;
 
 namespace ScriptingLaunguage.Parser
 {
     public class Parser
     {
-        public class ParseException : Exception
+        public interface IParseException
         {
-            public ParseException(string message) : base(message)
+        }
+
+        public class ExpectsSymbolException : LanguageException, IParseException
+        {
+            public IEnumerable<string> ExpectedSymbols;
+            public ExpectsSymbolException(ScriptId scriptId, int codeIndex, IEnumerable<string> expectedSymbols) : base("", scriptId, codeIndex)
             {
+                ExpectedSymbols = expectedSymbols;
+            }
+
+            public override string GetErrorMessage(bool printLineNumbers)
+            {
+                string expecting = "";
+                foreach (var symbol in ExpectedSymbols) 
+                {
+                    expecting += $", {symbol}";
+                }
+                expecting = expecting.Substring(2);
+                return $"Expecting one of: {expecting}{Environment.NewLine}{GetCodeSample(CodeIndex, ScriptId.Script, printLineNumbers)}";
+            }
+        }
+
+        public class CantProceedParsingException : LanguageException, IParseException
+        {
+            public CantProceedParsingException(ScriptId scriptId, int codeIndex) : base("", scriptId, codeIndex) { }
+
+            public override string GetErrorMessage(bool printLineNumbers)
+            {
+                return $"Syntax error{Environment.NewLine}{GetCodeSample(CodeIndex, ScriptId.Script, printLineNumbers)}";
             }
         }
 
         public ParserTable ParserTable;
-        public ProgramNode ParseProgram(IEnumerable<Token> program)
+        public ProgramNode ParseProgram(IEnumerable<IToken> program)
         {
-            IEnumerator<Token> script = program.GetEnumerator();
+            IEnumerator<IToken> script = program.GetEnumerator();
             script.MoveNext();
 
             Stack<int> stateStack = new Stack<int>();
@@ -26,17 +54,40 @@ namespace ScriptingLaunguage.Parser
             Stack<ProgramNode> treeStack = new Stack<ProgramNode>();
 
             bool endOfProgram = false;
+            IToken lastRead = null;
+
             while (stateStack.Peek() != ParserTable.FinalState) 
             {
                 if (endOfProgram)
                 {
-                    throw new ParseException("Parsing error!");
+                    var nextSymbols = ParserTable.ParserActions.Where(x => x.CurrentState == stateStack.Peek()).Select(x => x.NextSymbol);
+                    int index = (lastRead as IIndexed).Index;
+                    var scriptSource = (lastRead as IScriptSourceHolder).ScriptSource;
+                    if (!nextSymbols.Any())
+                    {
+                        throw new CantProceedParsingException(scriptSource, index);
+                    }
+                    else 
+                    {
+                        throw new ExpectsSymbolException(scriptSource, index, nextSymbols);
+                    }
                 }
                 var curToken = script.Current;
+                lastRead = curToken;
                 var action = ParserTable.ParserActions.FirstOrDefault(x => x.CurrentState == stateStack.Peek() && x.NextSymbol == curToken.Name);
                 if (action == null) 
                 {
-                    throw new ParseException("Parsing error!");
+                    int index = (curToken as IIndexed).Index;
+                    var scriptId = (curToken as IScriptSourceHolder).ScriptSource;
+                    var nextSymbols = ParserTable.ParserActions.Where(x => x.CurrentState == stateStack.Peek()).Select(x => x.NextSymbol);
+                    if (!nextSymbols.Any())
+                    {
+                        throw new CantProceedParsingException(scriptId, index);
+                    }
+                    else
+                    {
+                        throw new ExpectsSymbolException(scriptId, index, nextSymbols);
+                    }
                 }
 
                 if (action.ActionType == ActionType.Shift) 
@@ -55,7 +106,7 @@ namespace ScriptingLaunguage.Parser
                     tmpTreeStack.Push(treeStack.Pop());
                 }
                 var reduceSymbol = action.ReduceSymbol;
-                var reduceNode = new ProgramNode { RuleId = action.RuleId, Token = new Token { Name = reduceSymbol } };
+                var reduceNode = new ProgramNode { RuleId = action.RuleId, Token = new SimpleToken { Name = reduceSymbol } };
                 while (tmpTreeStack.Any()) 
                 {
                     reduceNode.Children.Add(tmpTreeStack.Pop());
@@ -63,7 +114,15 @@ namespace ScriptingLaunguage.Parser
                 var shiftAfterReduceAction = ParserTable.ParserActions.FirstOrDefault(x => x.CurrentState == stateStack.Peek() && x.NextSymbol == reduceSymbol);
                 if (shiftAfterReduceAction == null) 
                 {
-                    throw new ParseException("Parsing error!");
+                    var nextSymbols = ParserTable.ParserActions.Where(x => x.CurrentState == stateStack.Peek()).Select(x => x.NextSymbol);
+                    if (!nextSymbols.Any())
+                    {
+                        throw new CantProceedParsingException(reduceNode.GetScriptSource(), reduceNode.GetCodeIndex());
+                    }
+                    else
+                    {
+                        throw new ExpectsSymbolException(reduceNode.GetScriptSource(), reduceNode.GetCodeIndex(), nextSymbols);
+                    }
                 }
                 treeStack.Push(reduceNode);
                 stateStack.Push(shiftAfterReduceAction.NextState);

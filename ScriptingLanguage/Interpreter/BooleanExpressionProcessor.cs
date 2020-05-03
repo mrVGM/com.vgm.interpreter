@@ -21,13 +21,13 @@ namespace ScriptingLaunguage.Interpreter
 
                 if (programNode.MatchChildren("SingleBooleanExpression")) 
                 {
-                    BooleanExpression.ProcessNode(programNode.Children[0], scope, ref value);
+                    NodeProcessor.ExecuteProgramNodeProcessor(BooleanExpression, programNode.Children[0], scope, ref value);
                     return true;
                 }
                 if (programNode.MatchChildren("!", "SingleBooleanExpression"))
                 {
                     object tmp = null;
-                    BooleanExpression.ProcessNode(programNode.Children[1], scope, ref tmp);
+                    NodeProcessor.ExecuteProgramNodeProcessor(BooleanExpression, programNode.Children[1], scope, ref tmp);
                     value = !(bool)tmp;
                     return true;
                 }
@@ -45,14 +45,14 @@ namespace ScriptingLaunguage.Interpreter
 
                 if (programNode.MatchChildren("Negation")) 
                 {
-                    Negation.ProcessNode(programNode.Children[0], scope, ref value);
+                    NodeProcessor.ExecuteProgramNodeProcessor(Negation, programNode.Children[0], scope, ref value);
                     return true;
                 }
 
                 if (programNode.MatchChildren("Conjunction", "&&", "Negation")) 
                 {
                     object expr = null;
-                    ProcessNode(programNode.Children[0], scope, ref expr);
+                    NodeProcessor.ExecuteProgramNodeProcessor(this, programNode.Children[0], scope, ref expr);
 
                     if (!(bool)expr) 
                     {
@@ -60,7 +60,7 @@ namespace ScriptingLaunguage.Interpreter
                         return true;
                     }
 
-                    Negation.ProcessNode(programNode.Children[2], scope, ref value);
+                    NodeProcessor.ExecuteProgramNodeProcessor(Negation, programNode.Children[2], scope, ref value);
                     return true;
                 }
 
@@ -79,13 +79,13 @@ namespace ScriptingLaunguage.Interpreter
             {
                 if (programNode.MatchChildren("Conjunction"))
                 {
-                    Conjunction.ProcessNode(programNode.Children[0], scope, ref value);
+                    NodeProcessor.ExecuteProgramNodeProcessor(Conjunction, programNode.Children[0], scope, ref value);
                     return true;
                 }
                 if (programNode.MatchChildren("BooleanExpression", "||", "Conjunction"))
                 {
                     object expr = null;
-                    ProcessNode(programNode.Children[0], scope, ref expr);
+                    NodeProcessor.ExecuteProgramNodeProcessor(this, programNode.Children[0], scope, ref expr);
 
                     if ((bool)expr)
                     {
@@ -94,7 +94,7 @@ namespace ScriptingLaunguage.Interpreter
                     }
 
                     object conj = null;
-                    Conjunction.ProcessNode(programNode.Children[2], scope, ref conj);
+                    NodeProcessor.ExecuteProgramNodeProcessor(Conjunction, programNode.Children[2], scope, ref conj);
 
                     value = (bool)conj;
                     return true;
@@ -104,12 +104,12 @@ namespace ScriptingLaunguage.Interpreter
             {
                 if (programNode.MatchChildren("(", "BooleanExpression", ")")) 
                 {
-                    ProcessNode(programNode.Children[1], scope, ref value);
+                    NodeProcessor.ExecuteProgramNodeProcessor(this, programNode.Children[1], scope, ref value);
                     return true;
                 }
                 if (programNode.MatchChildren("Comparison"))
                 {
-                    Comparison.ProcessNode(programNode.Children[0], scope, ref value);
+                    NodeProcessor.ExecuteProgramNodeProcessor(Comparison, programNode.Children[0], scope, ref value);
                     return true;
                 }
             }

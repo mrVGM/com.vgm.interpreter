@@ -6,9 +6,9 @@ namespace ScriptingLaunguage.Tokenizer
 {
     public class NameTokenizer : ITokenizer
     {
-        public IEnumerable<Token> Tokenize(IEnumerable<Token> script)
+        public IEnumerable<IndexedToken> Tokenize(IEnumerable<IndexedToken> script)
         {
-            List<Token> buffer = new List<Token>();
+            List<IndexedToken> buffer = new List<IndexedToken>();
 
             bool reading = false;
             foreach (var token in script) 
@@ -26,7 +26,8 @@ namespace ScriptingLaunguage.Tokenizer
                         {
                             str += t.Name;
                         }
-                        yield return new Token { Name = "Name", Data = str };
+                        int index = buffer.FirstOrDefault().Index;
+                        yield return new IndexedToken(index, token.ScriptSource) { Name = "Name", Data = str };
                         buffer.Clear();
                         reading = false;
                         yield return token;
@@ -52,7 +53,10 @@ namespace ScriptingLaunguage.Tokenizer
                 {
                     str += t.Name;
                 }
-                yield return new Token { Name = "Name", Data = str };
+                var firstToken = buffer.FirstOrDefault();
+                int index = firstToken.Index;
+                var scriptSource = firstToken.ScriptSource;
+                yield return new IndexedToken(index, scriptSource) { Name = "Name", Data = str };
             }
         }
     }

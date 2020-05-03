@@ -32,7 +32,7 @@ namespace ScriptingLaunguage.Tokenizer
         {
             Tokenizers = tokenizers;
         }
-        public IEnumerable<Token> Tokenize(IEnumerable<Token> script)
+        public IEnumerable<IndexedToken> Tokenize(IEnumerable<IndexedToken> script)
         {
             var res = script.ToList();
             foreach (var tokenizer in Tokenizers) 
