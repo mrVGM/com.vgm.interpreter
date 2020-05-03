@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices.ComTypes;
 using ScriptingLaunguage.Interpreter;
 using ScriptingLaunguage.Tokenizer;
 
@@ -9,6 +10,11 @@ namespace ScriptingLaunguage
 {
     public static class Utils
     {
+        public class NumberedLine 
+        {
+            public int LineIndex;
+            public string Line;
+        }
         public static IEnumerable<int> GetNewLineIndeces(string source)
         {
             int curIndex = 0;
@@ -21,6 +27,22 @@ namespace ScriptingLaunguage
                 }
                 curIndex = foundIndex + Environment.NewLine.Length;
                 yield return foundIndex;
+            }
+        }
+
+        public static IEnumerable<NumberedLine> GetNumberedLines(string text)
+        {
+            var newLineIndeces = GetNewLineIndeces(text);
+            var newLinesCount = newLineIndeces.Count();
+
+            for (int i = 0; i < newLinesCount; ++i) 
+            {
+                yield return new NumberedLine { LineIndex = i, Line = GetLine(i, text) };
+            }
+            string lastLine = GetLine(newLinesCount, text);
+            if (!string.IsNullOrEmpty(lastLine)) 
+            {
+                yield return new NumberedLine { LineIndex = newLinesCount, Line = lastLine };
             }
         }
         

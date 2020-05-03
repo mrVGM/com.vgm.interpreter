@@ -41,8 +41,8 @@ namespace Program
                         Console.WriteLine(" ...");
                         continue;
                     }
-
-                    Console.WriteLine(expectSymbolException.GetErrorMessage());
+                    bool printLineNumbers = exceptionSource != scriptId;
+                    Console.WriteLine(expectSymbolException.GetErrorMessage(printLineNumbers));
                 }
                 catch (Exception exception)
                 {

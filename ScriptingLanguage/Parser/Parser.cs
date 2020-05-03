@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.ComTypes;
 using ScriptingLaunguage.Tokenizer;
+using static ScriptingLaunguage.Utils;
 
 namespace ScriptingLaunguage.Parser
 {
@@ -9,6 +12,8 @@ namespace ScriptingLaunguage.Parser
     {
         public abstract class ParseException : Exception
         {
+            const int SurroundingLines = 2;
+
             public int CodeIndex;
             public ScriptId ScriptId;
             public ParseException(ScriptId scriptId, int codeIndex)
@@ -16,53 +21,68 @@ namespace ScriptingLaunguage.Parser
                 ScriptId = scriptId;
                 CodeIndex = codeIndex;
             }
-            public string GetCodeSample(int index, string source)
+
+            public IEnumerable<NumberedLine> GetSampleOfLines(int lineOfInterest, int numberOfSurroundingLines, string script)
             {
-                string lineNumber(int number, int stringLength) 
+                var lines = Utils.GetNumberedLines(script);
+                foreach (var line in lines) 
                 {
-                    string res = (number + 1).ToString();
-                    while (res.Length < stringLength) 
+                    if (Math.Abs(line.LineIndex - lineOfInterest) <= numberOfSurroundingLines) 
                     {
-                        res = $" {res}";
+                        yield return line;
                     }
-                    return $"{res}| ";
                 }
-
-                int errorLineNumber = Utils.GetLineNumber(index, source);
-                string errorLine = Utils.GetLine(errorLineNumber, source);
-                int lineOffset = Utils.GetLineOffset(index, source);
-                string pointerLine = Utils.PointSymbol(lineOffset, errorLine);
-                string previousLine = "";
-                if (errorLineNumber > 0) 
-                {
-                    previousLine = Utils.GetLine(errorLineNumber - 1, source);
-                }
-                string nextLine = Utils.GetLine(errorLineNumber + 1, source);
-
-                string newLine = Environment.NewLine;
-                if (!string.IsNullOrEmpty(previousLine)) 
-                {
-                    previousLine = $"{previousLine}{newLine}";
-                }
-                pointerLine = $"{pointerLine}{newLine}";
-                nextLine = $"{nextLine}{newLine}";
-
-                int lineNumberLength = (errorLineNumber + 2).ToString().Length;
-
-                if (!string.IsNullOrEmpty(previousLine))
-                {
-                    previousLine = $"{lineNumber(errorLineNumber - 1, lineNumberLength)}{previousLine}";
-                }
-                errorLine = $"{lineNumber(errorLineNumber, lineNumberLength)}{errorLine}{newLine}";
-                if (!string.IsNullOrEmpty(nextLine))
-                {
-                    nextLine = $"{lineNumber(errorLineNumber + 1, lineNumberLength)}{nextLine}";
-                }
-
-                return $"{previousLine}{errorLine}{pointerLine}{nextLine}";
             }
 
-            public abstract string GetErrorMessage();
+            public string GetCodeSample(int index, string script, bool printLineNumbers) 
+            {
+                int lineOfInterest = Utils.GetLineNumber(index, script);
+                var sample = GetSampleOfLines(lineOfInterest, SurroundingLines, script);
+
+                var errorLine = sample.FirstOrDefault(x => x.LineIndex == lineOfInterest);
+                int errorLineOffset = Utils.GetLineOffset(index, script);
+
+                string pointerLine = Utils.PointSymbol(errorLineOffset, errorLine.Line);
+
+                string lineNumberSuffix = "| ";
+                int longestPrefixLength = (sample.Last().LineIndex + 1).ToString().Length + lineNumberSuffix.Length;
+                string blankPrefix = "";
+                while (blankPrefix.Length < longestPrefixLength) 
+                {
+                    blankPrefix += " ";
+                }
+
+                string getPrefix(NumberedLine line) 
+                {
+                    if (!printLineNumbers) 
+                    {
+                        return "";
+                    }
+                    string lineNumber = $"{line.LineIndex + 1}{lineNumberSuffix}";
+                    while (lineNumber.Length < longestPrefixLength) 
+                    {
+                        lineNumber = $" {lineNumber}";
+                    }
+                    return lineNumber;
+                }
+
+                if (printLineNumbers) 
+                {
+                    pointerLine = $"{blankPrefix}{pointerLine}";
+                }
+                string res = "";
+                foreach (var line in sample) 
+                {
+                    res += $"{getPrefix(line)}{line.Line}{Environment.NewLine}";
+                    if (line.LineIndex == lineOfInterest) 
+                    {
+                        res += $"{pointerLine}{Environment.NewLine}";
+                    }
+                }
+
+                return res;
+            }
+            public abstract string GetErrorMessage(bool printLineNumbers);
         }
 
         public class ExpectsSymbolException : ParseException 
@@ -73,7 +93,7 @@ namespace ScriptingLaunguage.Parser
                 ExpectedSymbols = expectedSymbols;
             }
 
-            public override string GetErrorMessage()
+            public override string GetErrorMessage(bool printLineNumbers)
             {
                 string expecting = "";
                 foreach (var symbol in ExpectedSymbols) 
@@ -81,7 +101,7 @@ namespace ScriptingLaunguage.Parser
                     expecting += $", {symbol}";
                 }
                 expecting = expecting.Substring(2);
-                return $"Expecting one of: {expecting}{Environment.NewLine}{ScriptId.Filename}{Environment.NewLine}{GetCodeSample(CodeIndex, ScriptId.Script)}";
+                return $"Expecting one of: {expecting}{Environment.NewLine}{ScriptId.Filename}{Environment.NewLine}{GetCodeSample(CodeIndex, ScriptId.Script, printLineNumbers)}";
             }
         }
 
@@ -89,9 +109,9 @@ namespace ScriptingLaunguage.Parser
         {
             public CantProceedParsingException(ScriptId scriptId, int codeIndex) : base(scriptId, codeIndex) { }
 
-            public override string GetErrorMessage()
+            public override string GetErrorMessage(bool printLineNumbers)
             {
-                return $"Syntax error{Environment.NewLine}{ScriptId.Filename}{Environment.NewLine}{GetCodeSample(CodeIndex, ScriptId.Script)}";
+                return $"Syntax error{Environment.NewLine}{ScriptId.Filename}{Environment.NewLine}{GetCodeSample(CodeIndex, ScriptId.Script, printLineNumbers)}";
             }
         }
 
