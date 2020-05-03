@@ -37,5 +37,15 @@ namespace ScriptingLaunguage.Parser
 
             return Children.FirstOrDefault().GetCodeIndex();
         }
+        public ScriptId GetScriptSource()
+        {
+            var indexed = Token as IScriptSourceHolder;
+            if (indexed != null)
+            {
+                return indexed.ScriptSource;
+            }
+
+            return Children.FirstOrDefault().GetScriptSource();
+        }
     }
 }

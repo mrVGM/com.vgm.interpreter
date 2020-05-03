@@ -7,20 +7,13 @@ namespace ScriptingLaunguage.Parser
 {
     public class Parser
     {
-        public class ProgramSource
-        {
-            public string Filename;
-            public string SourceCode;
-            public Interpreter.Interpreter Interpreter;
-        }
-
         public abstract class ParseException : Exception
         {
             public int CodeIndex;
-            public ProgramSource ExceptionSource;
-            public ParseException(ProgramSource exceptionSource, int codeIndex)
+            public ScriptId ScriptId;
+            public ParseException(ScriptId scriptId, int codeIndex)
             {
-                ExceptionSource = exceptionSource;
+                ScriptId = scriptId;
                 CodeIndex = codeIndex;
             }
             public string GetCodeSample(int index, string source)
@@ -75,7 +68,7 @@ namespace ScriptingLaunguage.Parser
         public class ExpectsSymbolException : ParseException 
         {
             public IEnumerable<string> ExpectedSymbols;
-            public ExpectsSymbolException(ProgramSource exceptionSource, int codeIndex, IEnumerable<string> expectedSymbols) : base(exceptionSource, codeIndex)
+            public ExpectsSymbolException(ScriptId scriptId, int codeIndex, IEnumerable<string> expectedSymbols) : base(scriptId, codeIndex)
             {
                 ExpectedSymbols = expectedSymbols;
             }
@@ -88,22 +81,22 @@ namespace ScriptingLaunguage.Parser
                     expecting += $", {symbol}";
                 }
                 expecting = expecting.Substring(2);
-                return $"Expecting one of: {expecting}{Environment.NewLine}{ExceptionSource.Filename}{Environment.NewLine}{GetCodeSample(CodeIndex, ExceptionSource.SourceCode)}";
+                return $"Expecting one of: {expecting}{Environment.NewLine}{ScriptId.Filename}{Environment.NewLine}{GetCodeSample(CodeIndex, ScriptId.Script)}";
             }
         }
 
         public class CantProceedParsingException : ParseException 
         {
-            public CantProceedParsingException(ProgramSource exceptionSource, int codeIndex) : base(exceptionSource, codeIndex) { }
+            public CantProceedParsingException(ScriptId scriptId, int codeIndex) : base(scriptId, codeIndex) { }
 
             public override string GetErrorMessage()
             {
-                return $"Syntax error{Environment.NewLine}{ExceptionSource.Filename}{Environment.NewLine}{GetCodeSample(CodeIndex, ExceptionSource.SourceCode)}";
+                return $"Syntax error{Environment.NewLine}{ScriptId.Filename}{Environment.NewLine}{GetCodeSample(CodeIndex, ScriptId.Script)}";
             }
         }
 
         public ParserTable ParserTable;
-        public ProgramNode ParseProgram(IEnumerable<IToken> program, ProgramSource programSource)
+        public ProgramNode ParseProgram(IEnumerable<IToken> program)
         {
             IEnumerator<IToken> script = program.GetEnumerator();
             script.MoveNext();
@@ -122,13 +115,14 @@ namespace ScriptingLaunguage.Parser
                 {
                     var nextSymbols = ParserTable.ParserActions.Where(x => x.CurrentState == stateStack.Peek()).Select(x => x.NextSymbol);
                     int index = (lastRead as IIndexed).Index;
+                    var scriptSource = (lastRead as IScriptSourceHolder).ScriptSource;
                     if (!nextSymbols.Any())
                     {
-                        throw new CantProceedParsingException(programSource, index);
+                        throw new CantProceedParsingException(scriptSource, index);
                     }
                     else 
                     {
-                        throw new ExpectsSymbolException(programSource, index, nextSymbols);
+                        throw new ExpectsSymbolException(scriptSource, index, nextSymbols);
                     }
                 }
                 var curToken = script.Current;
@@ -137,14 +131,15 @@ namespace ScriptingLaunguage.Parser
                 if (action == null) 
                 {
                     int index = (curToken as IIndexed).Index;
+                    var scriptId = (curToken as IScriptSourceHolder).ScriptSource;
                     var nextSymbols = ParserTable.ParserActions.Where(x => x.CurrentState == stateStack.Peek()).Select(x => x.NextSymbol);
                     if (!nextSymbols.Any())
                     {
-                        throw new CantProceedParsingException(programSource, index);
+                        throw new CantProceedParsingException(scriptId, index);
                     }
                     else
                     {
-                        throw new ExpectsSymbolException(programSource, index, nextSymbols);
+                        throw new ExpectsSymbolException(scriptId, index, nextSymbols);
                     }
                 }
 
@@ -175,11 +170,11 @@ namespace ScriptingLaunguage.Parser
                     var nextSymbols = ParserTable.ParserActions.Where(x => x.CurrentState == stateStack.Peek()).Select(x => x.NextSymbol);
                     if (!nextSymbols.Any())
                     {
-                        throw new CantProceedParsingException(programSource, reduceNode.GetCodeIndex());
+                        throw new CantProceedParsingException(reduceNode.GetScriptSource(), reduceNode.GetCodeIndex());
                     }
                     else
                     {
-                        throw new ExpectsSymbolException(programSource, reduceNode.GetCodeIndex(), nextSymbols);
+                        throw new ExpectsSymbolException(reduceNode.GetScriptSource(), reduceNode.GetCodeIndex(), nextSymbols);
                     }
                 }
                 treeStack.Push(reduceNode);

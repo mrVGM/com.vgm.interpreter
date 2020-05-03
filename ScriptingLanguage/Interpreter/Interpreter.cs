@@ -59,15 +59,14 @@ namespace ScriptingLaunguage.Interpreter
         public object RunScriptFile(string scriptToRunFullPath, Scope scope)
         {
             var entryScript = File.ReadAllText(scriptToRunFullPath);
-            return RunScript(entryScript, scope, new ProgramSource { Interpreter = this, Filename = scriptToRunFullPath, SourceCode = entryScript });
+            return RunScript(entryScript, scope, new ScriptId { Filename = scriptToRunFullPath, Script = entryScript });
         }
         
-        public object RunScript(string script, Scope scope, ProgramSource scriptSource)
+        public object RunScript(string script, Scope scope, ScriptId scriptId)
         {
-            var scriptId = new ScriptId { Filename = scriptSource.Filename, Script = scriptSource.SourceCode };
             var tokenized = Utils.TokenizeText(script, scriptId, new SimpleToken { Name = "Terminal" });
             var processed = tokenizer.Tokenize(tokenized);
-            var programTree = parser.ParseProgram(processed, scriptSource);
+            var programTree = parser.ParseProgram(processed);
             
             return EvaluateProgramNode(programTree, scope);
         }

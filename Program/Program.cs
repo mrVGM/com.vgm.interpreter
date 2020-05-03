@@ -1,5 +1,6 @@
 ﻿using System;
 using ScriptingLaunguage.Interpreter;
+using ScriptingLaunguage.Tokenizer;
 using static ScriptingLaunguage.Parser.Parser;
 
 namespace Program
@@ -27,14 +28,15 @@ namespace Program
 
                 buffer += line + Environment.NewLine;
                 object res = null;
+                var scriptId = new ScriptId { Script = buffer };
                 try
                 {
-                    res = interpreter.RunScript(buffer, session.GetWorkingScope(), new ProgramSource { Interpreter = interpreter, SourceCode = buffer });
+                    res = interpreter.RunScript(buffer, session.GetWorkingScope(), scriptId);
                 }
                 catch (ExpectsSymbolException expectSymbolException)
                 {
-                    var exceptionSource = expectSymbolException.ExceptionSource;
-                    if (exceptionSource.Interpreter == interpreter && expectSymbolException.CodeIndex == buffer.Length)
+                    var exceptionSource = expectSymbolException.ScriptId;
+                    if (scriptId == exceptionSource && expectSymbolException.CodeIndex == buffer.Length)
                     {
                         Console.WriteLine(" ...");
                         continue;
