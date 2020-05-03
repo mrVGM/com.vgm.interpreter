@@ -21,7 +21,9 @@ namespace ScriptingLaunguage
 
             public int CodeIndex;
             public ScriptId ScriptId;
-            public LanguageException(ScriptId scriptId, int codeIndex)
+
+            public override string Message => $"{base.Message}{Environment.NewLine}{GetErrorMessage(true)}";
+            public LanguageException(string message, ScriptId scriptId, int codeIndex) : base(message)
             {
                 ScriptId = scriptId;
                 CodeIndex = codeIndex;
@@ -85,7 +87,12 @@ namespace ScriptingLaunguage
                     }
                 }
 
-                return res;
+                if (string.IsNullOrEmpty(ScriptId.Filename))
+                {
+                    return res;
+                }
+
+                return $"{ScriptId.Filename}{Environment.NewLine}{res}";
             }
             public abstract string GetErrorMessage(bool printLineNumbers);
         }

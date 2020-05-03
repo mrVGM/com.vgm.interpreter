@@ -15,7 +15,7 @@ namespace ScriptingLaunguage.Parser
         public class ExpectsSymbolException : LanguageException, IParseException
         {
             public IEnumerable<string> ExpectedSymbols;
-            public ExpectsSymbolException(ScriptId scriptId, int codeIndex, IEnumerable<string> expectedSymbols) : base(scriptId, codeIndex)
+            public ExpectsSymbolException(ScriptId scriptId, int codeIndex, IEnumerable<string> expectedSymbols) : base("", scriptId, codeIndex)
             {
                 ExpectedSymbols = expectedSymbols;
             }
@@ -28,17 +28,17 @@ namespace ScriptingLaunguage.Parser
                     expecting += $", {symbol}";
                 }
                 expecting = expecting.Substring(2);
-                return $"Expecting one of: {expecting}{Environment.NewLine}{ScriptId.Filename}{Environment.NewLine}{GetCodeSample(CodeIndex, ScriptId.Script, printLineNumbers)}";
+                return $"Expecting one of: {expecting}{Environment.NewLine}{GetCodeSample(CodeIndex, ScriptId.Script, printLineNumbers)}";
             }
         }
 
         public class CantProceedParsingException : LanguageException, IParseException
         {
-            public CantProceedParsingException(ScriptId scriptId, int codeIndex) : base(scriptId, codeIndex) { }
+            public CantProceedParsingException(ScriptId scriptId, int codeIndex) : base("", scriptId, codeIndex) { }
 
             public override string GetErrorMessage(bool printLineNumbers)
             {
-                return $"Syntax error{Environment.NewLine}{ScriptId.Filename}{Environment.NewLine}{GetCodeSample(CodeIndex, ScriptId.Script, printLineNumbers)}";
+                return $"Syntax error{Environment.NewLine}{GetCodeSample(CodeIndex, ScriptId.Script, printLineNumbers)}";
             }
         }
 

@@ -26,8 +26,8 @@ namespace ScriptingLaunguage.Interpreter
 
             object e1 = null;
             object e2 = null;
-            ExpressionProcessor.ProcessNode(expr1, scope, ref e1);
-            ExpressionProcessor.ProcessNode(expr2, scope, ref e2);
+            NodeProcessor.ExecuteProgramNodeProcessor(ExpressionProcessor, expr1, scope, ref e1);
+            NodeProcessor.ExecuteProgramNodeProcessor(ExpressionProcessor, expr2, scope, ref e2);
 
             bool areEqual(object o1, object o2) 
             {

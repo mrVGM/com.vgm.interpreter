@@ -48,7 +48,7 @@ namespace ScriptingLaunguage.Interpreter
                     if (node.MatchChildren("Expression")) 
                     {
                         object tmp = null;
-                        expressionProcessor.ProcessNode(node.Children[0], scope, ref tmp);
+                        NodeProcessor.ExecuteProgramNodeProcessor(expressionProcessor, node.Children[0], scope, ref tmp);
                         yield return tmp;
                         yield break;
                     }
@@ -62,7 +62,7 @@ namespace ScriptingLaunguage.Interpreter
                         }
 
                         object tmp = null;
-                        expressionProcessor.ProcessNode(node.Children[2], scope, ref tmp);
+                        NodeProcessor.ExecuteProgramNodeProcessor(expressionProcessor, node.Children[2], scope, ref tmp);
                         yield return tmp;
                     }
                 }
@@ -94,7 +94,7 @@ namespace ScriptingLaunguage.Interpreter
                 var name = programNode.Children[0].Token.Data as string;
 
                 object template = null;
-                Template.ProcessNode(programNode.Children[1], scope, ref template);
+                NodeProcessor.ExecuteProgramNodeProcessor(Template, programNode.Children[1], scope, ref template);
                 value = new FunctionCallSettings { FunctionName = name, TemplateParamName = template as string };
                 return null;
             }
@@ -104,7 +104,7 @@ namespace ScriptingLaunguage.Interpreter
                 var name = programNode.Children[0].Token.Data as string;
 
                 object args = null;
-                Arguments.ProcessNode(programNode.Children[2], scope, ref args);
+                NodeProcessor.ExecuteProgramNodeProcessor(Arguments, programNode.Children[2], scope, ref args);
                 var arguments = args as IEnumerable<object>;
                 value = new FunctionCallSettings { FunctionName = name, Arguments = arguments };
                 return null;
@@ -115,10 +115,10 @@ namespace ScriptingLaunguage.Interpreter
                 var name = programNode.Children[0].Token.Data as string;
 
                 object template = null;
-                Template.ProcessNode(programNode.Children[1], scope, ref template);
+                NodeProcessor.ExecuteProgramNodeProcessor(Template, programNode.Children[1], scope, ref template);
 
                 object args = null;
-                Arguments.ProcessNode(programNode.Children[3], scope, ref args);
+                NodeProcessor.ExecuteProgramNodeProcessor(Arguments, programNode.Children[3], scope, ref args);
                 var arguments = args as IEnumerable<object>;
                 value = new FunctionCallSettings { FunctionName = name, Arguments = arguments, TemplateParamName = template as string };
                 return null;

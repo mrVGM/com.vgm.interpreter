@@ -46,7 +46,7 @@ namespace ScriptingLaunguage.Interpreter
                 if (programNode.MatchChildren("Value", ".", "Name")) 
                 {
                     object val = null;
-                    ValueProcessor.ProcessNode(programNode.Children[0], scope, ref val);
+                    NodeProcessor.ExecuteProgramNodeProcessor(ValueProcessor, programNode.Children[0], scope, ref val);
                     
                     string propertyName = programNode.Children[2].Token.Data as string;
                     
@@ -65,10 +65,10 @@ namespace ScriptingLaunguage.Interpreter
                 if (programNode.MatchChildren("Value", "[", "Expression", "]")) 
                 {
                     object val = null;
-                    ValueProcessor.ProcessNode(programNode.Children[0], scope, ref val);
+                    NodeProcessor.ExecuteProgramNodeProcessor(ValueProcessor, programNode.Children[0], scope, ref val);
 
                     object expr = null;
-                    ExpressionProcessor.ProcessNode(programNode.Children[2], scope, ref expr);
+                    NodeProcessor.ExecuteProgramNodeProcessor(ExpressionProcessor, programNode.Children[2], scope, ref expr);
 
                     var type = val.GetType();
                     var genericArguments = type.GetGenericArguments();
@@ -119,10 +119,10 @@ namespace ScriptingLaunguage.Interpreter
                 if (programNode.MatchChildren("Value", "=", "Expression", ";")) 
                 {
                     object val1 = null;
-                    ValueProcessor.ProcessNode(programNode.Children[0], scope, ref val1);
+                    NodeProcessor.ExecuteProgramNodeProcessor(ValueProcessor, programNode.Children[0], scope, ref val1);
 
                     object val2 = null;
-                    ExpressionProcessor.ProcessNode(programNode.Children[2], scope, ref val2);
+                    NodeProcessor.ExecuteProgramNodeProcessor(ExpressionProcessor, programNode.Children[2], scope, ref val2);
                     if (val1 is GenericObject.ObjectContainer)
                     {
                         var objectContainer = val1 as GenericObject.ObjectContainer;
@@ -131,17 +131,17 @@ namespace ScriptingLaunguage.Interpreter
                     }
 
                     var setValueProcessor = new SetValueProcessor(val2);
-                    setValueProcessor.ProcessNode(programNode.Children[0], scope, ref value);
+                    NodeProcessor.ExecuteProgramNodeProcessor(setValueProcessor, programNode.Children[0], scope, ref value);
                     return true;
                 }
 
                 if (programNode.MatchChildren("Value", "=", "BooleanExpression", ";"))
                 {
                     object val1 = null;
-                    ValueProcessor.ProcessNode(programNode.Children[0], scope, ref val1);
+                    NodeProcessor.ExecuteProgramNodeProcessor(ValueProcessor, programNode.Children[0], scope, ref val1);
 
                     object val2 = null;
-                    BooleanExpressionProcessor.ProcessNode(programNode.Children[2], scope, ref val2);
+                    NodeProcessor.ExecuteProgramNodeProcessor(BooleanExpressionProcessor, programNode.Children[2], scope, ref val2);
                     if (val1 is GenericObject.ObjectContainer)
                     {
                         var objectContainer = val1 as GenericObject.ObjectContainer;
@@ -150,7 +150,7 @@ namespace ScriptingLaunguage.Interpreter
                     }
 
                     var setValueProcessor = new SetValueProcessor(val2);
-                    setValueProcessor.ProcessNode(programNode.Children[0], scope, ref value);
+                    NodeProcessor.ExecuteProgramNodeProcessor(setValueProcessor, programNode.Children[0], scope, ref value);
                     return true;
                 }
 
@@ -165,17 +165,17 @@ namespace ScriptingLaunguage.Interpreter
             }
             if (programNode.MatchChildren("Value", ";")) 
             {
-                return ValueProcessor.ProcessNode(programNode.Children[0], scope, ref value);
+                return NodeProcessor.ExecuteProgramNodeProcessor(ValueProcessor, programNode.Children[0], scope, ref value);
             }
 
             if (programNode.MatchChildren("Assignment"))
             {
-                return AssignProcessor.ProcessNode(programNode.Children[0], scope, ref value);
+                return NodeProcessor.ExecuteProgramNodeProcessor(AssignProcessor, programNode.Children[0], scope, ref value);
             }
 
             if (programNode.MatchChildren("Declaration")) 
             {
-                return DeclarationProcessor.ProcessNode(programNode.Children[0], scope, ref value);
+                return NodeProcessor.ExecuteProgramNodeProcessor(DeclarationProcessor, programNode.Children[0], scope, ref value);
             }
 
             if (programNode.MatchChildren("break", ";")) 
@@ -185,11 +185,11 @@ namespace ScriptingLaunguage.Interpreter
 
             if (programNode.MatchChildren("IfStatement")) 
             {
-                return IfProcessor.ProcessNode(programNode.Children[0], scope, ref value);
+                return NodeProcessor.ExecuteProgramNodeProcessor(IfProcessor, programNode.Children[0], scope, ref value);
             }
             if (programNode.MatchChildren("WhileStatement"))
             {
-                return WhileProcessor.ProcessNode(programNode.Children[0], scope, ref value);
+                return NodeProcessor.ExecuteProgramNodeProcessor(WhileProcessor, programNode.Children[0], scope, ref value);
             }
             if (programNode.MatchChildren("return", ";"))
             {
@@ -198,12 +198,12 @@ namespace ScriptingLaunguage.Interpreter
             }
             if (programNode.MatchChildren("return", "Expression", ";"))
             {
-                ExpressionProcessor.ProcessNode(programNode.Children[1], scope, ref value);
+                NodeProcessor.ExecuteProgramNodeProcessor(ExpressionProcessor, programNode.Children[1], scope, ref value);
                 return new ReturnOperation();
             }
             if (programNode.MatchChildren("return", "BooleanExpression", ";"))
             {
-                BooleanExpressionProcessor.ProcessNode(programNode.Children[1], scope, ref value);
+                NodeProcessor.ExecuteProgramNodeProcessor(BooleanExpressionProcessor, programNode.Children[1], scope, ref value);
                 return new ReturnOperation();
             }
 

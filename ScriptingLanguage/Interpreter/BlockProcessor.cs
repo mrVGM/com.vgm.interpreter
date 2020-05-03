@@ -22,7 +22,7 @@ namespace ScriptingLaunguage.Interpreter
 
             if (programNode.MatchChildren("{", "OperationGroup", "}")) 
             {
-                return OperationGroupProcessor.ProcessNode(programNode.Children[1], scope, ref value);
+                return NodeProcessor.ExecuteProgramNodeProcessor(OperationGroupProcessor, programNode.Children[1], scope, ref value);
             }
             throw new NotImplementedException();
         }

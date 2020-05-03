@@ -17,12 +17,12 @@ namespace ScriptingLaunguage.Interpreter
             if (programNode.MatchChildren("if", "(", "BooleanExpression", ")", "Block")) 
             {
                 object expr = null;
-                BooleanExpressionProcessor.ProcessNode(programNode.Children[2], scope, ref expr);
+                NodeProcessor.ExecuteProgramNodeProcessor(BooleanExpressionProcessor, programNode.Children[2], scope, ref expr);
                 if ((bool)expr) 
                 {
                     var ifScope = new Scope();
                     ifScope.ParentScope = scope;
-                    return BlockProcessor.ProcessNode(programNode.Children[4], ifScope, ref value);
+                    return NodeProcessor.ExecuteProgramNodeProcessor(BlockProcessor, programNode.Children[4], ifScope, ref value);
                 }
                 return true;
             }

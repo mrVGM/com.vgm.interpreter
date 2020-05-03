@@ -38,9 +38,9 @@ namespace ScriptingLaunguage.Interpreter
                 switch (childNode.Token.Name)
                 {
                     case "Number":
-                        return NumberProcessor.ProcessNode(childNode, scope, ref value);
+                        return NodeProcessor.ExecuteProgramNodeProcessor(NumberProcessor, childNode, scope, ref value);
                     case "String":
-                        return StringProcessor.ProcessNode(childNode, scope, ref value);
+                        return NodeProcessor.ExecuteProgramNodeProcessor(StringProcessor, childNode, scope, ref value);
                     case "Name":
                         {
                             var name = childNode.Token.Data as string;
@@ -49,7 +49,7 @@ namespace ScriptingLaunguage.Interpreter
                                 value = new StaticMethodPath { Path = name };
                                 return null;
                             }
-                            return NameProcessor.ProcessNode(childNode, scope, ref value);
+                            return NodeProcessor.ExecuteProgramNodeProcessor(NameProcessor, childNode, scope, ref value);
                         }
                     case "null":
                         value = null;
@@ -63,7 +63,7 @@ namespace ScriptingLaunguage.Interpreter
                     case "FunctionCall":
                         {
                             object tmp = null;
-                            FunctionCall.ProcessNode(childNode, scope, ref tmp);
+                            NodeProcessor.ExecuteProgramNodeProcessor(FunctionCall, childNode, scope, ref tmp);
                             var funcSettings = tmp as FunctionCallProcessor.FunctionCallSettings;
 
                             var func = scope.GetVariable(funcSettings.FunctionName);
@@ -97,7 +97,7 @@ namespace ScriptingLaunguage.Interpreter
                     case "FunctionDeclaration":
                         {
                             object tmp = null;
-                            FunctionDeclaration.ProcessNode(childNode, scope, ref tmp);
+                            NodeProcessor.ExecuteProgramNodeProcessor(FunctionDeclaration, childNode, scope, ref tmp);
                             var funcScopeAndBlock = tmp as FunctionDeclarationProcessor.FunctionScopeAndBlock;
 
                             var func = new Function(scope);
@@ -108,14 +108,14 @@ namespace ScriptingLaunguage.Interpreter
                             return null;
                         }
                     default:
-                        return DummyNodeProcessor.DummyProcessor.ProcessNode(childNode, scope, ref value);
+                        return NodeProcessor.ExecuteProgramNodeProcessor(DummyNodeProcessor.DummyProcessor, childNode, scope, ref value);
                 }
             }
 
             if (programNode.MatchChildren("Value", ".", "Name"))
             {
                 object val1 = null;
-                ProcessNode(programNode.Children[0], scope, ref val1);
+                NodeProcessor.ExecuteProgramNodeProcessor(this, programNode.Children[0], scope, ref val1);
                 string propertyName = programNode.Children[2].Token.Data as string;
 
                 var staticMethodPath = val1 as StaticMethodPath;
@@ -152,9 +152,9 @@ namespace ScriptingLaunguage.Interpreter
             if (programNode.MatchChildren("Value", "[", "Expression", "]"))
             {
                 object val1 = null;
-                ProcessNode(programNode.Children[0], scope, ref val1);
+                NodeProcessor.ExecuteProgramNodeProcessor(this, programNode.Children[0], scope, ref val1);
                 object val2 = null;
-                ExpressionProcessor.ProcessNode(programNode.Children[2], scope, ref val2);
+                NodeProcessor.ExecuteProgramNodeProcessor(ExpressionProcessor, programNode.Children[2], scope, ref val2);
 
                 var type = val1.GetType();
                 var genericArguments = type.GetGenericArguments();
@@ -191,10 +191,10 @@ namespace ScriptingLaunguage.Interpreter
             if (programNode.MatchChildren("Value", ".", "FunctionCall")) 
             {
                 object obj = null;
-                ProcessNode(programNode.Children[0], scope, ref obj);
+                NodeProcessor.ExecuteProgramNodeProcessor(this, programNode.Children[0], scope, ref obj);
 
                 object tmp = null;
-                FunctionCall.ProcessNode(programNode.Children[2], scope, ref tmp);
+                NodeProcessor.ExecuteProgramNodeProcessor(FunctionCall, programNode.Children[2], scope, ref tmp);
                 var settings = tmp as FunctionCallProcessor.FunctionCallSettings;
 
                 var genericObject = obj as GenericObject;

@@ -79,7 +79,7 @@ namespace ScriptingLaunguage.Interpreter
             }
             curNode = curNode.Children[0];
             object res = null;
-            OperationGroupProcessor.ProcessNode(curNode, scope, ref res);
+            NodeProcessor.ExecuteProgramNodeProcessor(OperationGroupProcessor, curNode, scope, ref res);
             return res;
         }
     }
