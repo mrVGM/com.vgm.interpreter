@@ -88,7 +88,7 @@ namespace ScriptingLaunguage.Interpreter
                     NodeProcessor.ExecuteProgramNodeProcessor(this, programNode.Children[0], scope, ref val1);
 
                     object val2 = null;
-                    NodeProcessor.ExecuteProgramNodeProcessor(ProductExpr, programNode.Children[2], scope, ref val2);
+                    NodeProcessor.ExecuteProgramNodeProcessor(ExpressionProcessor, programNode.Children[2], scope, ref val2);
 
                     if (val1 is Number)
                     {
@@ -108,7 +108,7 @@ namespace ScriptingLaunguage.Interpreter
                     NodeProcessor.ExecuteProgramNodeProcessor(this, programNode.Children[0], scope, ref val1);
 
                     object val2 = null;
-                    NodeProcessor.ExecuteProgramNodeProcessor(ProductExpr, programNode.Children[2], scope, ref val2);
+                    NodeProcessor.ExecuteProgramNodeProcessor(ExpressionProcessor, programNode.Children[2], scope, ref val2);
 
                     if (val1 is Number)
                     {
