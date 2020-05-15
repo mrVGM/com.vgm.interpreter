@@ -117,6 +117,12 @@ namespace ScriptingLaunguage
             var newLineIndeces = GetNewLineIndeces(text);
             var newLinesCount = newLineIndeces.Count();
 
+            if (newLinesCount == 0)
+            {
+                yield return new NumberedLine { LineIndex = 0, Line = GetLine(0, text) };
+                yield break;
+            }
+
             for (int i = 0; i < newLinesCount; ++i) 
             {
                 yield return new NumberedLine { LineIndex = i, Line = GetLine(i, text) };
@@ -144,7 +150,12 @@ namespace ScriptingLaunguage
             }
             if (index == 0) 
             {
-                return source.Substring(0, newLineIndeces[0]);
+                int lineLength = source.Length;
+                if (newLineIndeces.Count > 0) 
+                {
+                    lineLength = newLineIndeces[0];
+                }
+                return source.Substring(0, lineLength);
             }
             int startIndex = newLineIndeces[index - 1] + Environment.NewLine.Length;
             int endIndex = source.Length;
