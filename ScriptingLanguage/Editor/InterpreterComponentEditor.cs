@@ -9,6 +9,7 @@ namespace ScriptingLaunguage
     [CustomEditor(typeof(InterpreterComponent))]
     public class InterpreterComponentEditor : Editor
     {
+        private const string EditorPrefsKey = "c_sharp_interpreter_scripts_location";
         private InterpreterComponent _interpreterComponent => target as InterpreterComponent;
         private void CreateSession()
         {
@@ -32,6 +33,10 @@ namespace ScriptingLaunguage
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
+            if (string.IsNullOrWhiteSpace(_interpreterComponent.ScriptsFolder) && EditorPrefs.HasKey(EditorPrefsKey)) {
+                _interpreterComponent.ScriptsFolder = EditorPrefs.GetString(EditorPrefsKey);
+            }
+
             if (GUILayout.Button("Evaluate")) {
                 if (string.IsNullOrWhiteSpace(_interpreterComponent.Command)) {
                     return;
@@ -62,6 +67,10 @@ namespace ScriptingLaunguage
                 _interpreterComponent.Command = "";
                 _interpreterComponent.Output = "";
                 return;
+            }
+
+            if (GUILayout.Button("Save Scripts In Preferences")) {
+                EditorPrefs.SetString(EditorPrefsKey, _interpreterComponent.ScriptsFolder);
             }
         }
     }
