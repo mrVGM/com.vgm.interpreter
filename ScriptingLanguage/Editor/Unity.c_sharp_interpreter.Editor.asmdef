@@ -1,0 +1,14 @@
+{
+    "name": "Unity.c_sharp_interpreter.Editor",
+    "references": [
+        "Unity.c_sharp_interpreter"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}
