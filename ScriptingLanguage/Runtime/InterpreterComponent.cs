@@ -5,7 +5,7 @@ namespace ScriptingLaunguage
 {
     public class InterpreterComponent : MonoBehaviour
     {
-        public string ScriptsFolder = "RuntimeScripts/";
+        public string ScriptsFolder = "";
         [TextArea(30, 50)]
         public string Output;
         public string Command;
