@@ -40,6 +40,11 @@ namespace ScriptingLaunguage.Interpreter
         Parser.Parser parser;
         public Interpreter(Session session)
         {
+            if (session.Parser != null)
+            {
+                parser = session.Parser;
+                return;
+            }
             if (!File.Exists(session.WorkingDir + parserTableData)) 
             {
                 var grammar = Grammar.ReadGrammarFromFile(session.WorkingDir + grammarDefinition);

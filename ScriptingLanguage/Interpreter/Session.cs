@@ -6,6 +6,7 @@ namespace ScriptingLaunguage.Interpreter
     {
         public string WorkingDir { get; private set; }
         public Scope SessionScope { get; private set; }
+        public Parser.Parser Parser { get; private set; }
 
         private Scope interpteterScope;
         private Scope workingScope = null;
