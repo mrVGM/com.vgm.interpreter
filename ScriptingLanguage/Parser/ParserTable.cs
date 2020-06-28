@@ -40,6 +40,13 @@ namespace ScriptingLaunguage.Parser
             return res;
         }
 
+        public static ParserTable Deserialize(byte[] bytes)
+        {
+            BinaryFormatter bf = new BinaryFormatter();
+            var stream = new MemoryStream(bytes);
+            return bf.Deserialize(stream) as ParserTable;
+        }
+
         public void Serialize(string fileName)
         {
             BinaryFormatter bf = new BinaryFormatter();
