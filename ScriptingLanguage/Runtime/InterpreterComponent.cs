@@ -5,6 +5,9 @@ namespace ScriptingLaunguage
 {
     public class InterpreterComponent : MonoBehaviour
     {
+        [HideInInspector]
+        [SerializeField]
+        private TextAsset _parserTable;
         public string ScriptsFolder = "";
         [TextArea(30, 50)]
         public string Output;
