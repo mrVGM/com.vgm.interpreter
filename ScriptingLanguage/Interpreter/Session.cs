@@ -28,5 +28,10 @@ namespace ScriptingLaunguage.Interpreter
             interpteterScope.ParentScope = SessionScope;
             SessionScope.AddVariable("require", new RequireFunction(this, interpteterScope));
         }
+
+        public Session(string workingDir, Parser.Parser parser) : this(workingDir)
+        {
+            Parser = parser;
+        }
     }
 }
