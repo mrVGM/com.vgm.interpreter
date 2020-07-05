@@ -118,12 +118,16 @@ namespace ScriptingLaunguage
             if (e.type == EventType.KeyDown)
             {
                 int commandsInBuffer = commandsBuffer.Count;
-                Debug.Log(e.keyCode);
                 switch (e.keyCode)
                 {
                     case KeyCode.Return:
                     case KeyCode.KeypadEnter:
-                        string cmd = command.Trim();
+                        string cmd = "";
+                        if (!string.IsNullOrWhiteSpace(command)) 
+                        {
+                            cmd = command;
+                        }
+                        cmd = cmd.Trim();
                         command = "";
                         if (string.IsNullOrWhiteSpace(cmd))
                         {
