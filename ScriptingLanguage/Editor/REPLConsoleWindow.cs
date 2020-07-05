@@ -37,7 +37,20 @@ namespace ScriptingLaunguage
 
         private const string EditorPrefsKey = "c_sharp_interpreter_scripts_location";
 
-        [SerializeField] private TextAsset parserTableData;
+        private ParserTableData _parserTableData;
+        private ParserTableData parserTableData 
+        {
+            get 
+            {
+                if (_parserTableData == null) {
+                    string guid = AssetDatabase.FindAssets($"t:{typeof(ParserTableData).Name}").FirstOrDefault();
+                    var path = AssetDatabase.GUIDToAssetPath(guid);
+                    _parserTableData = AssetDatabase.LoadAssetAtPath<ParserTableData>(path);
+                }
+
+                return _parserTableData;
+            }
+        }
 
         private Session session = null;
         private Interpreter.Interpreter interpreter = null;
@@ -64,7 +77,7 @@ namespace ScriptingLaunguage
             {
                 if (_parserTable == null)
                 {
-                    _parserTable = Parser.ParserTable.Deserialize(parserTableData.bytes);
+                    _parserTable = Parser.ParserTable.Deserialize(parserTableData.ParserTable.bytes);
                 }
 
                 return _parserTable;
