@@ -30,6 +30,7 @@ namespace ScriptingLaunguage.Interpreter
                 staticScope.AddVariable("unsubscribeFromEvent", new UnsubscribeFromEventFunction());
                 staticScope.AddVariable("getTypeMembers", new GetTypeMembersFunction());
                 staticScope.AddVariable("createCoroutine", new CreateCoroutineFunction());
+                staticScope.AddVariable("foreach", new ForeachFunction());
                 return staticScope;
             }
         }
