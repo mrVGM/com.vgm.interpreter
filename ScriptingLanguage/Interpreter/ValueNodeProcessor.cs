@@ -276,11 +276,11 @@ namespace ScriptingLaunguage.Interpreter
                 curType = curType.BaseType;
             }
 
-            if (!string.IsNullOrEmpty(settings.TemplateParamName)) 
+            if (settings.TemplateParamsNames != null && settings.TemplateParamsNames.Any()) 
             {
-                var genType = Utils.GetTypeAcrossAssemblies(settings.TemplateParamName);
-                methods = methods.Where(x => x.GetGenericArguments().Length == 1)
-                                 .Select(x => x.MakeGenericMethod(genType)).ToList();
+                var genTypes = settings.TemplateParamsNames.Select(x => Utils.GetTypeAcrossAssemblies(x)).ToArray();
+                methods = methods.Where(x => x.GetGenericArguments().Length == genTypes.Count())
+                                 .Select(x => x.MakeGenericMethod(genTypes)).ToList();
             }
 
             if (!methods.Any()) 

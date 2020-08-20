@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Text;
+using System.Linq;
 using ScriptingLaunguage.Parser;
 
 namespace ScriptingLaunguage.Interpreter
@@ -11,12 +10,63 @@ namespace ScriptingLaunguage.Interpreter
         public class FunctionCallSettings 
         {
             public string FunctionName;
-            public string TemplateParamName;
+            public IEnumerable<string> TemplateParamsNames;
             public IEnumerable<object> Arguments = new List<object>();
+        }
+
+        private class TemplateArgsProcessor : IProgramNodeProcessor
+        {
+            public object ProcessNode(ProgramNode programNode, Scope scope, ref object value)
+            {
+                string getTemplateArg(ProgramNode node)
+                {
+                    if (node.Token.Name == "String")
+                    {
+                        return node.Token.Data as string;
+                    }
+
+                    if (node.Token.Name == "Name")
+                    {
+                        var name = node.Token.Data as string;
+                        if (!scope.HasVariable(name))
+                        {
+                            throw new ArgumentException($"The variable {name} does not exists!");
+                        }
+
+                        string template = scope.GetVariable(name) as string;
+                        if (string.IsNullOrEmpty(template))
+                        {
+                            throw new ArgumentException($"The variable {name} should contain a String value!");
+                        }
+
+                        return template;
+                    }
+
+                    throw new NotSupportedException();
+                }
+
+                if (programNode.MatchChildren("String") || programNode.MatchChildren("Name")) 
+                {
+                    value = new string[] { getTemplateArg(programNode.Children[0]) };
+                    return null;
+                }
+                if (programNode.MatchChildren("TemplateParams", "|", "String") || programNode.MatchChildren("TemplateParams", "|", "Name")) 
+                {
+                    object tmp = null;
+                    NodeProcessor.ExecuteProgramNodeProcessor(this, programNode.Children[0], scope, ref tmp);
+                    var templatesSoFar = tmp as IEnumerable<string>;
+
+                    var lastTemplateArg = getTemplateArg(programNode.Children[2]);
+                    value = templatesSoFar.Append(lastTemplateArg);
+                    return null;
+                }
+                throw new NotImplementedException();
+            }
         }
 
         public class TemplateProcessor : IProgramNodeProcessor
         {
+            private TemplateArgsProcessor TemplateArgsProcessor = new TemplateArgsProcessor();
             public object ProcessNode(ProgramNode programNode, Scope scope, ref object value)
             {
                 if (programNode.Token.Name != "Template") 
@@ -24,11 +74,15 @@ namespace ScriptingLaunguage.Interpreter
                     throw new NotSupportedException();
                 }
 
-                if (programNode.MatchChildren("|", "String", "|")) 
+                if (programNode.MatchChildren("|", "TemplateParams", "|"))
                 {
-                    value = programNode.Children[1].Token.Data as string;
+                    object tmp = null;
+                    NodeProcessor.ExecuteProgramNodeProcessor(TemplateArgsProcessor, programNode.Children[1], scope, ref tmp);
+
+                    value = tmp as IEnumerable<string>;
                     return null;
                 }
+
                 throw new NotImplementedException();
             }
         }
@@ -95,7 +149,7 @@ namespace ScriptingLaunguage.Interpreter
 
                 object template = null;
                 NodeProcessor.ExecuteProgramNodeProcessor(Template, programNode.Children[1], scope, ref template);
-                value = new FunctionCallSettings { FunctionName = name, TemplateParamName = template as string };
+                value = new FunctionCallSettings { FunctionName = name, TemplateParamsNames = template as IEnumerable<string> };
                 return null;
             }
 
@@ -120,7 +174,7 @@ namespace ScriptingLaunguage.Interpreter
                 object args = null;
                 NodeProcessor.ExecuteProgramNodeProcessor(Arguments, programNode.Children[3], scope, ref args);
                 var arguments = args as IEnumerable<object>;
-                value = new FunctionCallSettings { FunctionName = name, Arguments = arguments, TemplateParamName = template as string };
+                value = new FunctionCallSettings { FunctionName = name, Arguments = arguments, TemplateParamsNames = template as IEnumerable<string> };
                 return null;
             }
 
