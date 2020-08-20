@@ -34,6 +34,7 @@
 "Value" "Value" "." "FunctionCall"
 "Value" "Name"
 "Value" "Number"
+"Value" "-" "Number"
 "Value" "String"
 "Value" "null"
 "Value" "true"

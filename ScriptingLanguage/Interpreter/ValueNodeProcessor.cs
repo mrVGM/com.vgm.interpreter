@@ -252,6 +252,15 @@ namespace ScriptingLaunguage.Interpreter
                 
             }
 
+            if (programNode.MatchChildren("-", "Number"))
+            {
+                object tmp = null;
+                NodeProcessor.ExecuteProgramNodeProcessor(NumberProcessor, programNode.Children[1], scope, ref tmp);
+                float num = (float)tmp;
+                value = -num;
+                return null;
+            }
+
             throw new NotImplementedException();
         }
 
