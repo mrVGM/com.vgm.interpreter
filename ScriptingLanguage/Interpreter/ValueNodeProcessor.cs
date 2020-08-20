@@ -3,9 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.ExceptionServices;
-using System.Text;
-using System.Xml;
 using ScriptingLaunguage.Parser;
 
 namespace ScriptingLaunguage.Interpreter
@@ -13,6 +10,55 @@ namespace ScriptingLaunguage.Interpreter
     public class StaticMethodPath
     {
         public string Path = "";
+        public object GetStaticProperty() 
+        {
+            if (string.IsNullOrWhiteSpace(Path)) 
+            {
+                return null;
+            }
+
+            int dotIndex = Path.LastIndexOf('.');
+            if (dotIndex < 0) 
+            {
+                return null;
+            }
+
+            string typeName = Path.Substring(0, dotIndex);
+            string propertyName = Path.Substring(dotIndex + 1);
+
+            var type = Utils.GetTypeAcrossAssemblies(typeName);
+            if (type == null) 
+            {
+                return null;
+            }
+
+            return Utils.GetProperty(null, type, propertyName);
+        }
+
+        public void SetStaticProperty(object val) 
+        {
+            if (string.IsNullOrWhiteSpace(Path))
+            {
+                return;
+            }
+
+            int dotIndex = Path.LastIndexOf('.');
+            if (dotIndex < 0)
+            {
+                return;
+            }
+
+            string typeName = Path.Substring(0, dotIndex);
+            string propertyName = Path.Substring(dotIndex + 1);
+
+            var type = Utils.GetTypeAcrossAssemblies(typeName);
+            if (type == null)
+            {
+                return;
+            }
+
+            Utils.SetProperty(null, type, propertyName, val);
+        }
     }
     class ValueNodeProcessor : IProgramNodeProcessor
     {
@@ -158,7 +204,13 @@ namespace ScriptingLaunguage.Interpreter
 
                 var type = val1.GetType();
                 var genericArguments = type.GetGenericArguments();
-                    
+
+                var staticMethodPath = val1 as StaticMethodPath;
+                if (val1 != null) 
+                {
+                    val1 = staticMethodPath.GetStaticProperty();
+                }
+
                 if (val1 is IEnumerable) 
                 {
                     if (genericArguments.Length < 2)

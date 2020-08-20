@@ -43,13 +43,13 @@ namespace ScriptingLaunguage.Interpreter
                     return null;
                 }
 
-                if (programNode.MatchChildren("Value", ".", "Name")) 
+                if (programNode.MatchChildren("Value", ".", "Name"))
                 {
                     object val = null;
                     NodeProcessor.ExecuteProgramNodeProcessor(ValueProcessor, programNode.Children[0], scope, ref val);
-                    
+
                     string propertyName = programNode.Children[2].Token.Data as string;
-                    
+
                     var genericObject = val as GenericObject;
                     if (genericObject != null)
                     {
@@ -57,7 +57,15 @@ namespace ScriptingLaunguage.Interpreter
                         objectContainer.ObjectValue = ValueToSet;
                         return true;
                     }
-                    
+
+                    var staticMethodPath = val as StaticMethodPath;
+                    if (staticMethodPath != null)
+                    {
+                        staticMethodPath.Path += "." + propertyName;
+                        staticMethodPath.SetStaticProperty(ValueToSet);
+                        return true;
+                    }
+
                     Utils.SetProperty(val, propertyName, ValueToSet);
                     return true;
                 }
@@ -70,34 +78,62 @@ namespace ScriptingLaunguage.Interpreter
                     object expr = null;
                     NodeProcessor.ExecuteProgramNodeProcessor(ExpressionProcessor, programNode.Children[2], scope, ref expr);
 
-                    var type = val.GetType();
-                    var genericArguments = type.GetGenericArguments();
+                    var staticMethodPath = val as StaticMethodPath;
+                    if (staticMethodPath != null) 
+                    {
+                        val = staticMethodPath.GetStaticProperty();
+                        var number = expr as Number;
+                        if (number != null)
+                        {
+                            expr = number.GetNumber(typeof(int));
+                        }
+                    }
 
+                    var type = val.GetType();
+
+                    var genericArguments = type.GetGenericArguments();
                     if (genericArguments.Count() == 0)
                     {
+                        var valueToSet = ValueToSet;
                         var method = type.GetMethod("Set");
-                        method.Invoke(val, new object[] { (int)(float)expr, ValueToSet });
+                        var p = method.GetParameters().FirstOrDefault();
+                        if (Utils.IsNumber(p.ParameterType) && ValueToSet is Number) 
+                        {
+                            valueToSet = (ValueToSet as Number).GetNumber(p.ParameterType);
+                        }
+                        method.Invoke(val, new object[] { Convert.ToInt32(expr), valueToSet });
                         return true;
                     }
 
                     if (genericArguments.Count() == 1) 
                     {
-                        var index = (int)((float)expr);
+                        var valueToSet = ValueToSet;
                         var method = type.GetMethod("set_Item");
-                        method.Invoke(val, new object[] { (int)(float)expr, ValueToSet });
+                        var p = method.GetParameters().FirstOrDefault();
+                        if (Utils.IsNumber(p.ParameterType) && ValueToSet is Number)
+                        {
+                            valueToSet = (ValueToSet as Number).GetNumber(p.ParameterType);
+                        }
+                        method.Invoke(val, new object[] { Convert.ToInt32(expr), valueToSet });
                         return true;
                     }
 
                     if (genericArguments.Count() == 2)
                     {
                         var key = expr;
-                        if (typeof(int).IsAssignableFrom(genericArguments[0]) && expr is Single)
+                        if (typeof(int).IsAssignableFrom(genericArguments[0]))
                         {
-                            key = (int)((float)expr);
+                            key = Convert.ToInt32(expr);
                         }
 
+                        var valueToSet = ValueToSet;
                         var method = type.GetMethod("set_Item");
-                        method.Invoke(val, new object[] { key, ValueToSet });
+                        var p = method.GetParameters().FirstOrDefault();
+                        if (Utils.IsNumber(p.ParameterType) && ValueToSet is Number)
+                        {
+                            valueToSet = (ValueToSet as Number).GetNumber(p.ParameterType);
+                        }
+                        method.Invoke(val, new object[] { key, valueToSet });
                         return true;
                     }
 
@@ -165,7 +201,13 @@ namespace ScriptingLaunguage.Interpreter
             }
             if (programNode.MatchChildren("Value", ";")) 
             {
-                return NodeProcessor.ExecuteProgramNodeProcessor(ValueProcessor, programNode.Children[0], scope, ref value);
+                var res = NodeProcessor.ExecuteProgramNodeProcessor(ValueProcessor, programNode.Children[0], scope, ref value);
+                var staticMethodPath = value as StaticMethodPath;
+                if (staticMethodPath != null) 
+                {
+                    value = staticMethodPath.GetStaticProperty();
+                }
+                return res;
             }
 
             if (programNode.MatchChildren("Assignment"))

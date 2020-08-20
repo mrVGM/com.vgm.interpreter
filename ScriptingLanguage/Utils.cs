@@ -264,25 +264,36 @@ namespace ScriptingLaunguage
 
         public static object GetProperty(object obj, string propertyName)
         {
-            var flags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
             var type = obj.GetType();
+            return GetProperty(obj, type, propertyName);
+        }
+
+        public static object GetProperty(object obj, Type type, string propertyName)
+        {
+            var flags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
             var propertyInfo = type.GetProperty(propertyName, flags);
-            if (propertyInfo != null) {
+            if (propertyInfo != null)
+            {
                 return propertyInfo.GetValue(obj);
             }
 
             var fieldInfo = type.GetField(propertyName, flags);
-            if (fieldInfo != null) {
+            if (fieldInfo != null)
+            {
                 return fieldInfo.GetValue(obj);
             }
 
             return null;
         }
 
-        public static void SetProperty(object obj, string propertyName, object value)
+        public static void SetProperty(object obj, string propertyName, object value) 
+        {
+            var type = obj.GetType();
+            SetProperty(obj, type, propertyName, value);
+        }
+        public static void SetProperty(object obj, Type type, string propertyName, object value)
         {
             var flags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
-            var type = obj.GetType();
             var propertyInfo = type.GetProperty(propertyName, flags);
             if (propertyInfo != null) {
                 propertyInfo.SetValue(obj, value);
@@ -316,7 +327,11 @@ namespace ScriptingLaunguage
             if (obj == null) {
                 return false;
             }
-            return Number.SupportedTypes.Contains(obj.GetType());
+            return IsNumber(obj.GetType());
+        }
+        public static bool IsNumber(Type t)
+        {
+            return Number.SupportedTypes.Contains(t);
         }
 
         public static Number ToNumber(object obj)

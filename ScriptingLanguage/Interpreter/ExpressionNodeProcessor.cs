@@ -143,9 +143,19 @@ namespace ScriptingLaunguage.Interpreter
 
             if (token.Name == "SingleValue") 
             {
-                if (programNode.MatchChildren("Value")) 
+                if (programNode.MatchChildren("Value"))
                 {
-                    var res = NodeProcessor.ExecuteProgramNodeProcessor(ValueProcessor, programNode.Children[0], scope, ref value);
+                    object tmp = null;
+                    var res = NodeProcessor.ExecuteProgramNodeProcessor(ValueProcessor, programNode.Children[0], scope, ref tmp);
+                    var staticMethodPath = tmp as StaticMethodPath;
+
+                    if (staticMethodPath != null) 
+                    {
+                        value = staticMethodPath.GetStaticProperty();
+                        return res;
+                    }
+
+                    value = tmp;
                     var objectContainer = value as GenericObject.ObjectContainer;
                     if (objectContainer != null) {
                         value = objectContainer.ObjectValue;
