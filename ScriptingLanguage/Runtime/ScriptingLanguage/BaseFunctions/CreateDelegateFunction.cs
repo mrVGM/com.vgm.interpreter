@@ -51,27 +51,13 @@ namespace ScriptingLaunguage.BaseFunctions
 
             var funcExpr = Expression.Constant(func);
 
-            var parametersCount = Expression.Constant(parameters.Length);
-
-            var listType = typeof(List<object>);
-            var list = Expression.Variable(listType);
-            var index = Expression.Variable(typeof(int));
-
-            var add = listType.GetMethod("Add");
-
-            var breakLabel = Expression.Label();
-
             // Declare a paramArray parameter to use inside the Expression.Block
             var paramArray = Expression.Parameter(typeof(object[]), "paramArray");
 
             var method = typeof(CreateDelegateFunction).GetMethod("CallFunc", BindingFlags.NonPublic | BindingFlags.Static);
 
             var block = Expression.Block(
-                new ParameterExpression[] { list, index, paramArray },  // pass in paramArray here
-                Expression.Assign(index, Expression.Constant(0)),
-                Expression.Assign(list, Expression.New(listType)),
-
-                /* Assign the array - make sure to box value types using Expression.Convert */
+                new ParameterExpression[] { paramArray },
                 Expression.Assign(
                     paramArray,
                     Expression.NewArrayInit(
