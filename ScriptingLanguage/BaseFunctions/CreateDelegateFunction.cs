@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Emit;
+using System.Linq.Expressions;
+using System.Reflection;
 using ScriptingLaunguage.Interpreter;
 
 namespace ScriptingLaunguage.BaseFunctions
@@ -27,77 +28,72 @@ namespace ScriptingLaunguage.BaseFunctions
 
         public string[] ParameterNames => parameters;
 
-        public static void Handler<T1, T2, T3, T4>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, int id)
+        private static object CallFunc(IFunction func, IEnumerable<object> args)
         {
-
-            var func = delegateIds[id];
+            var argArray = args.ToArray();
             var scope = func.ScopeTemplate;
-            object[] argsToPass = { arg1, arg2, arg3, arg4 };
-            for (int i = 0; i < Math.Min(func.ParameterNames.Length, argsToPass.Count()); ++i)
+
+            var parameterNames = func.ParameterNames;
+            for (int i = 0; i < parameterNames.Length; ++i) 
             {
-                scope.AddVariable(func.ParameterNames[i], argsToPass[i]);
+                scope.SetVariable(parameterNames[i], argArray[i]);
             }
 
-            func.Execute(scope);
+            return func.Execute(scope);
         }
 
-        static Dictionary<int, IFunction> delegateIds = new Dictionary<int, IFunction>();
+        public static object CreateLambda(Type delegateType, IFunction func)
+        {
+            var parameters = delegateType.GetMethod("Invoke")
+                .GetParameters()
+                .Select(x => Expression.Parameter(x.ParameterType))
+                .ToArray();
+
+            var funcExpr = Expression.Constant(func);
+
+            var parametersCount = Expression.Constant(parameters.Length);
+
+            var listType = typeof(List<object>);
+            var list = Expression.Variable(listType);
+            var index = Expression.Variable(typeof(int));
+
+            var add = listType.GetMethod("Add");
+
+            var breakLabel = Expression.Label();
+
+            // Declare a paramArray parameter to use inside the Expression.Block
+            var paramArray = Expression.Parameter(typeof(object[]), "paramArray");
+
+            var method = typeof(CreateDelegateFunction).GetMethod("CallFunc", BindingFlags.NonPublic | BindingFlags.Static);
+
+            var block = Expression.Block(
+                new ParameterExpression[] { list, index, paramArray },  // pass in paramArray here
+                Expression.Assign(index, Expression.Constant(0)),
+                Expression.Assign(list, Expression.New(listType)),
+
+                /* Assign the array - make sure to box value types using Expression.Convert */
+                Expression.Assign(
+                    paramArray,
+                    Expression.NewArrayInit(
+                        typeof(object),
+                        parameters.Select(p => Expression.Convert(p, typeof(object))))),
+
+                Expression.Call(method, funcExpr, paramArray)
+            );
+
+            var lambda = Expression.Lambda(delegateType, block, parameters);
+            var compiledLambda = lambda.Compile();
+            return compiledLambda;
+        }
 
         public object Execute(Scope scope)
         {
             var typeOfDelegate = scope.GetVariable(delegateType) as Type;
-            var delegateMethod = typeOfDelegate.GetMethod("Invoke");
+            var func = scope.GetVariable(functionToExecute) as IFunction;
 
-            var delegateArgs = delegateMethod.GetParameters().Select(x => x.ParameterType).ToArray();
-            var retType = delegateMethod.ReturnType;
+            var lambda = CreateLambda(typeOfDelegate, func);
 
-            int argsCount = delegateArgs.Length;
-
-            DynamicMethod dynamicMethod = new DynamicMethod("",
-                retType,
-                delegateArgs,
-                typeof(CreateDelegateFunction).Module);
-
-            List<Type> handlerTemplateArgs = new List<Type>();
-            handlerTemplateArgs.AddRange(delegateArgs);
-            while (handlerTemplateArgs.Count() < 4) 
-            {
-                handlerTemplateArgs.Add(typeof(object));
-            }
-
-            var method = typeof(CreateDelegateFunction).GetMethod("Handler");
-            method = method.MakeGenericMethod(handlerTemplateArgs.ToArray());
-
-            int functionId = (int) (scope.GetVariable(functionToExecuteId) as Number).GetNumber(typeof(int));
-
-            ILGenerator il = dynamicMethod.GetILGenerator(256);
-            if (argsCount >= 1)
-                il.Emit(OpCodes.Ldarg_0);
-            if (argsCount >= 2)
-                il.Emit(OpCodes.Ldarg_1);
-            if (argsCount >= 3)
-                il.Emit(OpCodes.Ldarg_2);
-            if (argsCount >= 4)
-                il.Emit(OpCodes.Ldarg_3);
-
-            for (int i = 0; i < 4 - argsCount; ++i) 
-            {
-                il.Emit(OpCodes.Ldnull);
-            }
-            il.Emit(OpCodes.Ldc_I4, functionId);
-
-            il.EmitCall(OpCodes.Call, method, null);
-            if (retType != typeof(void))
-            {
-                il.Emit(OpCodes.Ldnull);
-            }
-            il.Emit(OpCodes.Ret);
-
-            var function = dynamicMethod.CreateDelegate(typeOfDelegate);
-
-            delegateIds[functionId] = scope.GetVariable(functionToExecute) as IFunction;
-
-            return function;
+            return lambda;
         }
     }
 }
