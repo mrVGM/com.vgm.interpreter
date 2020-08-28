@@ -43,9 +43,7 @@ namespace ScriptingLaunguage
             get 
             {
                 if (_parserTableData == null) {
-                    string guid = AssetDatabase.FindAssets($"t:{typeof(ParserTableData).Name}").FirstOrDefault();
-                    var path = AssetDatabase.GUIDToAssetPath(guid);
-                    _parserTableData = AssetDatabase.LoadAssetAtPath<ParserTableData>(path);
+                    _parserTableData = Resources.FindObjectsOfTypeAll<ParserTableData>().First();
                 }
 
                 return _parserTableData;

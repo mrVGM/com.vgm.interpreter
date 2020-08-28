@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8926cb164933028478540ad6e125accf, type: 3}
+  m_Script: {fileID: 11500000, guid: 0a4d85f0f82b4314098f21771ded9fab, type: 3}
   m_Name: ParserTableData
   m_EditorClassIdentifier: 
-  ParserTable: {fileID: 4900000, guid: de78ce9f005a93f49ac8421e4a5fba1e, type: 3}
+  ParserTable: {fileID: 4900000, guid: 3d90a4f16cc9d064aba86c27aeb2f5ba, type: 3}
