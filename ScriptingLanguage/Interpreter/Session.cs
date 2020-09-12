@@ -5,31 +5,41 @@ namespace ScriptingLaunguage.Interpreter
     public class Session
     {
         public string WorkingDir { get; private set; }
-        public Scope SessionScope { get; private set; }
+        private Scope sessionScope { get; }
         public Parser.Parser Parser { get; private set; }
 
-        private Scope interpteterScope;
         private Scope workingScope = null;
         
         public Scope GetWorkingScope()
         {
             if (workingScope == null) {
-                workingScope = new Scope {ParentScope = interpteterScope};
+                workingScope = new Scope { ParentScope = sessionScope };
             }
 
             return workingScope;
         }
-        
-        public Session(string workingDir)
+
+        public class SessionFunc 
         {
-            WorkingDir = workingDir;
-            SessionScope = new Scope();
-            interpteterScope = Interpreter.GetStaticScope();
-            interpteterScope.ParentScope = SessionScope;
-            SessionScope.AddVariable("require", new RequireFunction(this, interpteterScope));
+            public string Name;
+            public IFunction Function;
         }
 
-        public Session(string workingDir, Parser.Parser parser) : this(workingDir)
+        public Session(string workingDir, params SessionFunc[] additionalFunctions)
+        {
+            WorkingDir = workingDir;
+            var interpteterScope = Interpreter.GetStaticScope();
+            sessionScope = new Scope();
+            sessionScope.ParentScope = interpteterScope;
+            sessionScope.AddVariable("require", new RequireFunction(this, sessionScope));
+
+            foreach (var func in additionalFunctions) 
+            {
+                sessionScope.AddVariable(func.Name, func.Function);
+            }
+        }
+
+        public Session(string workingDir, Parser.Parser parser, params SessionFunc[] additionalFunctions) : this(workingDir, additionalFunctions)
         {
             Parser = parser;
         }
