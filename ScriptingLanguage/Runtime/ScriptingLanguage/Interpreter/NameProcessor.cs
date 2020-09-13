@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using ScriptingLaunguage.Parser;
+using ScriptingLanguage.Parser;
 
-namespace ScriptingLaunguage.Interpreter
+namespace ScriptingLanguage.Interpreter
 {
     class NameProcessor : IProgramNodeProcessor
     {

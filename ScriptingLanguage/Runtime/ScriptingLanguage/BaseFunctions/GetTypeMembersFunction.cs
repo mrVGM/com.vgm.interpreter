@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using ScriptingLaunguage.Interpreter;
+using ScriptingLanguage.Interpreter;
 
-namespace ScriptingLaunguage.BaseFunctions
+namespace ScriptingLanguage.BaseFunctions
 {
     public class GetTypeMembersFunction : IFunction
     {

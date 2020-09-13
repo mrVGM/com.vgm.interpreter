@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using ScriptingLaunguage.Parser;
+using ScriptingLanguage.Parser;
 
-namespace ScriptingLaunguage.Interpreter
+namespace ScriptingLanguage.Interpreter
 {
     public class OperationProcessor : IProgramNodeProcessor
     {

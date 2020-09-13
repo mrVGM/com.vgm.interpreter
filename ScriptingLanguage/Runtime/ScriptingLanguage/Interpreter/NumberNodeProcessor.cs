@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Globalization;
-using ScriptingLaunguage.Parser;
+using ScriptingLanguage.Parser;
 
-namespace ScriptingLaunguage.Interpreter
+namespace ScriptingLanguage.Interpreter
 {
     class NumberNodeProcessor : IProgramNodeProcessor
     {

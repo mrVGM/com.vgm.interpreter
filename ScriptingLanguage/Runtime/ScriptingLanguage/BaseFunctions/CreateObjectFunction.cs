@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ScriptingLaunguage.Interpreter;
+using ScriptingLanguage.Interpreter;
 
-namespace ScriptingLaunguage.BaseFunctions
+namespace ScriptingLanguage.BaseFunctions
 {
     public class CreateObjectFunction : IFunction
     {

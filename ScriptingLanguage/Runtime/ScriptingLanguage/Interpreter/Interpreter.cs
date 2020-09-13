@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
-using ScriptingLaunguage.BaseFunctions;
-using ScriptingLaunguage.Parser;
-using ScriptingLaunguage.Tokenizer;
+using ScriptingLanguage.BaseFunctions;
+using ScriptingLanguage.Parser;
+using ScriptingLanguage.Tokenizer;
 
-namespace ScriptingLaunguage.Interpreter
+namespace ScriptingLanguage.Interpreter
 {
     public class Interpreter
     {

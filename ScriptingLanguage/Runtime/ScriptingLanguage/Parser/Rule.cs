@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ScriptingLaunguage.Tokenizer;
+using ScriptingLanguage.Tokenizer;
 
-namespace ScriptingLaunguage.Parser
+namespace ScriptingLanguage.Parser
 {
     public class Rule
     {

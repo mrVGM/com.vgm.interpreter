@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 
-namespace ScriptingLaunguage.Parser
+namespace ScriptingLanguage.Parser
 {
     public class ParserState
     {

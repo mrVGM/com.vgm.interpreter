@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections;
-using ScriptingLaunguage.Interpreter;
+using ScriptingLanguage.Interpreter;
 
-namespace ScriptingLaunguage.BaseFunctions
+namespace ScriptingLanguage.BaseFunctions
 {
     class LengthFunction : IFunction
     {

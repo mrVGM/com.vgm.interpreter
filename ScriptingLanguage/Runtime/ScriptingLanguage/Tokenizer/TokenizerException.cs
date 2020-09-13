@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ScriptingLaunguage.Tokenizer
+namespace ScriptingLanguage.Tokenizer
 {
     public class TokenizerException : Exception
     {

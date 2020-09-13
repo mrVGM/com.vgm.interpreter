@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ScriptingLaunguage.Interpreter
+namespace ScriptingLanguage.Interpreter
 {
     public class Number
     {

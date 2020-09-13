@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ScriptingLaunguage.Tokenizer
+namespace ScriptingLanguage.Tokenizer
 {
     public interface ITokenizer
     {

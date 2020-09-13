@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ScriptingLaunguage.Parser;
+using ScriptingLanguage.Parser;
 
-namespace ScriptingLaunguage.Interpreter
+namespace ScriptingLanguage.Interpreter
 {
     public class FunctionDeclarationProcessor : IProgramNodeProcessor
     {

@@ -1,6 +1,6 @@
-﻿using ScriptingLaunguage.Parser;
+﻿using ScriptingLanguage.Parser;
 
-namespace ScriptingLaunguage.Interpreter
+namespace ScriptingLanguage.Interpreter
 {
     class Function : IFunction
     {

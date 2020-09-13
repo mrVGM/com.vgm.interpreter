@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ScriptingLaunguage.Tokenizer;
-using static ScriptingLaunguage.Utils;
+using ScriptingLanguage.Tokenizer;
+using static ScriptingLanguage.Utils;
 
-namespace ScriptingLaunguage.Parser
+namespace ScriptingLanguage.Parser
 {
     public class Parser
     {

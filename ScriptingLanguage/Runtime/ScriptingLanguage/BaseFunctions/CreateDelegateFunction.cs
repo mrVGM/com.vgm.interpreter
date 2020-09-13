@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using ScriptingLaunguage.Interpreter;
+using ScriptingLanguage.Interpreter;
 
-namespace ScriptingLaunguage.BaseFunctions
+namespace ScriptingLanguage.BaseFunctions
 {
     class CreateDelegateFunction : IFunction
     {

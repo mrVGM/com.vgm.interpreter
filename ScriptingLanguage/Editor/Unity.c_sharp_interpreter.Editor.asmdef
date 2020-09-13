@@ -1,14 +1,15 @@
 {
     "name": "Unity.c_sharp_interpreter.Editor",
     "references": [
-        "Unity.c_sharp_interpreter"
+        "GUID:9958d2e23e61eb9428856a812b5709d0"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

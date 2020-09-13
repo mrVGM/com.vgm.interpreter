@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
-using ScriptingLaunguage.Parser;
+using ScriptingLanguage.Parser;
 
-namespace ScriptingLaunguage.Interpreter
+namespace ScriptingLanguage.Interpreter
 {
     public class ExpressionNodeProcessor : IProgramNodeProcessor
     {

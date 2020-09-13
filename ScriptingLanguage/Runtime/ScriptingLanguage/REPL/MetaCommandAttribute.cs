@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ScriptingLaunguage
+namespace ScriptingLanguage.REPL
 {
     [AttributeUsage(AttributeTargets.Method)]
     public class MetaCommandAttribute : Attribute

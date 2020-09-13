@@ -1,7 +1,7 @@
 ﻿using System.IO;
-using ScriptingLaunguage.Interpreter;
+using ScriptingLanguage.Interpreter;
 
-namespace ScriptingLaunguage.BaseFunctions
+namespace ScriptingLanguage.BaseFunctions
 {
     class RequireFunction : IFunction
     {

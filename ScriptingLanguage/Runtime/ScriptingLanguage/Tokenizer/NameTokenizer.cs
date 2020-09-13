@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ScriptingLaunguage.Tokenizer
+namespace ScriptingLanguage.Tokenizer
 {
     public class NameTokenizer : ITokenizer
     {

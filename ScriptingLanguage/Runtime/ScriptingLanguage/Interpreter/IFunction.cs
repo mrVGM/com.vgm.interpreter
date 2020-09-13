@@ -1,4 +1,4 @@
-﻿namespace ScriptingLaunguage.Interpreter
+﻿namespace ScriptingLanguage.Interpreter
 {
     public interface IFunction
     {

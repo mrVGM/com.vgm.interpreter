@@ -2,11 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
-using ScriptingLaunguage.Parser;
-using ScriptingLaunguage.Tokenizer;
-using static ScriptingLaunguage.Utils;
+using ScriptingLanguage.Parser;
+using ScriptingLanguage.Tokenizer;
+using static ScriptingLanguage.Utils;
 
-namespace ScriptingLaunguage.Interpreter
+namespace ScriptingLanguage.Interpreter
 {
     public class BasicLanguageException : LanguageException
     {
