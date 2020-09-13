@@ -15,7 +15,15 @@ namespace ScriptingLanguage.REPL
         public class PrintBuffer : IFunction
         {
             const string paramName = "arg";
-            public Scope ScopeTemplate => new Scope();
+            public Scope ScopeTemplate
+            {
+                get
+                { 
+                    var scope = new Scope();
+                    scope.AddVariable(paramName, null);
+                    return scope;
+                }
+            }
 
             public string[] ParameterNames => new[] { paramName };
 
