@@ -128,7 +128,12 @@ namespace ScriptingLanguage.REPL
                 yield break;
             }
 
-            buffer += command;
+            if (string.IsNullOrWhiteSpace(command)) 
+            {
+                buffer = "";
+                yield break;
+            }
+            buffer += $"{Environment.NewLine}{command}";
             var scriptId = new ScriptId { Script = buffer };
             printBuffer.Clear();
 
