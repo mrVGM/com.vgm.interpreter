@@ -65,11 +65,5 @@ namespace ScriptingLanguage
                 Instance = window;
             }
         }
-
-        [REPL.MetaCommand(Name = "ssda")]
-        private static IEnumerable<string> ssda(IEnumerable<string> args) 
-        {
-            yield return "degew";
-        } 
     }
 }
