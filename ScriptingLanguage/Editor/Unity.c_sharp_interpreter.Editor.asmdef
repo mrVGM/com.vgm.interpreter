@@ -1,7 +1,7 @@
 {
     "name": "Unity.c_sharp_interpreter.Editor",
     "references": [
-        "GUID:9958d2e23e61eb9428856a812b5709d0"
+        "GUID:beec3af4434da5a42aaa24c6fa4828e7"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
