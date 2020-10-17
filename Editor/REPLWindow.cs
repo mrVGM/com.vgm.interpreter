@@ -2,15 +2,13 @@
 using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ScriptingLanguage
 {
     public class REPLWindow : EditorWindow
     {
         private static REPLWindow Instance;
-
-        [SerializeField]
-        private TextAsset ParserTable;
         public string Script;
 
         private ScriptingLanguage.REPL.REPL repl;
@@ -20,8 +18,9 @@ namespace ScriptingLanguage
             {
                 if (repl == null)
                 {
-                    var parserTable = ScriptingLanguage.Parser.ParserTable.Deserialize(ParserTable.bytes);
-                    repl = new REPL.REPL(parserTable);
+                    var parserData = Resources.FindObjectsOfTypeAll<ParserData>().FirstOrDefault();
+                    var pt = Parser.ParserTable.Deserialize(parserData.ParserTable.bytes);
+                    repl = new REPL.REPL(pt);
                 }
                 return repl;
             }
