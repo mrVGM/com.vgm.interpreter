@@ -7,8 +7,7 @@ namespace ScriptingLanguage
     public class SessionHolder : MonoBehaviour
     {
         [SerializeField]
-        [HideInInspector]
-        private TextAsset ParserTable;
+        private ParserData ParserData;
 
         REPL.REPL repl;
         REPL.REPL REPL
@@ -16,8 +15,7 @@ namespace ScriptingLanguage
             get
             {
                 if (repl == null) {
-                    var parserData = Resources.FindObjectsOfTypeAll<ParserData>().FirstOrDefault();
-                    var pt = Parser.ParserTable.Deserialize(parserData.ParserTable.bytes);
+                    var pt = ParserData.GetParserTable();
                     repl = new REPL.REPL(pt);
                 }
                 return repl;

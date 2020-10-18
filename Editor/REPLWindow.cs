@@ -1,8 +1,6 @@
 ﻿using System.IO;
 using UnityEditor;
 using UnityEngine;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace ScriptingLanguage
 {
@@ -11,6 +9,9 @@ namespace ScriptingLanguage
         private static REPLWindow Instance;
         public string Script;
 
+        [SerializeField]
+        private ParserData ParserData;
+        
         private ScriptingLanguage.REPL.REPL repl;
         private ScriptingLanguage.REPL.REPL REPL
         {
@@ -18,8 +19,7 @@ namespace ScriptingLanguage
             {
                 if (repl == null)
                 {
-                    var parserData = Resources.FindObjectsOfTypeAll<ParserData>().FirstOrDefault();
-                    var pt = Parser.ParserTable.Deserialize(parserData.ParserTable.bytes);
+                    var pt = ParserData.GetParserTable();
                     repl = new REPL.REPL(pt);
                 }
                 return repl;
