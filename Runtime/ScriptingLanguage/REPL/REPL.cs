@@ -41,6 +41,7 @@ namespace ScriptingLanguage.REPL
             }
         }
 
+        private Parser.Parser parser;
         private Session session;
         private Interpreter.Interpreter interpreter;
         private string buffer = "";
@@ -48,8 +49,13 @@ namespace ScriptingLanguage.REPL
 
         public REPL(ParserTable pt)
         {
-            var parser = new Parser.Parser { ParserTable = pt };
-            session = new Session(null, parser, new Session.SessionFunc { Name = "print", Function = printBuffer });
+            parser = new Parser.Parser { ParserTable = pt };
+            InitSession(null);
+        }
+
+        private void InitSession(string workingDir)
+        {
+            session = new Session(workingDir, parser, new Session.SessionFunc { Name = "print", Function = printBuffer });
             interpreter = new Interpreter.Interpreter(session);
         }
 
@@ -119,7 +125,7 @@ namespace ScriptingLanguage.REPL
                 return true;
             }
 
-            output = method.Invoke(null, new object[] { commandArgs }) as IEnumerable<string>;
+            output = method.Invoke(null, new object[] { this, commandArgs }) as IEnumerable<string>;
             return true;
         }
 
@@ -129,6 +135,7 @@ namespace ScriptingLanguage.REPL
             bool metaCommand = HandleMetaCommand(command, out output);
             if (metaCommand) 
             {
+                yield return command;
                 foreach (var str in output) 
                 {
                     yield return str;
@@ -145,6 +152,8 @@ namespace ScriptingLanguage.REPL
             var scriptId = new ScriptId { Script = buffer };
             printBuffer.Clear();
 
+            yield return command;
+            
             LanguageException exception = null;
             object res = null;
             try
@@ -176,6 +185,24 @@ namespace ScriptingLanguage.REPL
                 throw exception;
             }
             yield return $"{(res == null ? "null" : res)}";
+        }
+
+        [MetaCommand(Name = "reset_session")]
+        public static IEnumerable<string> ResetSession(object context, IEnumerable<string> args)
+        {
+            var repl = context as REPL;
+            if (repl == null)
+            {
+                yield break;
+            }
+
+            var workingDir = args.FirstOrDefault();
+            if (string.IsNullOrEmpty(workingDir)) {
+                yield break;
+            }
+
+            repl.InitSession(workingDir);
+            yield return $"Opened REPL session with working directory: {workingDir}";
         }
     }
 }

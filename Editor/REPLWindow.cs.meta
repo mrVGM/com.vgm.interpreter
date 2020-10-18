@@ -5,7 +5,7 @@ MonoImporter:
   serializedVersion: 2
   defaultReferences:
   - m_ViewDataDictionary: {instanceID: 0}
-  - ParserData: {fileID: 11400000, guid: e3a9ca86da1fda047b19949533a28a6b, type: 2}
+  - ParserTable: {fileID: 4900000, guid: 629da4afca339b74aac05d38aa1fd4fb, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

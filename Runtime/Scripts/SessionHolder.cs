@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace ScriptingLanguage
@@ -7,7 +6,7 @@ namespace ScriptingLanguage
     public class SessionHolder : MonoBehaviour
     {
         [SerializeField]
-        private ParserData ParserData;
+        private TextAsset ParserTable;
 
         REPL.REPL repl;
         REPL.REPL REPL
@@ -15,7 +14,7 @@ namespace ScriptingLanguage
             get
             {
                 if (repl == null) {
-                    var pt = ParserData.GetParserTable();
+                    var pt = Parser.ParserTable.Deserialize(ParserTable.bytes);;
                     repl = new REPL.REPL(pt);
                 }
                 return repl;

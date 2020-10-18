@@ -98,7 +98,7 @@ namespace ScriptingLanguage
         }
 
         [MetaCommand(Name = "change_font_size")]
-        private static IEnumerable<string> ChangeFontSize(IEnumerable<string> args)
+        private static IEnumerable<string> ChangeFontSize(object context, IEnumerable<string> args)
         {
             if (Instance == null)
                 yield break;
@@ -119,7 +119,7 @@ namespace ScriptingLanguage
         }
 
         [MetaCommand(Name = "change_font_color")]
-        private static IEnumerable<string> ChangeFontColor(IEnumerable<string> args)
+        private static IEnumerable<string> ChangeFontColor(object context, IEnumerable<string> args)
         {
             if (Instance == null)
                 yield break;
@@ -159,7 +159,7 @@ namespace ScriptingLanguage
         }
 
         [MetaCommand(Name = "cls")]
-        private static IEnumerable<string> CLS(IEnumerable<string> args)
+        private static IEnumerable<string> CLS(object context, IEnumerable<string> args)
         {
             if (Instance == null)
                 yield break;
