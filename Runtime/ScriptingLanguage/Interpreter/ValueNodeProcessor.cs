@@ -206,7 +206,7 @@ namespace ScriptingLanguage.Interpreter
                 var genericArguments = type.GetGenericArguments();
 
                 var staticMethodPath = val1 as StaticMethodPath;
-                if (val1 != null) 
+                if (staticMethodPath != null) 
                 {
                     val1 = staticMethodPath.GetStaticProperty();
                 }
