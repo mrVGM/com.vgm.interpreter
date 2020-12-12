@@ -181,7 +181,7 @@ namespace ScriptingLanguage.REPL
             buffer = "";
             if (exception != null)
             {
-                yield return exception.Message;
+                yield return $"<color=red>{exception.Message}</color>";
                 throw exception;
             }
             yield return $"{(res == null ? "null" : res)}";
