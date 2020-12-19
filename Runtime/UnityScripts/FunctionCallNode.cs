@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -17,6 +18,7 @@ namespace ScriptingLanguage.VisualScripting
         public RectTransform TemplateArgs;
         public RectTransform Args;
         public Knob Function;
+        public Knob FunctionCall;
         public Knob Output;
 
         private void UpdateKnobs(KnobOperation knobOperation, RectTransform parentTransform)
@@ -27,7 +29,10 @@ namespace ScriptingLanguage.VisualScripting
             }
 
             if (knobOperation == KnobOperation.Remove) {
-                var knob = parentTransform.GetComponentsInChildren<Knob>().FirstOrDefault();
+                var knob = parentTransform.GetComponentsInChildren<Knob>().LastOrDefault();
+                if (knob == null) {
+                    return;
+                }
                 foreach (var linkEndpoint in KnobPrefab.LinkEndpoints) {
                     linkEndpoint.GetLink().DestroyLink();
                 }
@@ -65,6 +70,9 @@ namespace ScriptingLanguage.VisualScripting
 
         public string GenerateCode(Knob knob)
         {
+            if (knob != Output && knob != FunctionCall) {
+                throw new NotSupportedException();
+            }
             var funcKnob = Function.LinkEndpoints.FirstOrDefault().GetCounterpart().Knob;
             var funcCodeGenerator = funcKnob.GetComponentInParent<ICodeGenerator>();
 
@@ -93,7 +101,7 @@ namespace ScriptingLanguage.VisualScripting
             }
             args = $"({args})";
             
-            return $"{funcCodeGenerator.GenerateCode(funcKnob)}{templateArgs}{args}";
+            return $"{funcCodeGenerator.GenerateCode(funcKnob)}{templateArgs}{args}{(knob == FunctionCall ? ";" : "")}";
         }
 
         public IEnumerator<Knob> GetEnumerator()

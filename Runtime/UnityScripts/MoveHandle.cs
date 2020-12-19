@@ -9,7 +9,7 @@ namespace ScriptingLanguage.VisualScripting
 
         public void OnDrag(PointerEventData eventData)
         {
-            TransformToMove.anchoredPosition = eventData.position;
+            TransformToMove.position = eventData.position;
         }
 
         public void OnEndDrag(PointerEventData eventData)

@@ -10,35 +10,9 @@ namespace ScriptingLanguage.VisualScripting
     public class BinaryOperatorNode : MonoBehaviour, ICodeGenerator, IKnobOwner
     {
         public Text Name;
-        public InputField InputField;
         public Knob LeftKnob;
         public Knob RightKnob;
         public Knob OutputKnob;
-
-        public void EnableTitleInputField()
-        {
-            if (InputField.gameObject.activeSelf) {
-                return;
-            }
-
-            InputField.gameObject.SetActive(true);
-            InputField.text = Name.text;
-            InputField.ActivateInputField();
-        }
-
-        public void OnTitleChanged()
-        {
-            if (string.IsNullOrWhiteSpace(InputField.text)) {
-                return;
-            }
-
-            if (InputField.text.Contains(" ")) {
-                return;
-            }
-
-            Name.text = InputField.text;
-            InputField.gameObject.SetActive(false);
-        }
 
         public string GenerateCode(Knob knob)
         {
@@ -54,7 +28,7 @@ namespace ScriptingLanguage.VisualScripting
             var leftCodeGenerator = leftLinkedKnob.GetComponentInParent<ICodeGenerator>();
             var rightCodeGenerator = rightLinkedKnob.GetComponentInParent<ICodeGenerator>();
 
-            return $"({leftCodeGenerator.GenerateCode(leftLinkedKnob)}{Name}{rightCodeGenerator.GenerateCode(rightLinkedKnob)})";
+            return $"({leftCodeGenerator.GenerateCode(leftLinkedKnob)}{Name.text}{rightCodeGenerator.GenerateCode(rightLinkedKnob)})";
         }
 
         public IEnumerator<Knob> GetEnumerator()

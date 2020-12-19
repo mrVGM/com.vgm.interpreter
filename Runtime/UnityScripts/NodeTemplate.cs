@@ -11,9 +11,9 @@ namespace ScriptingLanguage.VisualScripting
         {
             var frame = GetComponentInParent<Frame>();
             
-            var node = Instantiate(Template, frame.transform);
+            var node = Instantiate(Template, frame.NodesAnchor.transform);
             var rectTransform = node.GetComponent<RectTransform>();
-            rectTransform.anchoredPosition = eventData.position;
+            rectTransform.position = eventData.position;
         }
         
         public void OnDrag(PointerEventData eventData)
