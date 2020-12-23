@@ -3,7 +3,7 @@ This is an interpreter for a simple scripting language. It can be integrated int
 is modding Unity games.
 
 # Syntax
-The syntax of the language resembles to the syntax of Javascript, but it's simpler. Here are some of the base constructs, that can be used:
+The syntax of the language resembles to the syntax of JavaScript, but it's simpler. Here are some of the base constructs, that can be used:
 ## Literals
 Strings are defined in the usual way, as in most of the other programming languages - enclosed with double quotes. Examples: `"Hello World!"`,
 `"There was written \"Hello World!\""`. As you can see, if you need to include double quotes inside your string, you need to escape it with backslash `\`.
@@ -92,3 +92,24 @@ containing string values to the function like this:
 For example, if you have a variable `go` containing a unity game object and you want to get the Image component attached to it, you can do it like this:
 
 `let image = go.GetComponent|"UnityEngine.UI.Image"|();`
+
+# Semantics
+This section will give details on how the interpretator actually works.
+
+## Representations of data
+There are 2 base and 2 composite types of data the interpreter works with. The two base ones are string wich is represented as a regular c# string and a number, which is
+stored as a custom class containing a double value.
+The composite types are a c# `List<object>`, corresponding to the literal `[]`, and a c# `Dict<string, object>`, corresponding to the literal `{}`. The dictionary is used
+as a generic object, containing different kinds of values. Almost the same as the objects in JavaScript.
+
+## Scopes
+Scopes are containers for the variables, while the interpreter executes a script. Scope is just a dictionary linking a variable name to its value. Actually,
+the interpreter works with a hierarchy of scopes. There is a global scope, where some global variables are stored. Every time the interpreter starts to
+execute an operations block, it creates a new child scope to the one it currently operates in. When querying the value of a variable, it first checks in the current scope
+and if the variable can't be found there, it checks the parent scopes. When declaring a variable it goes right into the current scope. So if for example, you declare a
+variable `x` inside the operations block if an `if` construct, it can't be accessed outside it. It is the same with the parameters of functions. Let's look again at the
+function `f`, declared in the previous section. When, for example, `f(5)` is called, what happens is:
+1. A new child scope of the current one is created
+1. The variable `x` (corresponding to the parameter `x` from the function declaration) is created in the new scope
+1. The value `5` is assigned to `x`
+1. The operations block of the function is executed
