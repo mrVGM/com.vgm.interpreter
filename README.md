@@ -80,3 +80,15 @@ let f = function(x) {
   return x + 1;
 };
 ```
+
+## Calling Functions
+A function is called, in the same manner as in most of the other programming languages. For example the function `f` defined above, can be called like this: `f(5);`.
+However if you want to call a method with template parameters defined in a c# class, you should supply them as well. They need to be passed as strings 
+(the full names of the type of the template parameter) or as variables
+containing string values to the function like this: 
+
+`<function>|<template parameter 1>|<template paramater 2>|...|<template parameter n>|(<arguments>)`
+
+For example, if you have a variable `go` containing a unity game object and you want to get the Image component attached to it, you can do it like this:
+
+`let image = go.GetComponent|"UnityEngine.UI.Image"|();`
