@@ -170,9 +170,19 @@ public interface IFunction
   object Execute(Scope scope);
 }
 ```
-The interpreter executes these objects as ordinary functions defined in the scripts. It just creates a new scope from the `ScopeTemplate`, creates variables in it from the
+The interpreter executes these objects as ordinary functions defined in the scripts. It just creates a new scope from the `ScopeTemplate`, defines variables in it out of the
 `ParameterNames`, fills them with the provided arguments and calls the `Execute` method. We will illustrate the purpose of these functions with an example.
 There is a very usefull `require` variable, defined in the global scope of the interpeter, whose value is an object of the `RequireFunction` class.
 It can load a script file into a variable. If you look at the code you will see, that all it does is to create a scope template with `export` variable defined inside it,
 then runs the script file with the interpreter and returns the value stored in the `export` variable. There are some more of these globally defined functions, which can be
 checked in the code. If some more are needed they can be created as implementations of the `IFunction` interface and added as variable to the static scope of the Interpreter.
+
+## REPL, Session and Meta Commands
+There is one more layer of abstraction over the Interpreter itself. This is the REPL. It just receives lines of code one by one, evaluates them and returns the results
+as strings. A session is just a container a parent scope and a root directory for the REPL. The root directory is the directory where the `require` function looks for the
+script files if you reference to them with a relative path. REPL can also process commands, that are not part of the scripting language.
+These are called meta commands. To create a meta command you simply need to create somewhere a static method, which receives a context object and a `IEnumerable<string>` of
+parameters and returns an `IEnumerable<string>` of results of its execution. The method should be decorated with the `MetaCommand` attribute and the name, you supply as an
+argument to the attribute will be the command, which the method will be called with. To call a meta command from the REPL, you simply type the name of the command 
+prefixed with colons.
+An example of such command is `reset_session`, which creates a new session with blank scope and with the root directory, provided to the command.
