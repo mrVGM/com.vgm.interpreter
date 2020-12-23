@@ -186,3 +186,7 @@ parameters and returns an `IEnumerable<string>` of results of its execution. The
 argument to the attribute will be the command, which the method will be called with. To call a meta command from the REPL, you simply type the name of the command 
 prefixed with colons.
 An example of such command is `reset_session`, which creates a new session with blank scope and with the root directory, provided to the command.
+
+# Integration to a Unity project
+To integrate the REPL and the Intepreter to a Unity project, you simply attach the `SessionHolder` script to a game object. Then to use the REPL, you simply 
+supply commands to its `RunCommand` method.
