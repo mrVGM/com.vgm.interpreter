@@ -103,7 +103,8 @@ The composite types are a c# `List<object>`, corresponding to the literal `[]`, 
 as a generic object, containing different kinds of values. Almost the same as the objects in JavaScript.
 
 ## Scopes
-Scopes are containers for the variables, while the interpreter executes a script. Scope is just a dictionary linking a variable name to its value. Actually,
+Scopes are containers for the variables, while the interpreter executes a script. Scope is just a dictionary linking a variable name to its value. The language is not
+strictly typed, so a variable can contain values of all kind of types. Actually,
 the interpreter works with a hierarchy of scopes. There is a global scope, where some global variables are stored. Every time the interpreter starts to
 execute an operations block, it creates a new child scope to the one it currently operates in. When querying the value of a variable, it first checks in the current scope
 and if the variable can't be found there, it checks the parent scopes. When declaring a variable it goes right into the current scope. So if for example, you declare a
@@ -113,3 +114,47 @@ function `f`, declared in the previous section. When, for example, `f(5)` is cal
 1. The variable `x` (corresponding to the parameter `x` from the function declaration) is created in the new scope
 1. The value `5` is assigned to `x`
 1. The operations block of the function is executed
+
+## The dot operator
+The dot operator is used for reading and writing properties of objects. Here is an example with the generic objects defined in the scripts:
+```
+let obj = {};
+obj.a = 4;
+obj.b = {};
+obj.b.c = 5;
+obj.b.d = obj.a;
+```
+When this code is executed the value of `obj`, should look like this (if we visualize it as a JSON):
+```
+{
+  "a": 4,
+  "b": {
+    "c": 5,
+    "d": 4
+  }
+}
+```
+When the dot operator is used on a c# object, it retrieves its properties just as the dot operator in c#, no matter if the properties or fields are public protected 
+or private.
+Static c# methods can be also called, using the dot operator, just like this: `UnityEngine.Debug.Log("Hello")`. However to identify them one should always start
+from the most global namespace, which the method is contained in (`UnityEngine` in this case).
+There is a little inconvenience, when one needs to call a method on a static variable. Look at this c# classes:
+```
+class Foo
+{
+  public void SomeMethod()
+  {
+  }
+}
+class Bar
+{
+  public static Foo FooInstance = new Foo();
+}
+```
+If you want to call the `SomeMothod` method of the object `Bar.FooInstance`, you can't just write: `Bar.FooInstance.SomeMethod()`, because it will result in an exception.
+The way to do this is with a temporary variable:
+```
+let tmp = Bar.FooInstance;
+tmp.SomeMethod();
+```
+It's a known issue, still not resolved, though.
