@@ -158,3 +158,21 @@ let tmp = Bar.FooInstance;
 tmp.SomeMethod();
 ```
 It's a known issue, still not resolved, though.
+
+## The IFunction interface
+As we mentioned, there are some variables that are defined in the global scope of the interpreter. The values they contain are objects, implementing the interface `IFunction`
+and are designed to call c# code directly. This is how the `IFunction` interface looks like:
+```
+public interface IFunction
+{
+  Scope ScopeTemplate { get; }
+  string[] ParameterNames { get; }
+  object Execute(Scope scope);
+}
+```
+The interpreter executes these objects as ordinary functions defined in the scripts. It just creates a new scope from the `ScopeTemplate`, creates variables in it from the
+`ParameterNames`, fills them with the provided arguments and calls the `Execute` method. We will illustrate the purpose of these functions with an example.
+There is a very usefull `require` variable, defined in the global scope of the interpeter, whose value is an object of the `RequireFunction` class.
+It can load a script file into a variable. If you look at the code you will see, that all it does is to create a scope template with `export` variable defined inside it,
+then runs the script file with the interpreter and returns the value stored in the `export` variable. There are some more of these globally defined functions, which can be
+checked in the code. If some more are needed they can be created as implementations of the `IFunction` interface and added as variable to the static scope of the Interpreter.
