@@ -19,7 +19,7 @@ namespace ScriptingLanguage.VisualScripting
 
         public InputField Filename;
 
-        private void ClearWorkspace() 
+        public void ClearWorkspace() 
         {
             var go = new GameObject();
             go.SetActive(false);
@@ -69,8 +69,6 @@ namespace ScriptingLanguage.VisualScripting
                 };
                 return tmp;
             }).ToArray();
-
-            ClearWorkspace();
         }
 
         private void RestoreNodes() 
