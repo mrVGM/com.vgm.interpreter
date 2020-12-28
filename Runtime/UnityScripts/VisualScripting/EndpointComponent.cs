@@ -16,15 +16,24 @@ namespace ScriptingLanguage.VisualScripting
         }
 
         private Frame _frame => GetComponentInParent<Frame>();
-        public string Guid;
-        public Endpoint Endpoint;
+        [SerializeField]
+        private string Guid;
+        private Endpoint _endpoint;
+        public Endpoint Endpoint 
+        {
+            get 
+            {
+                return _endpoint;
+            }
+            set
+            {
+                _endpoint = value;
+                Guid = _endpoint.Guid.ToString();
+            }
+        }
 
         [SerializeField]
         private List<LinkData> LinksData;
-        public void Init(Endpoint endpoint)
-        {
-            Endpoint = endpoint;
-        }
 
         public void OnDrag(PointerEventData eventData)
         {
@@ -67,7 +76,7 @@ namespace ScriptingLanguage.VisualScripting
 
         public static void VisuallyUnlink(EndpointComponent endpointComponent1, EndpointComponent endpointComponent2)
         {
-            var linkData = endpointComponent1.LinksData.FirstOrDefault(x => x.OtherComponent = endpointComponent2);
+            var linkData = endpointComponent1.LinksData.FirstOrDefault(x => x.OtherComponent == endpointComponent2);
             if (linkData != null) {
                 Destroy(linkData.Link.gameObject);
                 endpointComponent1.LinksData.Remove(linkData);
