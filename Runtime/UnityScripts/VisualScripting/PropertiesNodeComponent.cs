@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace ScriptingLanguage.VisualScripting
@@ -55,6 +56,7 @@ namespace ScriptingLanguage.VisualScripting
         public EndpointComponent ObjectEndpoint;
         public EndpointComponent ResultEndpoint;
         public Button PropertyTemplate;
+        public RectTransform PropertiesRoot;
 
         public PropertiesNode _node;
 
@@ -80,7 +82,7 @@ namespace ScriptingLanguage.VisualScripting
 
         private void AddPropertyTemplate(string propertyName) 
         {
-            var parentTransform = PropertyTemplate.transform.parent;
+            var parentTransform = PropertiesRoot;
             var property = Instantiate(PropertyTemplate, parentTransform);
             property.gameObject.SetActive(true);
             var text = property.GetComponent<Text>();
@@ -105,7 +107,7 @@ namespace ScriptingLanguage.VisualScripting
                         break;
                     }
                 }
-                _node.Properties[index - 1] = str;
+                _node.Properties[index] = str;
             });
 
             property.onClick.AddListener(() => {
@@ -120,7 +122,7 @@ namespace ScriptingLanguage.VisualScripting
         }
         public void RemovePropertyTemplate()
         {
-            var parentTransform = PropertyTemplate.transform.parent;
+            var parentTransform = PropertiesRoot;
             int childCount = parentTransform.transform.childCount;
             if (childCount > 1) {
                 Destroy(parentTransform.GetChild(childCount - 1).gameObject);
