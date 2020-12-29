@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -86,7 +85,12 @@ namespace ScriptingLanguage.VisualScripting
             var property = Instantiate(PropertyTemplate, parentTransform);
             property.gameObject.SetActive(true);
             var text = property.GetComponent<Text>();
-            var inputField = property.GetComponentInChildren<InputField>(true);
+
+            var propertyExplorer = property.GetComponentInChildren<PropertyExplorer>();
+            propertyExplorer.gameObject.SetActive(false);
+
+            var inputField = propertyExplorer.GetComponentInChildren<InputField>(true);
+            var okButton = propertyExplorer.GetComponentInChildren<Button>();
 
             if (string.IsNullOrWhiteSpace(propertyName)) {
                 _node.Properties.Add(text.text);
@@ -94,12 +98,14 @@ namespace ScriptingLanguage.VisualScripting
                 text.text = propertyName;
             }
 
-            inputField.onEndEdit.AddListener(str => {
-                if (str.Contains(' ')) {
+            okButton.onClick.AddListener(() => {
+                string str = inputField.text;
+                if (string.IsNullOrWhiteSpace(str) || str.Contains(' ')) {
                     return;
                 }
+
                 text.text = str;
-                inputField.gameObject.SetActive(false);
+                propertyExplorer.gameObject.SetActive(false);
                 int index = 0;
                 for (int i = 0; i < parentTransform.childCount; ++i) {
                     if (parentTransform.GetChild(i) == property.transform) {
@@ -111,11 +117,11 @@ namespace ScriptingLanguage.VisualScripting
             });
 
             property.onClick.AddListener(() => {
-                if (inputField.gameObject.activeSelf) {
+                if (propertyExplorer.gameObject.activeSelf) {
                     return;
                 }
 
-                inputField.gameObject.SetActive(true);
+                propertyExplorer.gameObject.SetActive(true);
                 inputField.text = text.text;
                 inputField.ActivateInputField();
             });
@@ -124,7 +130,7 @@ namespace ScriptingLanguage.VisualScripting
         {
             var parentTransform = PropertiesRoot;
             int childCount = parentTransform.transform.childCount;
-            if (childCount > 1) {
+            if (childCount > 0) {
                 Destroy(parentTransform.GetChild(childCount - 1).gameObject);
                 _node.Properties.RemoveAt(_node.Properties.Count - 1);
             }
