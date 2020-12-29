@@ -54,7 +54,6 @@ namespace ScriptingLanguage.VisualScripting
                     }
                     parameters = parameters.Substring(0, parameters.Length - 1);
                 }
-                parameters = $"({parameters})";
 
                 var bodyEndpoint = BodyEndpoint.LinkedEndpoints.FirstOrDefault();
                 var bodyNode = nodesDB.GetNodeByEndpoint(bodyEndpoint);

@@ -52,7 +52,15 @@ namespace ScriptingLanguage.VisualScripting
         {
             var frame = GetComponentInParent<Frame>();
             string code = _node.GenerateCode(_node.RightEndpoint, frame.NodesDB, null);
-            Debug.Log(code);
+            var codeLines = code.Split('\n');
+            foreach (var line in codeLines)
+            {
+                var output = frame.SessionHolder.RunCommand(line);
+                foreach (var s in output)
+                {
+                    Debug.Log(s);
+                }
+            }
         }
 
         public override void ParticularInit(INode node)

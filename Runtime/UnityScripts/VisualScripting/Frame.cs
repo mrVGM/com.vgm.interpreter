@@ -14,6 +14,7 @@ namespace ScriptingLanguage.VisualScripting
         public RectTransform NodesContainer;
         public RectTransform LinksContainer;
         public RectTransform TemplatesContainer;
+        public SessionHolder SessionHolder;
 
         public NodesDB NodesDB = new NodesDB();
 
