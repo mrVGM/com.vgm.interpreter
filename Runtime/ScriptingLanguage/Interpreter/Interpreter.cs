@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using ScriptingLanguage.BaseFunctions;
 using ScriptingLanguage.Parser;
 using ScriptingLanguage.Tokenizer;
@@ -65,13 +66,14 @@ namespace ScriptingLanguage.Interpreter
         public object RunScriptFile(string scriptToRunFullPath, Scope scope)
         {
             var entryScript = File.ReadAllText(scriptToRunFullPath);
-            return RunScript(entryScript, scope, new ScriptId { Filename = scriptToRunFullPath, Script = entryScript });
+            return RunScript(scope, new ScriptId { Filename = scriptToRunFullPath, Script = entryScript });
         }
         
-        public object RunScript(string script, Scope scope, ScriptId scriptId)
+        public object RunScript(Scope scope, ScriptId scriptId)
         {
-            var tokenized = Utils.TokenizeText(script, scriptId, new SimpleToken { Name = "Terminal" });
-            var processed = tokenizer.Tokenize(tokenized);
+            var tokenized = Utils.TokenizeText(scriptId, new SimpleToken { Name = "Terminal" }).ToList();
+            scriptId.TokenizedScript = tokenized;
+            var processed = tokenizer.Tokenize(tokenized).ToList();
             var programTree = parser.ParseProgram(processed);
             
             return EvaluateProgramNode(programTree, scope);

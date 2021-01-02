@@ -27,12 +27,12 @@ namespace ScriptingLanguage.Parser
             return true;
         }
 
-        public int GetCodeIndex() 
+        public IIndexed GetCodeIndex() 
         {
             var indexed = Token as IIndexed;
             if (indexed != null) 
             {
-                return indexed.Index;
+                return indexed;
             }
 
             return Children.FirstOrDefault().GetCodeIndex();

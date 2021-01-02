@@ -19,58 +19,58 @@ namespace ScriptingLanguage
         {
             const int SurroundingLines = 2;
 
-            public int CodeIndex;
+            public IIndexed CodeIndex;
             public ScriptId ScriptId;
 
             public override string Message => $"{base.Message}{Environment.NewLine}{GetErrorMessage(true)}";
-            public LanguageException(string message, ScriptId scriptId, int codeIndex) : base(message)
+            public LanguageException(string message, ScriptId scriptId, IIndexed codeIndex) : base(message)
             {
                 ScriptId = scriptId;
                 CodeIndex = codeIndex;
             }
 
-            public IEnumerable<NumberedLine> GetSampleOfLines(int lineOfInterest, int numberOfSurroundingLines, string script)
+            public IEnumerable<IndexedToken> GetSampleOfLines(int lineOfInterest, int numberOfSurroundingLines, ScriptId scriptId)
             {
-                var lines = Utils.GetNumberedLines(script);
+                var lines = scriptId.Lines;
                 foreach (var line in lines)
                 {
-                    if (Math.Abs(line.LineIndex - lineOfInterest) <= numberOfSurroundingLines)
+                    if (Math.Abs(line.Index - lineOfInterest) <= numberOfSurroundingLines)
                     {
                         yield return line;
                     }
                 }
             }
 
-            public string GetCodeSample(int index, string script, bool printLineNumbers)
+            public string GetCodeSample(IIndexed index, ScriptId scriptId, bool printLineNumbers)
             {
-                int lineOfInterest = Utils.GetLineNumber(index, script);
-                var sample = GetSampleOfLines(lineOfInterest, SurroundingLines, script);
+                int lineOfInterest = scriptId.GetLineNumber(index);
+                var sample = GetSampleOfLines(lineOfInterest, SurroundingLines, scriptId);
 
-                var errorLine = sample.FirstOrDefault(x => x.LineIndex == lineOfInterest);
-                int errorLineOffset = Utils.GetLineOffset(index, script);
+                var errorLine = sample.FirstOrDefault(x => x.Index == lineOfInterest);
+                int errorLineOffset = scriptId.GetLineOffset(index);
 
-                string pointerLine = Utils.PointSymbol(errorLineOffset, errorLine.Line);
+                string pointerLine = Utils.PointSymbol(errorLineOffset, scriptId.GetStringOfLine(errorLine));
 
                 string lineNumberSuffix = "| ";
-                int longestPrefixLength = (sample.Last().LineIndex + 1).ToString().Length + lineNumberSuffix.Length;
+                int longestPrefixLength = (sample.Last().Index + 1).ToString().Length + lineNumberSuffix.Length;
                 string blankPrefix = "";
                 while (blankPrefix.Length < longestPrefixLength)
                 {
                     blankPrefix += " ";
                 }
 
-                string getPrefix(NumberedLine line)
+                string getPrefix(int lineNumber)
                 {
                     if (!printLineNumbers)
                     {
                         return "";
                     }
-                    string lineNumber = $"{line.LineIndex + 1}{lineNumberSuffix}";
-                    while (lineNumber.Length < longestPrefixLength)
+                    string lineNumberStr = $"{lineNumber}{lineNumberSuffix}";
+                    while (lineNumberStr.Length < longestPrefixLength)
                     {
-                        lineNumber = $" {lineNumber}";
+                        lineNumberStr = $" {lineNumberStr}";
                     }
-                    return lineNumber;
+                    return lineNumberStr;
                 }
 
                 if (printLineNumbers)
@@ -80,10 +80,11 @@ namespace ScriptingLanguage
                 string res = "";
                 foreach (var line in sample)
                 {
-                    res += $"{getPrefix(line)}{line.Line}{Environment.NewLine}";
-                    if (line.LineIndex == lineOfInterest)
+                    var lineString = scriptId.GetStringOfLine(line);
+                    res += $"{getPrefix(line.Index)}{lineString}";
+                    if (line.Index == lineOfInterest)
                     {
-                        res += $"{pointerLine}{Environment.NewLine}";
+                        res += $"{pointerLine}\n";
                     }
                 }
 
@@ -112,71 +113,6 @@ namespace ScriptingLanguage
             }
         }
 
-        public static IEnumerable<NumberedLine> GetNumberedLines(string text)
-        {
-            var newLineIndeces = GetNewLineIndeces(text);
-            var newLinesCount = newLineIndeces.Count();
-
-            if (newLinesCount == 0)
-            {
-                yield return new NumberedLine { LineIndex = 0, Line = GetLine(0, text) };
-                yield break;
-            }
-
-            for (int i = 0; i < newLinesCount; ++i) 
-            {
-                yield return new NumberedLine { LineIndex = i, Line = GetLine(i, text) };
-            }
-            string lastLine = GetLine(newLinesCount, text);
-            if (!string.IsNullOrEmpty(lastLine)) 
-            {
-                yield return new NumberedLine { LineIndex = newLinesCount, Line = lastLine };
-            }
-        }
-        
-        public static int GetLineNumber(int index, string source)
-        {
-            var newLineIndeces = GetNewLineIndeces(source);
-            return newLineIndeces.Count(x => x <= index);
-        }
-
-        public static string GetLine(int index, string source) 
-        {
-            var newLineIndeces = GetNewLineIndeces(source).ToList();
-            
-            if (index > newLineIndeces.Count)
-            {
-                return "";
-            }
-            if (index == 0) 
-            {
-                int lineLength = source.Length;
-                if (newLineIndeces.Count > 0) 
-                {
-                    lineLength = newLineIndeces[0];
-                }
-                return source.Substring(0, lineLength);
-            }
-            int startIndex = newLineIndeces[index - 1] + Environment.NewLine.Length;
-            int endIndex = source.Length;
-            if (index < newLineIndeces.Count) 
-            {
-                endIndex = newLineIndeces[index];
-            }
-            return source.Substring(startIndex, endIndex - startIndex);
-        }
-
-        public static int GetLineOffset(int index, string source) 
-        {
-            var newLines = GetNewLineIndeces(source);
-            int startLine = 0;
-            if (newLines.Any(x => x < index)) 
-            {
-                startLine = newLines.Last(x => x < index) + Environment.NewLine.Length;
-            }
-
-            return index - startLine;
-        }
 
         public static string PointSymbol(int index, string line) 
         {
@@ -196,8 +132,9 @@ namespace ScriptingLanguage
             return new string(replaced.ToArray());
         }
 
-        public static IEnumerable<IndexedToken> TokenizeText(string text, ScriptId scriptId, IToken endOfText = null)
+        public static IEnumerable<IndexedToken> TokenizeText(ScriptId scriptId, IToken endOfText = null)
         {
+            var text = scriptId.Script;
             int index = 0;
             foreach (var symbol in text)
             {

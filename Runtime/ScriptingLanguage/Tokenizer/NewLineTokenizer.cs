@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace ScriptingLanguage.Tokenizer
 {
     public class NewLineTokenizer : ITokenizer
     {
+        public const string CRLF = "\r\n";
+        public const string LF = "\n";
         IEnumerable<IndexedToken> TwoSymbolNewLine(IEnumerable<IndexedToken> script) 
         {
             IndexedToken oneSymbolRead = null;

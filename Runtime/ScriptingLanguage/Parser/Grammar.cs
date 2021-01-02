@@ -149,7 +149,7 @@ namespace ScriptingLanguage.Parser
         public static Grammar ReadGrammarFromString(string grammarJson)
         {
             var tokenizer = new CombinedTokenizer(new StringTokenizer(), new NewLineTokenizer());
-            var grammarScript = Utils.TokenizeText(grammarJson, new ScriptId { Script = grammarJson });
+            var grammarScript = Utils.TokenizeText(new ScriptId { Script = grammarJson });
             grammarScript = tokenizer.Tokenize(grammarScript);
             var lines = GetLines(grammarScript);
 
