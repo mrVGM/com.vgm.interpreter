@@ -9,7 +9,7 @@ namespace ScriptingLanguage.Tokenizer
         {
             foreach (var token in script) 
             {
-                if (token.Name == NewLineTokenizer.LF || token.Name == NewLineTokenizer.CRLF 
+                if (token.Name == NewLineTokenizer.LF || token.Name == NewLineTokenizer.CRLF
                     || token.Name == " " || token.Name == "\t")
                 {
                     continue;

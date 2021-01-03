@@ -17,6 +17,7 @@ namespace ScriptingLanguage.Tokenizer
                     defaultTokenizer = new CombinedTokenizer(
                         new NewLineTokenizer(),
                         new StringTokenizer(),
+                        new CommentsTokenizer(),
                         new KeywordTokenizer("let", "if", "while", "return", "function", "break", "null", "true", "false"),
                         new NameTokenizer(),
                         new NumberTokenizer(),
