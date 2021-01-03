@@ -28,7 +28,7 @@ namespace ScriptingLanguage.Parser
                     expecting += $", {symbol}";
                 }
                 expecting = expecting.Substring(2);
-                return $"Expecting one of: {expecting}{Environment.NewLine}{GetCodeSample(CodeIndex, ScriptId, printLineNumbers)}";
+                return $"Expecting one of: {expecting}\n{GetCodeSample(CodeIndex, ScriptId, printLineNumbers)}";
             }
         }
 
@@ -38,7 +38,7 @@ namespace ScriptingLanguage.Parser
 
             public override string GetErrorMessage(bool printLineNumbers)
             {
-                return $"Syntax error{Environment.NewLine}{GetCodeSample(CodeIndex, ScriptId, printLineNumbers)}";
+                return $"Syntax error\n{GetCodeSample(CodeIndex, ScriptId, printLineNumbers)}";
             }
         }
 

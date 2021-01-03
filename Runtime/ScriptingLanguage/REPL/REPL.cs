@@ -148,7 +148,7 @@ namespace ScriptingLanguage.REPL
                 buffer = "";
                 yield break;
             }
-            buffer += $"{Environment.NewLine}{command}";
+            buffer += $"\n{command}";
             var scriptId = new ScriptId { Script = buffer };
             printBuffer.Clear();
 

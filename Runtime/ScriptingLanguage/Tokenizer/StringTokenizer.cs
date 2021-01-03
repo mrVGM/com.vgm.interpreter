@@ -19,7 +19,7 @@ namespace ScriptingLanguage.Tokenizer
 
             foreach (var token in script)
             {
-                if (token.Name == Environment.NewLine)
+                if (token.Name == NewLineTokenizer.LF || token.Name == NewLineTokenizer.CRLF)
                 {
                     if (state != State.Default)
                     {

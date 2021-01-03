@@ -22,7 +22,7 @@ namespace ScriptingLanguage
             public IIndexed CodeIndex;
             public ScriptId ScriptId;
 
-            public override string Message => $"{base.Message}{Environment.NewLine}{GetErrorMessage(true)}";
+            public override string Message => $"{base.Message}\n{GetErrorMessage(true)}";
             public LanguageException(string message, ScriptId scriptId, IIndexed codeIndex) : base(message)
             {
                 ScriptId = scriptId;
@@ -93,26 +93,10 @@ namespace ScriptingLanguage
                     return res;
                 }
 
-                return $"{ScriptId.Filename}{Environment.NewLine}{res}";
+                return $"{ScriptId.Filename}\n{res}";
             }
             public abstract string GetErrorMessage(bool printLineNumbers);
         }
-
-        public static IEnumerable<int> GetNewLineIndeces(string source)
-        {
-            int curIndex = 0;
-            while (true) 
-            {
-                int foundIndex = source.IndexOf(Environment.NewLine, curIndex);
-                if (foundIndex < 0) 
-                {
-                    break;
-                }
-                curIndex = foundIndex + Environment.NewLine.Length;
-                yield return foundIndex;
-            }
-        }
-
 
         public static string PointSymbol(int index, string line) 
         {

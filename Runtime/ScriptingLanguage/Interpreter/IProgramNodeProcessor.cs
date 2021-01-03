@@ -34,13 +34,13 @@ namespace ScriptingLanguage.Interpreter
                 lastLine = line;
                 lastScript = scriptSource;
 
-                callStack += $"{scriptSource.Filename} {line}:{index + 1}{Environment.NewLine}";
+                callStack += $"{scriptSource.Filename} {line}:{index + 1}\n";
             }
         }
 
         public override string GetErrorMessage(bool printLineNumbers)
         {
-            return $"{GetCodeSample(CodeIndex, ScriptId, true)}{Environment.NewLine}{callStack}";
+            return $"{GetCodeSample(CodeIndex, ScriptId, true)}\n{callStack}";
         }
     }
     public class NodeProcessor

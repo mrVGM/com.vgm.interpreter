@@ -155,7 +155,7 @@ namespace ScriptingLanguage.Parser
             string str = "";
             foreach (var rule in Rules) 
             {
-                str += rule + Environment.NewLine;
+                str += rule + "\n";
             }
             return str;
         }
