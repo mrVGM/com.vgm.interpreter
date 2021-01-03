@@ -60,6 +60,9 @@ namespace ScriptingLanguage.Tokenizer
 			var contents = line.Data as List<IndexedToken>;
 			foreach (var token in contents)
 			{
+				if (token.Name == "Terminal") {
+					continue;
+				}
 				str += token.Name;
 			}
 

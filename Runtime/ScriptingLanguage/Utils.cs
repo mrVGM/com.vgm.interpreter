@@ -9,12 +9,6 @@ namespace ScriptingLanguage
 {
     public static class Utils
     {
-        public class NumberedLine 
-        {
-            public int LineIndex;
-            public string Line;
-        }
-
         public abstract class LanguageException : Exception
         {
             const int SurroundingLines = 2;
@@ -84,6 +78,9 @@ namespace ScriptingLanguage
                     res += $"{getPrefix(line.Index)}{lineString}";
                     if (line.Index == lineOfInterest)
                     {
+                        if (!lineString.EndsWith(NewLineTokenizer.LF) && !lineString.EndsWith(NewLineTokenizer.CRLF)) {
+                            res += "\n";
+                        }
                         res += $"{pointerLine}\n";
                     }
                 }
