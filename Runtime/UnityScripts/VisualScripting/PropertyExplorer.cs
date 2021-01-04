@@ -24,7 +24,7 @@ namespace ScriptingLanguage.VisualScripting
             UpdateButtons();
         }
 
-        private static IEnumerable<string> GetOptions(IEnumerable<string> query)
+        private static IEnumerable<string> GetOptionsStatic(IEnumerable<string> query)
         {
             var queryString = "";
             if (query.Any())
@@ -198,6 +198,53 @@ namespace ScriptingLanguage.VisualScripting
             }).ToList();
         }
 
+        private IEnumerable<string> GetOptions(object obj, IEnumerable<string> query)
+        {
+            var genericObject = obj as Interpreter.GenericObject;
+            if (genericObject != null) {
+                return genericObject.GetProperties();
+            }
+            var flags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+
+            IEnumerable<string> getOptions(Type type, IEnumerable<string> path) {
+                IEnumerable<MemberInfo> members = type.GetMembers(flags);
+                if (!path.Any()) {
+                    foreach (var member in members) {
+                        yield return member.Name;
+                    }
+                    yield break;
+                }
+
+                var nextMemberName = path.First();
+                path = path.Skip(1);
+                members = members.Where(x => x.Name == nextMemberName);
+
+                var fields = members.OfType<FieldInfo>();
+                var properties = members.OfType<PropertyInfo>();
+
+                foreach (var field in fields) {
+                    var options = getOptions(field.FieldType, path);
+                    foreach (var opt in options) {
+                        yield return opt;
+                    }
+                }
+                foreach (var property in properties) {
+                    var options = getOptions(property.PropertyType, path);
+                    foreach (var opt in options) {
+                        yield return opt;
+                    }
+                }
+            }
+
+            if (obj == null) {
+                return Enumerable.Empty<string>();
+            }
+
+            var objType = obj.GetType();
+            var res = getOptions(objType, query);
+            return res.Distinct();
+        }
+
         private static bool OptionCompatible(IEnumerable<string> optionPath, IEnumerable<string> propertiesPath)
         {
             if (optionPath.Count() <= propertiesPath.Count()) {
@@ -208,16 +255,35 @@ namespace ScriptingLanguage.VisualScripting
             return zip.All(x => x);
         }
 
-        public void UpdateButtons()
+        private object GetLinkedObject() 
         {
-            var propertiesNode = GetComponentInParent<PropertiesNodeComponent>();
-
-            if (propertiesNode.ObjectEndpoint.Endpoint.LinkedEndpoints.Any()) {
-                UpdateButtons(Enumerable.Empty<string>());
-                return;
+            var endpoint = PropertiesNode.ObjectEndpoint.Endpoint.LinkedEndpoints.FirstOrDefault();
+            if (endpoint == null) {
+                return null;
             }
 
-            var options = GetOptions(CurrentProperties);
+            var frame = GetComponentInParent<Frame>();
+            var node = frame.NodesDB.GetNodeByEndpoint(endpoint) as VariableNodeComponent.VariableNode;
+            if (node == null) {
+                return null;
+            }
+
+            var scope = frame.VisualScriptingSession.GetRootScope();
+            var obj = scope.GetVariable(node.VariableName);
+            return obj;
+        }
+
+        public void UpdateButtons()
+        {
+            var options = Enumerable.Empty<string>();
+
+            if (PropertiesNode.ObjectEndpoint.Endpoint.LinkedEndpoints.Any()) {
+                var obj = GetLinkedObject();
+                options = GetOptions(obj, CurrentProperties);
+            } else {
+                options = GetOptionsStatic(CurrentProperties);
+            }
+
             var inputField = Property.GetComponentInChildren<InputField>();
             var str = inputField.text;
             if (!string.IsNullOrWhiteSpace(str)) {

@@ -47,5 +47,14 @@ namespace ScriptingLanguage.VisualScripting
             }
             _session.Reset(workingDir);
         }
+
+        public Scope GetRootScope() 
+        {
+            if (_session == null) {
+                InitSession();
+            }
+
+            return _session.GetWorkingScope();
+        }
     }
 }

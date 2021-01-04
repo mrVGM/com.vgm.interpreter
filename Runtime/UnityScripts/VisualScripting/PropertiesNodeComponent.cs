@@ -19,41 +19,57 @@ namespace ScriptingLanguage.VisualScripting
                 {
                     yield return ObjectEndpoint;
                     yield return ResultEndpoint;
+                    yield return TypeNameEndpoint;
                 }
             }
             public Endpoint ObjectEndpoint = new Endpoint();
             public Endpoint ResultEndpoint = new Endpoint();
+            public Endpoint TypeNameEndpoint = new Endpoint();
             public List<string> Properties = new List<string>();
 
             public string GenerateCode(Endpoint endpoint, NodesDB nodesDB, CodeGenerationContext context)
             {
-                if (endpoint != ResultEndpoint) {
-                    throw new InvalidOperationException();
+                if (endpoint == TypeNameEndpoint) {
+                    var str = "";
+                    foreach (var p in Properties) {
+                        str += $".{p}";
+                    }
+                    if (str.Length > 0) {
+                        str = str.Substring(1);
+                    }
+                    return $"\"{str}\"";
                 }
 
-                string str = "";
-                foreach (var prop in Properties)
-                {
-                    str += $".{prop}";
-                }
+                if (endpoint == ResultEndpoint) {
 
-                var objectEndpoint = ObjectEndpoint.LinkedEndpoints.FirstOrDefault();
-                if (objectEndpoint == null) {
-                    str = str.Substring(1);
-                    return str;
-                }
+                    string str = "";
+                    foreach (var prop in Properties)
+                    {
+                        str += $".{prop}";
+                    }
 
-                var objectEndpointNode = nodesDB.GetNodeByEndpoint(objectEndpoint);
-                string code;
-                using (context.CreateTemporaryCustomContext(null)) {
-                    code = objectEndpointNode.GenerateCode(objectEndpoint, nodesDB, context);
+                    var objectEndpoint = ObjectEndpoint.LinkedEndpoints.FirstOrDefault();
+                    if (objectEndpoint == null)
+                    {
+                        str = str.Substring(1);
+                        return str;
+                    }
+
+                    var objectEndpointNode = nodesDB.GetNodeByEndpoint(objectEndpoint);
+                    string code;
+                    using (context.CreateTemporaryCustomContext(null))
+                    {
+                        code = objectEndpointNode.GenerateCode(objectEndpoint, nodesDB, context);
+                    }
+
+                    return $"{code}{str}";
                 }
-                
-                return $"{code}{str}";
+                throw new InvalidOperationException();
             }
         }
         public EndpointComponent ObjectEndpoint;
         public EndpointComponent ResultEndpoint;
+        public EndpointComponent TypeNameEndpoint;
         public Button PropertyTemplate;
         public RectTransform PropertiesRoot;
 
@@ -69,6 +85,7 @@ namespace ScriptingLanguage.VisualScripting
 
             ObjectEndpoint.Endpoint = _node.ObjectEndpoint;
             ResultEndpoint.Endpoint = _node.ResultEndpoint;
+            TypeNameEndpoint.Endpoint = _node.TypeNameEndpoint;
             foreach (var prop in _node.Properties) {
                 AddPropertyTemplate(prop);
             }

@@ -22,5 +22,9 @@ namespace ScriptingLanguage.Interpreter
             }
             return val;
         }
+        public IEnumerable<string> GetProperties()
+        {
+            return properties.Keys;
+        }
     }
 }
