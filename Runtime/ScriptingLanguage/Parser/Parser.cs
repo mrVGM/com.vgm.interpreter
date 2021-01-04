@@ -15,7 +15,7 @@ namespace ScriptingLanguage.Parser
         public class ExpectsSymbolException : LanguageException, IParseException
         {
             public IEnumerable<string> ExpectedSymbols;
-            public ExpectsSymbolException(ScriptId scriptId, int codeIndex, IEnumerable<string> expectedSymbols) : base("", scriptId, codeIndex)
+            public ExpectsSymbolException(ScriptId scriptId, IIndexed codeIndex, IEnumerable<string> expectedSymbols) : base("", scriptId, codeIndex)
             {
                 ExpectedSymbols = expectedSymbols;
             }
@@ -28,17 +28,17 @@ namespace ScriptingLanguage.Parser
                     expecting += $", {symbol}";
                 }
                 expecting = expecting.Substring(2);
-                return $"Expecting one of: {expecting}{Environment.NewLine}{GetCodeSample(CodeIndex, ScriptId.Script, printLineNumbers)}";
+                return $"Expecting one of: {expecting}\n{GetCodeSample(CodeIndex, ScriptId, printLineNumbers)}";
             }
         }
 
         public class CantProceedParsingException : LanguageException, IParseException
         {
-            public CantProceedParsingException(ScriptId scriptId, int codeIndex) : base("", scriptId, codeIndex) { }
+            public CantProceedParsingException(ScriptId scriptId, IIndexed codeIndex) : base("", scriptId, codeIndex) { }
 
             public override string GetErrorMessage(bool printLineNumbers)
             {
-                return $"Syntax error{Environment.NewLine}{GetCodeSample(CodeIndex, ScriptId.Script, printLineNumbers)}";
+                return $"Syntax error\n{GetCodeSample(CodeIndex, ScriptId, printLineNumbers)}";
             }
         }
 
@@ -61,7 +61,7 @@ namespace ScriptingLanguage.Parser
                 if (endOfProgram)
                 {
                     var nextSymbols = ParserTable.ParserActions.Where(x => x.CurrentState == stateStack.Peek()).Select(x => x.NextSymbol);
-                    int index = (lastRead as IIndexed).Index;
+                    IIndexed index = lastRead as IIndexed;
                     var scriptSource = (lastRead as IScriptSourceHolder).ScriptSource;
                     if (!nextSymbols.Any())
                     {
@@ -77,7 +77,7 @@ namespace ScriptingLanguage.Parser
                 var action = ParserTable.ParserActions.FirstOrDefault(x => x.CurrentState == stateStack.Peek() && x.NextSymbol == curToken.Name);
                 if (action == null) 
                 {
-                    int index = (curToken as IIndexed).Index;
+                    IIndexed index = curToken as IIndexed;
                     var scriptId = (curToken as IScriptSourceHolder).ScriptSource;
                     var nextSymbols = ParserTable.ParserActions.Where(x => x.CurrentState == stateStack.Peek()).Select(x => x.NextSymbol);
                     if (!nextSymbols.Any())

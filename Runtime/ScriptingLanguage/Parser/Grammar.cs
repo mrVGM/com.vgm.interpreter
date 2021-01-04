@@ -121,7 +121,7 @@ namespace ScriptingLanguage.Parser
             List<IToken> curLine = new List<IToken>();
             foreach (var token in grammarScript)
             {
-                if (token.Name == Environment.NewLine) 
+                if (token.Name == NewLineTokenizer.LF || token.Name == NewLineTokenizer.CRLF)
                 {
                     if (curLine.Any()) 
                     {
@@ -148,8 +148,8 @@ namespace ScriptingLanguage.Parser
         }
         public static Grammar ReadGrammarFromString(string grammarJson)
         {
-            var tokenizer = new CombinedTokenizer(new StringTokenizer(), new NewLineTokenizer());
-            var grammarScript = Utils.TokenizeText(grammarJson, new ScriptId { Script = grammarJson });
+            var tokenizer = new CombinedTokenizer(new NewLineTokenizer(), new StringTokenizer());
+            var grammarScript = Utils.TokenizeText(new ScriptId { Script = grammarJson });
             grammarScript = tokenizer.Tokenize(grammarScript);
             var lines = GetLines(grammarScript);
 

@@ -24,23 +24,23 @@ namespace ScriptingLanguage.Interpreter
                 }
 
                 string script = scriptSource.Script;
-                int line = Utils.GetLineNumber(CodeIndex, script);
+                int line = scriptSource.GetLineNumber(CodeIndex);
                 if (line == lastLine && scriptSource == lastScript) 
                 {
                     continue;
                 }
 
-                int index = Utils.GetLineOffset(CodeIndex, script);
+                int index = scriptSource.GetLineOffset(CodeIndex);
                 lastLine = line;
                 lastScript = scriptSource;
 
-                callStack += $"{scriptSource.Filename} {line + 1}:{index + 1}{Environment.NewLine}";
+                callStack += $"{scriptSource.Filename} {line}:{index + 1}\n";
             }
         }
 
         public override string GetErrorMessage(bool printLineNumbers)
         {
-            return $"{GetCodeSample(CodeIndex, ScriptId.Script, true)}{Environment.NewLine}{callStack}";
+            return $"{GetCodeSample(CodeIndex, ScriptId, true)}\n{callStack}";
         }
     }
     public class NodeProcessor

@@ -148,7 +148,7 @@ namespace ScriptingLanguage.REPL
                 buffer = "";
                 yield break;
             }
-            buffer += $"{Environment.NewLine}{command}";
+            buffer += $"\n{command}";
             var scriptId = new ScriptId { Script = buffer };
             printBuffer.Clear();
 
@@ -158,7 +158,7 @@ namespace ScriptingLanguage.REPL
             object res = null;
             try
             {
-                res = interpreter.RunScript(buffer, session.GetWorkingScope(), scriptId);
+                res = interpreter.RunScript(session.GetWorkingScope(), scriptId);
             }
             catch (LanguageException e) 
             {
@@ -172,7 +172,7 @@ namespace ScriptingLanguage.REPL
           
             if (exception is ExpectsSymbolException
                 && exception.ScriptId == scriptId
-                && exception.CodeIndex == buffer.Length) 
+                && exception.CodeIndex.Index == buffer.Length) 
             {
                 yield return "...";
                 yield break;
