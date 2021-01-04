@@ -39,7 +39,7 @@ namespace ScriptingLanguage.Tokenizer
 		{
 			foreach (var line in Lines) {
 				var contents = line.Data as List<IndexedToken>;
-				if (contents.Contains(index)) {
+				if (contents.Any(x => x.Index == index.Index)) {
 					return line;
 				}
 			}
