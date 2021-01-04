@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 namespace ScriptingLanguage.VisualScripting
 {
@@ -52,15 +51,7 @@ namespace ScriptingLanguage.VisualScripting
         {
             var frame = GetComponentInParent<Frame>();
             string code = _node.GenerateCode(_node.RightEndpoint, frame.NodesDB, null);
-            var codeLines = code.Split('\n');
-            foreach (var line in codeLines)
-            {
-                var output = frame.SessionHolder.RunCommand(line);
-                foreach (var s in output)
-                {
-                    Debug.Log(s);
-                }
-            }
+            frame.VisualScriptingSession.RunScript(code);
         }
 
         public override void ParticularInit(INode node)

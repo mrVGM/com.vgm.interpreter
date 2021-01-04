@@ -14,7 +14,7 @@ namespace ScriptingLanguage.VisualScripting
         public RectTransform NodesContainer;
         public RectTransform LinksContainer;
         public RectTransform TemplatesContainer;
-        public SessionHolder SessionHolder;
+        public VisualScriptingSession VisualScriptingSession;
 
         public NodesDB NodesDB = new NodesDB();
 
@@ -125,6 +125,11 @@ namespace ScriptingLanguage.VisualScripting
             NodesDB = bf.Deserialize(fs) as NodesDB;
             fs.Close();
             RestoreNodes();
+        }
+
+        public void ResetSession()
+        {
+            VisualScriptingSession.ResetSession(Filename.text);
         }
     }
 }
