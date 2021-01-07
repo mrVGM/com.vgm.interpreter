@@ -50,7 +50,7 @@ namespace ScriptingLanguage.REPL
         public REPL(ParserTable pt)
         {
             parser = new Parser.Parser { ParserTable = pt };
-            InitSession(null);
+            InitSession("");
         }
 
         private void InitSession(string workingDir)
