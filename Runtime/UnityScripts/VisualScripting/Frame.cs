@@ -50,6 +50,7 @@ namespace ScriptingLanguage.VisualScripting
 
         public void ClearWorkspace() 
         {
+            UnselectAll();
             var go = new GameObject();
             go.SetActive(false);
 

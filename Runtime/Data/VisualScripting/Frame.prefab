@@ -800,7 +800,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 640, y: 480}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &3972242361403653356
 GameObject:
@@ -932,6 +932,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f2dbbf1f78dd9d4e8abb0e425fed690, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SelectionRactanglePrefab: {fileID: 4366002593971331903, guid: 5f28b367199d4d64fbdb25d6d2c99ca8,
+    type: 3}
+  SelectionRectangleParent: {fileID: 8371763269296317831}
 --- !u!222 &661705702556211262
 CanvasRenderer:
   m_ObjectHideFlags: 0
