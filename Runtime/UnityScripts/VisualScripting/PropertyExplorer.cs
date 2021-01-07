@@ -19,8 +19,13 @@ namespace ScriptingLanguage.VisualScripting
 
         private static Dictionary<string, List<string>> _optionsByProperties = new Dictionary<string, List<string>>();
 
+        private bool justCreated = true;
+
         public void OnEnable()
         {
+            if (justCreated) {
+                return;
+            }
             UpdateButtons();
         }
 
