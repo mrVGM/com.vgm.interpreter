@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -9,11 +10,18 @@ namespace ScriptingLanguage.VisualScripting
         private Vector2 _startingPosition;
         private Vector3 _transformInitialPosition;
         public NodeComponent NodeComponent => GetComponentInParent<NodeComponent>();
+        public Frame Frame => GetComponentInParent<Frame>();
+
         public void OnBeginDrag(PointerEventData eventData)
         {
             if (eventData.button != PointerEventData.InputButton.Left) {
                 return;
             }
+            if (!Frame.Selected.Contains(this)) {
+                Frame.UnselectAll();
+                Frame.Select(this);
+            }
+
             _startingPosition = eventData.position;
             _transformInitialPosition = NodeComponent.transform.position;
         }
@@ -24,7 +32,10 @@ namespace ScriptingLanguage.VisualScripting
                 return;
             }
             Vector2 offset = eventData.position - _startingPosition;
-            NodeComponent.transform.position = _transformInitialPosition + new Vector3(offset.x, offset.y, 0.0f);
+            var nodeComponents = Frame.Selected.Select(x => x.NodeComponent);
+            foreach (var node in nodeComponents) {
+                node.transform.position = _transformInitialPosition + new Vector3(offset.x, offset.y, 0.0f);
+            }
         }
 
         public void OnEndDrag(PointerEventData eventData)
@@ -39,8 +50,12 @@ namespace ScriptingLanguage.VisualScripting
             if (trashCan == null) {
                 return;
             }
-            NodeComponent.DeInit();
-            Destroy(NodeComponent.gameObject);
+            var nodeComponents = Frame.Selected.Select(x => x.NodeComponent);
+            foreach (var node in nodeComponents.ToList()) {
+                NodeComponent.DeInit();
+                Destroy(NodeComponent.gameObject);
+            }
+            Frame.UnselectAll();
         }
     }
 }

@@ -16,9 +16,37 @@ namespace ScriptingLanguage.VisualScripting
         public RectTransform TemplatesContainer;
         public VisualScriptingSession VisualScriptingSession;
 
+        private readonly HashSet<MoveHandle> _selected = new HashSet<MoveHandle>();
+        public IEnumerable<MoveHandle> Selected => _selected;
+
         public NodesDB NodesDB = new NodesDB();
 
         public InputField Filename;
+
+        public void Select(MoveHandle moveHandle)
+        {
+            var highlight = moveHandle.NodeComponent.gameObject.GetComponent<NodeHighlight>();
+            if (highlight != null) {
+                highlight.Highlight(true);
+            }
+            _selected.Add(moveHandle);
+        }
+
+        public void Select(IEnumerable<MoveHandle> moveHandles)
+        {
+            foreach (var moveHandle in moveHandles) {
+                Select(moveHandle);
+            }
+        }
+
+        public void UnselectAll()
+        {
+            var highlights = _selected.Select(x => x.NodeComponent.GetComponent<NodeHighlight>());
+            foreach (var highlight in highlights) {
+                highlight.Highlight(false);
+            }
+            _selected.Clear();
+        }
 
         public void ClearWorkspace() 
         {
