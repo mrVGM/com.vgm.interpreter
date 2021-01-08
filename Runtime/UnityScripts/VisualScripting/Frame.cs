@@ -137,7 +137,8 @@ namespace ScriptingLanguage.VisualScripting
         {
             FlushDB();
 
-            string filename = Filename.text;
+            string workingDir = VisualScriptingSession.GetWorkingDir();
+            string filename = workingDir + Filename.text;
             if (string.IsNullOrWhiteSpace(filename)) {
                 return;
             }
@@ -148,7 +149,8 @@ namespace ScriptingLanguage.VisualScripting
         }
         public void LoadWorkspace() 
         {
-            string filename = Filename.text;
+            string workingDir = VisualScriptingSession.GetWorkingDir();
+            string filename = workingDir + Filename.text;
             if (!File.Exists(filename))
             {
                 return;
