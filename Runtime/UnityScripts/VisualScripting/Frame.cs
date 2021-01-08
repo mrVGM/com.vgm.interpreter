@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -101,15 +102,17 @@ namespace ScriptingLanguage.VisualScripting
             }).ToArray();
         }
 
-        private void RestoreNodes() 
+        private IEnumerable<NodeComponent> RestoreNodes(NodesDB nodesDB) 
         {
             List<EndpointComponent> endPointComponents = new List<EndpointComponent>();
-            foreach (var node in NodesDB.NodesWithPositions) {
+            var nodeComponents = new List<NodeComponent>();
+            foreach (var node in nodesDB.NodesWithPositions) {
                 var nodeComponent = RestoreNode(node);
+                nodeComponents.Add(nodeComponent);
                 endPointComponents.AddRange(nodeComponent.GetComponentsInChildren<EndpointComponent>());
             }
 
-            var allEndpoints = NodesDB.GetEndpoints();
+            var allEndpoints = nodesDB.GetEndpoints();
 
             foreach (var endpoint in allEndpoints) {
                 endpoint.RestoreLinkedEndpoints(allEndpoints);
@@ -127,6 +130,7 @@ namespace ScriptingLanguage.VisualScripting
                 }
                 visited.Add(ednpointComponent);
             }
+            return nodeComponents;
         }
 
         public void SaveWorkspace() 
@@ -153,12 +157,50 @@ namespace ScriptingLanguage.VisualScripting
             BinaryFormatter bf = new BinaryFormatter();
             NodesDB = bf.Deserialize(fs) as NodesDB;
             fs.Close();
-            RestoreNodes();
+            RestoreNodes(NodesDB);
         }
 
         public void ResetSession()
         {
             VisualScriptingSession.ResetSession(Filename.text);
+        }
+
+        public IEnumerable<NodeComponent> CopyNodes(IEnumerable<INode> nodes)
+        {
+            FlushDB();
+            var bf = new BinaryFormatter();
+            NodesDB clone = null;
+            using (MemoryStream ms = new MemoryStream()) {
+                bf.Serialize(ms, NodesDB);
+                ms.Flush();
+                ms.Position = 0;
+                clone = bf.Deserialize(ms) as NodesDB;
+            }
+
+            nodes = clone.NodesWithPositions.Select(x => x.Node).Where(node => {
+                var endpointID = node.Endpoints.First().Guid;
+                return nodes.Any(x => x.Endpoints.Any(y => y.Guid == endpointID));
+            }).ToList();
+
+            var allEndpoints = clone.NodesWithPositions.Select(x => x.Node).SelectMany(x => x.Endpoints).Distinct().ToList();
+            Endpoint.RemapIds(allEndpoints);
+
+            foreach (var endpoint in allEndpoints) {
+                endpoint.RestoreLinkedEndpoints(allEndpoints);
+            }
+
+            var skippedNodes = clone.NodesWithPositions.Select(x => x.Node).Except(nodes);
+            foreach (var skippedNode in skippedNodes) {
+                foreach (var endpoint in skippedNode.Endpoints) {
+                    foreach (var link in endpoint.LinkedEndpoints.ToList()) {
+                        Endpoint.UnLink(endpoint, link);
+                    }
+                }
+            }
+
+            clone.NodesWithPositions = clone.NodesWithPositions.Where(x => nodes.Contains(x.Node)).ToArray();
+            var newNodes = RestoreNodes(clone);
+            return newNodes;
         }
     }
 }

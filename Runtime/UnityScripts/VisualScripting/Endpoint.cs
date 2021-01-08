@@ -45,5 +45,20 @@ namespace ScriptingLanguage.VisualScripting
             endpoint1._linkedEndpointIds.Remove(endpoint2.Guid);
             endpoint2._linkedEndpointIds.Remove(endpoint1.Guid);
         }
+
+        public static void RemapIds(IEnumerable<Endpoint> allEndpoints)
+        {
+            Dictionary<Guid, Guid> idMap = new Dictionary<Guid, Guid>();
+            foreach (var endpoint in allEndpoints) {
+                idMap[endpoint.Guid] = Guid.NewGuid();
+            }
+
+            foreach (var endpoint in allEndpoints) {
+                endpoint.Guid = idMap[endpoint.Guid];
+                for (int i = 0; i < endpoint._linkedEndpointIds.Count; ++i) {
+                    endpoint._linkedEndpointIds[i] = idMap[endpoint._linkedEndpointIds[i]];
+                }
+            }
+        }
     }
 }

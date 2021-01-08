@@ -12,21 +12,12 @@ namespace ScriptingLanguage.VisualScripting
         public NodeComponent NodeComponent => GetComponentInParent<NodeComponent>();
         public Frame Frame => GetComponentInParent<Frame>();
 
-        public IEnumerable<Transform> Corners
-        {
-            get
-            {
-                for (int i = 0; i < transform.childCount; ++i) {
-                    yield return transform.GetChild(i);
-                }
-            }
-        }
-
         public void OnBeginDrag(PointerEventData eventData)
         {
-            if (eventData.button != PointerEventData.InputButton.Left) {
+            if (eventData.button == PointerEventData.InputButton.Middle) {
                 return;
             }
+
             if (!Frame.Selected.Contains(this)) {
                 Frame.UnselectAll();
                 Frame.Select(this);
@@ -34,8 +25,14 @@ namespace ScriptingLanguage.VisualScripting
 
             _startingPosition = eventData.position;
             _nodesInitialPositions.Clear();
+            
+            if (eventData.button == PointerEventData.InputButton.Right) {
+                var newNodes = Frame.CopyNodes(Frame.Selected.Select(x => x.NodeComponent.Node));
+                Frame.UnselectAll();
+                Frame.Select(newNodes.Select(x => x.GetComponentInChildren<MoveHandle>()));
+            }
 
-            var allHandles = Frame.GetComponentsInChildren<MoveHandle>();
+            var allHandles = Frame.Selected.Select(x => x.GetComponentInChildren<MoveHandle>());
             foreach (var handle in allHandles) {
                 _nodesInitialPositions[handle.NodeComponent] = handle.NodeComponent.transform.position;
             }
@@ -43,7 +40,7 @@ namespace ScriptingLanguage.VisualScripting
 
         public void OnDrag(PointerEventData eventData)
         {
-            if (eventData.button != PointerEventData.InputButton.Left) {
+            if (eventData.button == PointerEventData.InputButton.Middle) {
                 return;
             }
             Vector2 offset = eventData.position - _startingPosition;
@@ -55,9 +52,10 @@ namespace ScriptingLanguage.VisualScripting
 
         public void OnEndDrag(PointerEventData eventData)
         {
-            if (eventData.button != PointerEventData.InputButton.Left) {
+            if (eventData.button == PointerEventData.InputButton.Middle) {
                 return;
             }
+
             if (eventData.pointerEnter == null) {
                 return;
             }
