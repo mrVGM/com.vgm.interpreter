@@ -4,9 +4,10 @@ MonoImporter:
   externalObjects: {}
   serializedVersion: 2
   defaultReferences:
-  - ParserTable: {fileID: 4900000, guid: c099d0057bfdfb34ea61fde1871fa62e, type: 3}
+  - ParserTable: {fileID: 4900000, guid: 629da4afca339b74aac05d38aa1fd4fb, type: 3}
   - GraphicElements: {instanceID: 0}
   - InputField: {instanceID: 0}
+  - ConsoleOutput: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

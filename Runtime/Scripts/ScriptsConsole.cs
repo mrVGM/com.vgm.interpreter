@@ -10,7 +10,6 @@ namespace ScriptingLanguage
     public class ScriptsConsole : MonoBehaviour
     {
         [SerializeField]
-        [HideInInspector]
         private TextAsset ParserTable;
         public GameObject GraphicElements;
         public InputField InputField;
@@ -93,8 +92,8 @@ namespace ScriptingLanguage
             }
 
             InputField.text = "";
-            if (EventSystem.current.currentSelectedGameObject != InputField.gameObject)
-                EventSystem.current.SetSelectedGameObject(InputField.gameObject);
+            InputField.Select();
+            InputField.ActivateInputField();
         }
 
         [MetaCommand(Name = "change_font_size")]
