@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
 
 namespace ScriptingLanguage.Parser
 {
@@ -33,26 +31,28 @@ namespace ScriptingLanguage.Parser
         public ParserTable() { }
         public static ParserTable Deserialize(string fileName)
         {
-            BinaryFormatter bf = new BinaryFormatter();
-            var f = File.Open(fileName, FileMode.Open);
-            var res = bf.Deserialize(f) as ParserTable;
-            f.Close();
-            return res;
+            ParserTable pt = null;
+            using (var file = File.Open(fileName, FileMode.Open))
+            {
+                var bf = new BinaryFormatter();
+                pt = bf.Deserialize(file) as ParserTable;
+            }
+            return pt;
         }
 
-        public static ParserTable Deserialize(byte[] bytes)
+        public static ParserTable Deserialize(byte[] data)
         {
-            BinaryFormatter bf = new BinaryFormatter();
-            var stream = new MemoryStream(bytes);
-            return bf.Deserialize(stream) as ParserTable;
+            var bf = new BinaryFormatter();
+            var ms = new MemoryStream(data);
+            return bf.Deserialize(ms) as ParserTable;
         }
 
         public void Serialize(string fileName)
         {
-            BinaryFormatter bf = new BinaryFormatter();
-            var f = File.Open(fileName, FileMode.Create);
-            bf.Serialize(f, this);
-            f.Close();
+            using (var file = File.Open(fileName, FileMode.CreateNew)) {
+                var bf = new BinaryFormatter();
+                bf.Serialize(file, this);
+            }
         }
 
         public ParserTable(Grammar grammar)
