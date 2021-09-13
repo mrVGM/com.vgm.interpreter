@@ -1,4 +1,5 @@
 using ScriptingLanguage;
+using ScriptingLanguage.Markup;
 using ScriptingLanguage.Parser;
 using ScriptingLanguage.Tokenizer;
 using UnityEngine;
@@ -31,14 +32,15 @@ public class Test : MonoBehaviour
             return _parser;
         }
     }
-
-    // Start is called before the first frame update
-    void Start()
+    public void BuildUI()
     {
         var scriptId = new ScriptId { Filename = Markup.name, Script = Markup.text };
         var tokens = Utils.TokenizeText(scriptId, new SimpleToken { Name = "Terminal" });
         tokens = CombinedTokenizer.DefaultTokenizer.Tokenize(tokens);
         var tree = Parser.ParseProgram(tokens);
-        bool t = true;
+        MarkupInterpreter.ValidateParserTree(tree);
+
+        var interpreter = new MarkupInterpreter();
+        interpreter.SetupUnityElements(tree, GetComponent<RectTransform>());
     }
 }

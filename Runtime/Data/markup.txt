@@ -1,1 +1,10 @@
-<div id="dwqe"> </div>
+<rect id="dwqe">
+ <div></div>
+ <div></div>
+ <div></div>
+</rect>
+<rect id="dwqe">
+ <div></div>
+ <div></div>
+ <div></div>
+</rect>
