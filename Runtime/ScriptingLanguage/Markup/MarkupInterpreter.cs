@@ -1,4 +1,5 @@
-﻿using ScriptingLanguage.Parser;
+﻿using ScriptingLanguage.Markup.Layout;
+using ScriptingLanguage.Parser;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,42 +41,52 @@ namespace ScriptingLanguage.Markup
             }
         }
 
-        public IEnumerable<UIElement> SetupUnityElements(ProgramNode node, RectTransform root)
+        private void OnElementCreated(UIElement element, UIBuildingContext buildingContext)
         {
-            var elementList = new List<UIElement>();
-            UIElement convertNode(ProgramNode node, RectTransform transform)
+            var allParams = MarkupUtils.GetTagParameters(element);
+            foreach (var tagParam in allParams) {
+                if (tagParam.Key == "onCreated") {
+                    var funcName = tagParam.Value;
+                    var func = buildingContext.NamedProperties.FirstOrDefault(x => x.Name == funcName);
+                    if (func.CallBack != null) {
+                        func.CallBack.Invoke(element);
+                        break;
+                    }
+                }
+            }
+        }
+
+        public IEnumerable<UIElement> SetupUnityElements(ProgramNode node, UIBuildingContext buildingContext, RectTransform root)
+        {
+            UIElement convertNode(ProgramNode node, RectTransform transform, UIElementFactory factory)
             {
-                var uiElement = new UIElement { ProgramNode = node };
+                var uiElement = factory.CreateElement(node);
                 if (node.Token.Name == "Tag") {
                     var go = new GameObject($"{node.Children[0].Children[1].Token.Data}");
                     uiElement.UnityElement = go.AddComponent<RectTransform>();
                     uiElement.UnityElement.SetParent(transform);
+                    OnElementCreated(uiElement, buildingContext);
                 }
                 foreach (var child in uiElement.ProgramNode.Children) {
-                    var tmp = convertNode(child, uiElement.UnityElement != null ? uiElement.UnityElement : transform);
+                    var tmp = convertNode(child, uiElement.UnityElement != null ? uiElement.UnityElement : transform, factory);
                     tmp.Parent = uiElement;
                 }
-                elementList.Add(uiElement);
                 return uiElement;
             }
-
-            int nodeLevel(UIElement element)
-            {
-                int level = 0;
-                while (element.Parent != null)
-                {
-                    element = element.Parent;
-                    if (element.ProgramNode.Token.Name == "Tag") {
-                        ++level;
-                    }
+            List<UIElement> elementList = new List<UIElement>();
+            using (var factory = new UIElementFactory()) {
+                convertNode(node, root, factory);
+                elementList = factory.ElementsCreated.Where(x => x.ProgramNode.Token.Name == "Tag").ToList(); 
+            }
+            foreach (var tagElement in elementList) {
+                var parent = tagElement.Parent;
+                while (parent != null && !elementList.Contains(parent)) {
+                    parent = parent.Parent;
                 }
-                return level;
+                tagElement.Parent = parent;
             }
 
-            convertNode(node, root);
-
-            var tags = elementList.OrderByDescending(nodeLevel);
-            return tags;
+            return elementList;
         }
     }
 }

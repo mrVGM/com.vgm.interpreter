@@ -3,10 +3,11 @@ using UnityEngine;
 
 namespace ScriptingLanguage.Markup
 {
-    public class UIElement
+    public interface UIElement
     {
-        public UIElement Parent;
-        public ProgramNode ProgramNode;
-        public RectTransform UnityElement;
+        UIElement Parent { get; set; }
+        ProgramNode ProgramNode { get; }
+        RectTransform UnityElement { get; set; }
+        int ElementLevel { get; }
     }
 }

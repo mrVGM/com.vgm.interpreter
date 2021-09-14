@@ -3,8 +3,8 @@
  <div></div>
  <div></div>
 </rect>
-<rect id="dwqe">
+<rect id="dwqefdes">
+ <div width="300" height="500"></div>
  <div></div>
- <div></div>
- <div></div>
+ <div onCreated="func"></div>
 </rect>
