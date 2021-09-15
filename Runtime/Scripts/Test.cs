@@ -63,9 +63,12 @@ public class Test : MonoBehaviour
         var interpreter = new MarkupInterpreter();
         var elements = interpreter.SetupUnityElements(tree, BuildingContext, GetComponent<RectTransform>());
 
-        var layouthandler = new LayoutSizeHandler();
+        var layoutSizeHandler = new LayoutSizeHandler();
         var grouphandler = new GroupHandler();
-        layouthandler.HandleLayout(elements);
-        grouphandler.HandleLayout(elements);
+        var texthandler = new TextHandler();
+
+        texthandler.HandleLayout(elements, BuildingContext);
+        layoutSizeHandler.HandleLayout(elements, BuildingContext);
+        grouphandler.HandleLayout(elements, BuildingContext);
     }
 }

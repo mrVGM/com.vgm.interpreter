@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace ScriptingLanguage.Markup.Layout
 {
-    public class GroupHandler
+    public class GroupHandler : ILayoutHandler
     {
-        public void HandleLayout(IEnumerable<UIElement> elements)
+        public void HandleLayout(IEnumerable<UIElement> elements, UIBuildingContext context)
         {
             var groupTags = elements.Where(x => MarkupUtils.GetTagName(x) == "div" || MarkupUtils.GetTagName(x) == "span");
             Dictionary<UIElement, List<UIElement>> childrenMap = new Dictionary<UIElement, List<UIElement>>();

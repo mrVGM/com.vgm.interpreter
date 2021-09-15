@@ -3,9 +3,9 @@ using System.Linq;
 
 namespace ScriptingLanguage.Markup.Layout
 {
-    public class LayoutSizeHandler
+    public class LayoutSizeHandler : ILayoutHandler
     {
-        public void HandleLayout(IEnumerable<UIElement> elements)
+        public void HandleLayout(IEnumerable<UIElement> elements, UIBuildingContext context)
         {
             var ordered = elements.OrderByDescending(x => x.ElementLevel);
             foreach (var elem in ordered) 
