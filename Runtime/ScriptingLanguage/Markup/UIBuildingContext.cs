@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 using UnityEngine.Events;
 
 namespace ScriptingLanguage.Markup
@@ -12,6 +13,7 @@ namespace ScriptingLanguage.Markup
             public string Name;
             public int IntValue;
             public string StringValue;
+            public Sprite SpriteValue;
             public UIElementCallback CallBack;
         }
         [Serializable]

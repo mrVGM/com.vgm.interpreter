@@ -66,8 +66,10 @@ public class Test : MonoBehaviour
         var layoutSizeHandler = new LayoutSizeHandler();
         var grouphandler = new GroupHandler();
         var texthandler = new TextHandler();
+        var imagehandler = new ImageHandler();
 
         texthandler.HandleLayout(elements, BuildingContext);
+        imagehandler.HandleLayout(elements, BuildingContext);
         layoutSizeHandler.HandleLayout(elements, BuildingContext);
         grouphandler.HandleLayout(elements, BuildingContext);
     }
