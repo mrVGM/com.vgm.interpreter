@@ -14,6 +14,8 @@ namespace ScriptingLanguage.Markup
             public int IntValue;
             public string StringValue;
             public Sprite SpriteValue;
+            public Font Font;
+            public Color Color;
             public UIElementCallback CallBack;
         }
         [Serializable]

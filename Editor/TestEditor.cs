@@ -10,7 +10,7 @@ public class TestEditor : Editor
 
         Test myTarget = target as Test;
         if (GUILayout.Button("Build UI")) {
-            myTarget.BuildUI();
+            myTarget.BuildUI(myTarget.Markup, myTarget.gameObject.GetComponent<RectTransform>(), myTarget.BuildingContext);
         }
     }
 }

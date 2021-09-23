@@ -37,7 +37,7 @@ public class Test : MonoBehaviour
         }
     }
 
-    public void OnCreated(UIElement element)
+    public void OnCreated(UIElement element, UIBuildingContext buildingContext)
     {
         var scriptId = new ScriptId { Filename = Markup2.name, Script = Markup2.text };
         var tokens = Utils.TokenizeText(scriptId, new SimpleToken { Name = "Terminal" });
@@ -46,31 +46,42 @@ public class Test : MonoBehaviour
         MarkupInterpreter.ValidateParserTree(tree);
 
         var interpreter = new MarkupInterpreter();
-        var elements = interpreter.SetupUnityElements(tree, BuildingContext, element.UnityElement);
+        var elements = interpreter.SetupUnityElements(tree, buildingContext, element.UnityElement);
         var topLevelElements = elements.Where(x => x.ElementLevel == 0).ToList();
         foreach (var elem in topLevelElements) {
             elem.Parent = element;
         }
     }
-    public void BuildUI()
+
+    public ProgramNode ParseLayout(TextAsset markup)
     {
-        var scriptId = new ScriptId { Filename = Markup.name, Script = Markup.text };
+        var scriptId = new ScriptId { Filename = markup.name, Script = markup.text };
+        var tokens = Utils.TokenizeText(scriptId, new SimpleToken { Name = "Terminal" });
+        tokens = CombinedTokenizer.DefaultTokenizer.Tokenize(tokens);
+        var tree = Parser.ParseProgram(tokens);
+        MarkupInterpreter.ValidateParserTree(tree);
+        return tree;
+    }
+
+    public void BuildUI(TextAsset markup, RectTransform root, UIBuildingContext buildingContext)
+    {
+        var scriptId = new ScriptId { Filename = markup.name, Script = markup.text };
         var tokens = Utils.TokenizeText(scriptId, new SimpleToken { Name = "Terminal" });
         tokens = CombinedTokenizer.DefaultTokenizer.Tokenize(tokens);
         var tree = Parser.ParseProgram(tokens);
         MarkupInterpreter.ValidateParserTree(tree);
 
         var interpreter = new MarkupInterpreter();
-        var elements = interpreter.SetupUnityElements(tree, BuildingContext, GetComponent<RectTransform>());
+        var elements = interpreter.SetupUnityElements(tree, buildingContext, root);
 
         var layoutSizeHandler = new LayoutSizeHandler();
         var grouphandler = new GroupHandler();
         var texthandler = new TextHandler();
         var imagehandler = new ImageHandler();
 
-        texthandler.HandleLayout(elements, BuildingContext);
-        imagehandler.HandleLayout(elements, BuildingContext);
-        layoutSizeHandler.HandleLayout(elements, BuildingContext);
-        grouphandler.HandleLayout(elements, BuildingContext);
+        texthandler.HandleLayout(elements);
+        imagehandler.HandleLayout(elements);
+        layoutSizeHandler.HandleLayout(elements);
+        grouphandler.HandleLayout(elements);
     }
 }

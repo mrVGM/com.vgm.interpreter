@@ -8,6 +8,7 @@ namespace ScriptingLanguage.Markup
         UIElement Parent { get; set; }
         ProgramNode ProgramNode { get; }
         RectTransform UnityElement { get; set; }
+        UIBuildingContext Context { get; set; }
         int ElementLevel { get; }
     }
 }

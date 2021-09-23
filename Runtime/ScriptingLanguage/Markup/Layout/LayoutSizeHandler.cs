@@ -5,7 +5,7 @@ namespace ScriptingLanguage.Markup.Layout
 {
     public class LayoutSizeHandler : ILayoutHandler
     {
-        public void HandleLayout(IEnumerable<UIElement> elements, UIBuildingContext context)
+        public void HandleLayout(IEnumerable<UIElement> elements)
         {
             var ordered = elements.OrderByDescending(x => x.ElementLevel);
             foreach (var elem in ordered) 
@@ -19,8 +19,7 @@ namespace ScriptingLanguage.Markup.Layout
                     sizeDelta.x = w;
                     elem.UnityElement.sizeDelta = sizeDelta;
                 }
-                if (!height.Equals(default(KeyValuePair<string, string>)))
-                {
+                if (!height.Equals(default(KeyValuePair<string, string>))) {
                     int h = int.Parse(height.Value);
                     var sizeDelta = elem.UnityElement.sizeDelta;
                     sizeDelta.y = h;

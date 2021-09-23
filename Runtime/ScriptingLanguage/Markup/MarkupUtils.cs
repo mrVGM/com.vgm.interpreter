@@ -8,27 +8,27 @@ namespace ScriptingLanguage.Markup
     {
         public static IEnumerable<KeyValuePair<string, string>> GetTagParameters(UIElement element)
         {
-            var node = element.ProgramNode;
-            if (node.Token.Name != "Tag") {
+            var programNode = element.ProgramNode;
+            if (programNode.Token.Name != "Tag") {
                 throw new InvalidOperationException();
             }
-            var openingTag = node.Children[0]; 
-            if (node.MatchChildren("<", "Name", ">")) {
+            var openingTag = programNode.Children[0]; 
+            if (programNode.MatchChildren("<", "Name", ">")) {
                 yield break;
             }
             var tagParams = openingTag.Children[2];
-            IEnumerable<ProgramNode> getTagParams(ProgramNode tagParams)
+            IEnumerable<ProgramNode> getTagParams(ProgramNode parameters)
             {
-                if (tagParams.MatchChildren("TagParameter")) {
-                    yield return tagParams.Children[0];
+                if (parameters.MatchChildren("TagParameter")) {
+                    yield return parameters.Children[0];
                     yield break;
                 }
-                if (tagParams.MatchChildren("TagParameters", "TagParameter")) {
-                    var nodes = getTagParams(tagParams.Children[0]);
+                if (parameters.MatchChildren("TagParameters", "TagParameter")) {
+                    var nodes = getTagParams(parameters.Children[0]);
                     foreach (var node in nodes) {
                         yield return node;
                     }
-                    yield return tagParams.Children[1];
+                    yield return parameters.Children[1];
                 }
             }
 

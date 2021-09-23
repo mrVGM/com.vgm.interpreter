@@ -56,16 +56,27 @@ namespace ScriptingLanguage.Markup
             }
         }
 
-        public IEnumerable<UIElement> SetupUnityElements(ProgramNode node, UIBuildingContext buildingContext, RectTransform root)
+        public IEnumerable<UIElement> SetupUnityElements(ProgramNode programNode, UIBuildingContext buildingContext, RectTransform root)
         {
             UIElement convertNode(ProgramNode node, RectTransform transform, UIElementFactory factory)
             {
                 var uiElement = factory.CreateElement(node);
+                uiElement.Context = buildingContext;
                 if (node.Token.Name == "Tag") {
                     var go = new GameObject($"{node.Children[0].Children[1].Token.Data}");
                     uiElement.UnityElement = go.AddComponent<RectTransform>();
                     uiElement.UnityElement.SetParent(transform);
+                    uiElement.UnityElement.pivot = Vector2.up;
+                    uiElement.UnityElement.anchorMin = Vector2.up;
+                    uiElement.UnityElement.anchorMax = Vector2.up;
+                    uiElement.UnityElement.anchoredPosition = Vector2.zero;
                     OnElementCreated(uiElement, buildingContext);
+                    var parameters = MarkupUtils.GetTagParameters(uiElement);
+                    string paramString = "";
+                    foreach (var p in parameters) {
+                        paramString += $" {p.Key}=\"{p.Value}\"";
+                    }
+                    go.name = $"<{go.name}{paramString}>";
                 }
                 foreach (var child in uiElement.ProgramNode.Children) {
                     var tmp = convertNode(child, uiElement.UnityElement != null ? uiElement.UnityElement : transform, factory);
@@ -75,7 +86,7 @@ namespace ScriptingLanguage.Markup
             }
             List<UIElement> elementList = new List<UIElement>();
             using (var factory = new UIElementFactory()) {
-                convertNode(node, root, factory);
+                convertNode(programNode, root, factory);
                 elementList = factory.ElementsCreated.Where(x => x.ProgramNode.Token.Name == "Tag").ToList(); 
             }
             foreach (var tagElement in elementList) {
