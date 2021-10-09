@@ -211,16 +211,30 @@ namespace ScriptingLanguage
         }
         public static void SetProperty(object obj, Type type, string propertyName, object value)
         {
+            object convertValue(Type t)
+            {
+                if (!Utils.IsNumber(t)) {
+                    return value;
+                }
+
+                var number = value as Number;
+                if (number == null) {
+                    return value;
+                }
+
+                return number.GetNumber(t);
+            }
+
             var flags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
             var propertyInfo = type.GetProperty(propertyName, flags);
             if (propertyInfo != null) {
-                propertyInfo.SetValue(obj, value);
+                propertyInfo.SetValue(obj, convertValue(propertyInfo.PropertyType));
                 return;
             }
 
             var fieldInfo = type.GetField(propertyName, flags);
             if (fieldInfo != null) {
-                fieldInfo.SetValue(obj, value);
+                fieldInfo.SetValue(obj, convertValue(fieldInfo.FieldType));
                 return;
             }
         }

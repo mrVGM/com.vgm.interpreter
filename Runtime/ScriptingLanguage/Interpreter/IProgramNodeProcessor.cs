@@ -24,13 +24,13 @@ namespace ScriptingLanguage.Interpreter
                 }
 
                 string script = scriptSource.Script;
-                int line = scriptSource.GetLineNumber(CodeIndex);
+                int line = scriptSource.GetLineNumber(node.GetCodeIndex());
                 if (line == lastLine && scriptSource == lastScript) 
                 {
                     continue;
                 }
 
-                int index = scriptSource.GetLineOffset(CodeIndex);
+                int index = scriptSource.GetLineOffset(node.GetCodeIndex());
                 lastLine = line;
                 lastScript = scriptSource;
 
@@ -68,7 +68,7 @@ namespace ScriptingLanguage.Interpreter
         }
         private NodeProcessor() { }
     }
-
+    
     public interface IProgramNodeProcessor
     {
         object ProcessNode(ProgramNode programNode, Scope scope, ref object value);
