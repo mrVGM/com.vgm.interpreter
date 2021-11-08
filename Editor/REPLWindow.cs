@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace ScriptingLanguage
 {
+#if UNITY_EDITOR
     public class REPLWindow : EditorWindow
     {
         private static REPLWindow Instance;
@@ -65,4 +66,5 @@ namespace ScriptingLanguage
             }
         }
     }
+#endif
 }
